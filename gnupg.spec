@@ -4,7 +4,7 @@
 #
 Name     : gnupg
 Version  : 2.0.27
-Release  : 4
+Release  : 5
 URL      : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.0.27.tar.bz2
 Source0  : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.0.27.tar.bz2
 Summary  : No detailed summary available
@@ -20,6 +20,7 @@ BuildRequires : libassuan-dev
 BuildRequires : libgcrypt-dev
 BuildRequires : libgpg-error-dev
 BuildRequires : libksba-dev
+BuildRequires : libusb-compat-dev
 BuildRequires : pkgconfig(zlib)
 BuildRequires : pth-dev
 
@@ -68,9 +69,12 @@ locales components for the gnupg package.
 
 %build
 %configure --disable-static
-make V=1 %{?_smp_mflags}
+make V=1  %{?_smp_mflags}
 
 %check
+export http_proxy=http://127.0.0.1:9/
+export https_proxy=http://127.0.0.1:9/
+export no_proxy=localhost
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
