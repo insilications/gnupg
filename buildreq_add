@@ -2,3 +2,8 @@
 # picked up automatically. One name per line, no whitespace.
 libusb-compat-dev
 npth-dev
+libgpg-error-dev
+libgcrypt-dev
+libassuan-dev
+libksba-dev
+bzip2-dev
