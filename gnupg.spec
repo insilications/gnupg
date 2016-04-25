@@ -4,7 +4,7 @@
 #
 Name     : gnupg
 Version  : 2.1.11
-Release  : 10
+Release  : 11
 URL      : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.11.tar.bz2
 Source0  : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.11.tar.bz2
 Summary  : zlib compression library
@@ -24,6 +24,7 @@ BuildRequires : npth-dev
 BuildRequires : pkgconfig(gnutls)
 BuildRequires : pkgconfig(sqlite3)
 Patch1: fix-test-failures.patch
+Patch2: wakeups.patch
 
 %description
 The GNU Privacy Guard 2
@@ -71,13 +72,16 @@ locales components for the gnupg package.
 %prep
 %setup -q -n gnupg-2.1.11
 %patch1 -p1
+%patch2 -p1
 
 %build
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
-export CFLAGS="$CFLAGS -flto -falign-functions=32 -O3 -fno-semantic-interposition "
-export CXXFLAGS="$CXXFLAGS -flto -falign-functions=32 -O3 -fno-semantic-interposition "
+export CFLAGS="$CFLAGS -fno-semantic-interposition -O3 -flto -falign-functions=32 "
+export FCFLAGS="$CFLAGS -fno-semantic-interposition -O3 -flto -falign-functions=32 "
+export FFLAGS="$CFLAGS -fno-semantic-interposition -O3 -flto -falign-functions=32 "
+export CXXFLAGS="$CXXFLAGS -fno-semantic-interposition -O3 -flto -falign-functions=32 "
 %configure --disable-static --disable-rpath
 make V=1  %{?_smp_mflags}
 
