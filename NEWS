@@ -1,3 +1,106 @@
+Noteworthy changes in version 2.1.13 (2016-06-16)
+-------------------------------------------------
+
+ * gpg: New command --quick-addkey.  Extend the --quick-gen-key
+   command.
+
+ * gpg: New --keyid-format "none" which is now also the default.
+
+ * gpg: New option --with-subkey-fingerprint.
+
+ * gpg: Include Signer's UID subpacket in signatures if the secret key
+   has been specified using a mail address and the new option
+   --disable-signer-uid is not used.
+
+ * gpg: Allow unattended deletion of a secret key.
+
+ * gpg: Allow export of non-passphrase protected secret keys.
+
+ * gpg: New status lines KEY_CONSIDERED and NOTATION_FLAGS.
+
+ * gpg: Change status line TOFU_STATS_LONG to use '~' as
+   a non-breaking-space character.
+
+ * gpg: Speedup key listings in Tofu mode.
+
+ * gpg: Make sure that the current and total values of a PROGRESS
+   status line are small enough.
+
+ * gpgsm: Allow the use of AES192 and SERPENT ciphers.
+
+ * dirmngr: Adjust WKD lookup to current specs.
+
+ * dirmngr: Fallback to LDAP v3 if v2 is is not supported.
+
+ * gpgconf: New commands --create-socketdir and --remove-socketdir,
+   new option --homedir.
+
+ * If a /run/user/$UID directory exists, that directory is now used
+   for IPC sockets instead of the GNUPGHOME directory.  This fixes
+   problems with NFS and too long socket names and thus avoids the
+   need for redirection files.
+
+ * The Speedo build systems now uses the new versions.gnupg.org server
+   to retrieve the default package versions.
+
+ * Fix detection of libusb on FreeBSD.
+
+ * Speedup fd closing after a fork.
+
+
+Noteworthy changes in version 2.1.12 (2016-05-04)
+-------------------------------------------------
+
+ * gpg: New --edit-key sub-command "change-usage" for testing
+   purposes.
+
+ * gpg: Out of order key-signatures are now systematically detected
+   and fixed by --edit-key.
+
+ * gpg: Improved detection of non-armored messages.
+
+ * gpg: Removed the extra prompt needed to create Curve25519 keys.
+
+ * gpg: Improved user ID selection for --quick-sign-key.
+
+ * gpg: Use the root CAs provided by the system with --fetch-key.
+
+ * gpg: Add support for the experimental Web Key Directory key
+   location service.
+
+ * gpg: Improve formatting of Tofu messages and emit new Tofu specific
+   status lines.
+
+ * gpgsm: Add option --pinentry-mode to support a loopback pinentry.
+
+ * gpgsm: A new pubring.kbx is now created with the header blob so
+   that gpg can detect that the keybox format needs to be used.
+
+ * agent: Add read support for the new private key protection format
+   openpgp-s2k-ocb-aes.
+
+ * agent: Add read support for the new extended private key format.
+
+ * agent: Default to --allow-loopback-pinentry and add option
+   --no-allow-loopback-pinentry.
+
+ * scd: Changed to use the new libusb 1.0 API for the internal CCID
+   driver.
+
+ * dirmngr: The dirmngr-client does now auto-detect the PEM format.
+
+ * g13: Add experimental support for dm-crypt.
+
+ * w32: Tofu support is now available with the Speedo build method.
+
+ * w32: Removed the need for libiconv.dll.
+
+ * The man pages for gpg and gpgv are now installed under the correct
+   name (gpg2 or gpg - depending on a configure option).
+
+ * Lots of internal cleanups and bug fixes.
+
+
 Noteworthy changes in version 2.1.11 (2016-01-26)
 -------------------------------------------------
 

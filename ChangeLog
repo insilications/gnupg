@@ -1,3 +1,1659 @@
+2016-06-16  Werner Koch  <wk@gnupg.org>
+
+	Release 2.1.13.
+
+2016-06-16  Yuri Chornoivan  <yurchor@ukr.net>
+
+	po: Update Ukrainian translation.
+
+2016-06-16  Ineiev  <ineiev@gnu.org>
+
+	po: Update Russian translation.
+
+2016-06-16  Werner Koch  <wk@gnupg.org>
+
+	po: Update German translation.
+
+	Add missing files so that make distcheck works again,
+	* tests/openpgp/Makefile.am (CLEANFILES): Add created file
+	"passphrases".
+	* tools/Makefile.am (EXTRA_DIST): Add no-libgcrypt.c.
+
+	tools: Fix typo in function name of symcryptrun.
+	* tools/symcryptrun.c (main): Fix typo.
+
+2016-06-14  Werner Koch  <wk@gnupg.org>
+
+	gpg: Print the subkey's curve and not the primary key curve.
+	* g10/keylist.c (list_keyblock_colon): Use PK2 for the subkey's curve.
+
+	ldap: Improve info output for v3 fallback.
+	* dirmngr/dirmngr_ldap.c (fetch_ldap): Do not use log_debug in an
+	unprotected section.  Replace log_debug by log_info in verbose mode.
+
+2016-06-14  Andre Heinecke  <aheinecke@intevation.de>
+
+	dirmngr: Try ldap protocol V3 as fallback.
+	* dirmngr/dirmngr_ldap.c (fetch_ldap): Try V3 Protocol in case
+	default Protocol gives error.
+
+	dirmngr: Print ldap error if bind fails.
+	* dirmngr/dirmngr_ldap.c (fetch_ldap): Use ldap_err2string on bind
+	return.
+
+2016-06-14  Werner Koch  <wk@gnupg.org>
+
+	gpgsm: Allow ciphers AES192 and SERPENT256.
+	* sm/gpgsm.c (main): Add AES192 cipher.  Allow SERPENT256.
+
+	doc: Add files and envvars to a new index.
+	* doc/gnupg.texi: Define new index "ef".
+	(Environment Index): New.
+
+	gpg: Avoid endless loop in a tofu error case.
+	* g10/tofu.c (get_trust): Do not jump to out.
+
+	gpg: Split tofu's get_trust function into several smaller ones.
+	* g10/tofu.c (get_trust): Factor code out to ...
+	(format_conflict_msg_part1): new and to ...
+	(ask_about_binding): new.
+
+2016-06-13  Werner Koch  <wk@gnupg.org>
+
+	gpg: Un-deprecate option --auto-key-retrieve.
+	* g10/gpg.c (main): Remove deprecation warning.
+
+	gpg: New option --disable-signer-uid, create Signer's UID sub-packet.
+	* g10/gpg.c (oDisableSignerUID): New.
+	(opts): New option '--disable-signer-uid'.
+	(main): Set option.
+	* g10/options.h (opt): Add field flags.disable_signer_uid.
+	* g10/sign.c: Include mbox-util.h.
+	(mk_notation_policy_etc): Embed the signer's uid.
+	* g10/mainproc.c (check_sig_and_print): Do not use WKD for auto key
+	retrieval if --disable-signer-uid is used.
+
+	gpg: Try Signer's User ID sub-packet with --auto-key-retrieve.
+	* g10/packet.h (PKT_signature): Add field 'signers_uid'.
+	* g10/parse-packet.c (parse_signature): Set this field.
+	* g10/free-packet.c (free_seckey_enc): Free field.
+	(copy_signature): Copy field.
+	* g10/mainproc.c (akl_has_wkd_method): New.
+	(check_sig_and_print): Extend NEWSIG status.  If WKD is enabled try to
+	locate a missing key via the signature's Signer's User ID sub-packet.
+	Do this right before trying a keyserver lookup.
+
+2016-06-11  Werner Koch  <wk@gnupg.org>
+
+	gpg: Remove C-99ism, re-indent, and simplify one function.
+	* g10/call-agent.c (struct keyinfo_data): Rename to
+	keyinfo_data_parm_s.
+	(agent_get_keyinfo): Replace C-99 style init.
+	(keyinfo_status_cb): Use new fucntion split_fields.
+	* g10/export.c (match_curve_skey_pk): Add missings returns error
+	cases.
+	(cleartext_secret_key_to_openpgp): Better clear PK->PKEY first.
+
+	common: New function split_fields.
+	* common/stringhelp.c (split_fields): New.
+	* common/t-stringhelp.c: Include assert.h.
+	(test_split_fields): New.
+	(main): Call test.
+
+2016-06-11  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	g10: Export cleartext keys as cleartext.
+	* g10/export.c (do_export_stream): If a key is stored by the agent in
+	cleartext, then try to export it as cleartext.
+	* tests/openpgp/export.test: For secret keys that are stored in
+	cleartext, test should try to export without pinentry interaction.
+
+	g10: Allow receiving cleartext secret keys from agent.
+	* g10/export.c (match_curve_skey_pk): New function, testing whether an
+	OpenPGP public key and an S-expression use the same curve.
+	* g10/export.c (cleartext_secret_key_to_openpgp): New function,
+	filling in the secret key parameters of a PKT_public_key object from
+	a corresponding cleartext S-expression.
+	* g10/export.c, g10/main.h (receive_seckey_from_agent): Add cleartext
+	parameter, enabling retrieval of the secret key, unlocked.
+	* g10/export.c (do_export_stream): Send cleartext as 0, keeping current
+	behavior.
+	* g10/keygen.c (card_store_key_with_backup): Use cleartext=0 to ensure
+	that smartcard backups are all passphrase-locked.
+
+	g10: Add openpgp_protected flag to agent secret key export functions.
+	* g10/call-agent.c, g10/call-agent.h (agent_export_key): Add
+	openpgp_protected flag.
+	* g10/export.c (receive_seckey_from_agent): Request openpgp_protected
+	secret keys from agent.
+	* agent/command.c (hlp_export_key): EXPORT_KEY help text: add a
+	brief description of the effect of --openpgp.
+
+	g10: report whether key in agent is passphrase-protected or not.
+	* g10/call-agent.c, g10/call-agent.h (agent_get_keyinfo): add
+	  r_cleartext parameter to report whether a key is stored without
+	  passphrase protection.
+	* g10/gpgv.c, g10/test-stubs.c: augment dummy agent_get_keyinfo to
+	  match new API.
+	* g10/export.c, g10/keyedit.c, g10/keygen.c, g10/keylist.c,
+	  g10/sign.c: pass NULL to agent_get_keyinfo since we do not yet
+	  need to know whether agent is passphrase-protected.
+
+2016-06-08  Werner Koch  <wk@gnupg.org>
+
+	Explicitly restrict socket permissions.
+	* agent/gpg-agent.c (create_server_socket): Call chmod before listen.
+	* scd/scdaemon.c (create_server_socket): Ditto.
+	* dirmngr/dirmngr.c (main): Ditto.
+
+	w32: Fix recent build regression.
+	* common/homedir.c (_gnupg_socketdir_internal) [W32]: Add definition
+	for NAME.
+	* g10/gpg.c (main) [W32]:  Fix use og gnupg_homedir.
+
+	* agent/gpg-agent.c (remove_socket): Remove unused var P.
+	* scd/scdaemon.c (cleanup): Ditto.
+
+	gpgconf: New commands --create-socketdir and --remove-socketdir.
+	* tools/gpgconf.c: Include unistd.h.
+	(aCreateSocketDir, aRemoveSocketDir): New.
+	(opts): Add --create-socketdir and --remove-socketdir.
+	(main): Implement them.
+
+	Implement /run/user/UID/gnupg based sockets.
+	* common/homedir.c: Include sys/stat.h and zb32.h.
+	(w32_portable_app, w32_bin_is_bin): Change type from int to byte.
+	(non_default_homedir): New.
+	(is_gnupg_default_homedir): New.
+	(default_homedir): Set non_default_homedir.
+	(gnupg_set_homedir): Set non_default_homedir and make
+	the_gnupg_homedir and absolute directory name.
+	(gnupg_homedir): Return an absolute directory name.
+	(_gnupg_socketdir_internal): New.
+	(gnupg_socketdir): Implement /run/user/ based sockets.
+	* tools/gpg-connect-agent.c (get_var_ext): Replace now obsolete
+	make_filename by xstrdup.
+	* tools/gpgconf.c (main): Sue gnupg_homedir for the "homedir:" output.
+
+	gpgconf: Add option --homedir.
+	* tools/gpgconf.c (opts): Add --homedir.
+	(main): Set homedir.
+
+	Do not use no-libgcrypt dummy for tools.
+	* tools/Makefile.am (gpgconf_SOURCES): Remove no-libgcrypt.c.
+	(gpgconf_LDADD): Add LIBGCRYPT_LIBS.
+	(gpg_connect_agent_LDADD): Ditto.
+	(gpgtar_LDADD): Ditto.
+	* dirmngr/Makefile.am (dirmngr_client_LDADD): Ditto.
+	(t_common_ldadd): Ditto.  Remove no-libgcrypt.o.
+
+	Do not try to remove the enclosing directory of sockets.
+	* agent/gpg-agent.c (remove_socket): Do not remove the enclosing
+	directory.
+	* scd/scdaemon.c (cleanup): Ditto.
+
+2016-06-07  Werner Koch  <wk@gnupg.org>
+
+	common: New function gnupg_socketdir.
+	* common/homedir.c (gnupg_socketdir): New.
+	* agent/gpg-agent.c (create_socket_name): Use new function instead of
+	gnupg_homedir.
+	(check_own_socket): Ditto.
+	(check_for_running_agent): Ditto.
+	* agent/preset-passphrase.c (main): Ditto.
+	* common/asshelp.c (start_new_gpg_agent): Ditto.
+	* scd/scdaemon.c (create_socket_name): Ditto.
+	* tools/gpgconf.c (main): Ditto.
+	* tools/symcryptrun.c (main): Ditto.
+
+	common: Remove homedir arg from start_new_{dirmngr,gpg_agent}.
+	* common/asshelp.c (start_new_gpg_agent): Remove arg 'homedir' in
+	favor of gnupg_homedir ().  Change all callers.
+	(start_new_dirmngr): Ditto.
+	* common/get-passphrase.c (gnupg_prepare_get_passphrase): Remove arg
+	'homedir'.
+
+	Replace use of opt.homedir by accessor functions.
+	* common/homedir.c (the_gnupg_homedir): New var.
+	(gnupg_set_homedir): New.
+	(gnupg_homedir): New.
+	* g10/options.h (struct opt): Remove 'homedir' and replace all users
+	by the new accessor functions.
+	* g13/g13-common.h (struct opt): Ditto.
+	* scd/scdaemon.h (struct opt): Ditto.
+	* sm/gpgsm.h (struct opt): Ditto.
+	* dirmngr/dirmngr.h (struct opt): Ditto.
+	* agent/preset-passphrase.c (opt_homedir): Ditto.
+	* agent/protect-tool.c (opt_homedir): Ditto.
+
+2016-06-07  NIIBE Yutaka  <gniibe@fsij.org>
+
+	po: Update Japanese translation.
+
+	gpg: Fix command line parsing of --quick-addkey and --quick-gen-key.
+	* g10/gpg.c (main): Compose a block by curly braces.
+
+2016-06-06  Werner Koch  <wk@gnupg.org>
+
+	gpg: Use --keyid-format=none by default.
+	* g10/gpg.c (main): Init keyid_format to KF_NONE.
+	* g10/keyid.c (format_keyid): Ditto.
+	(keystrlen): Ditto.
+
+	gpg: Add option --with-subkey-fingerprint.
+	* g10/gpg.c (oWithSubkeyFingerprint): New.
+	(opts): Add --with-subkey-fingerprint[s].
+	(main): Set that option.
+	* g10/options.h (struct opt): Add 'with_subkey_fingerprint'.
+	* g10/keylist.c (list_keyblock_print): Print subkey fingerprint.
+	(print_fingerprint): Tweak printing to use compact format if
+	desirable.
+
+	gpg: Implement --keyid-format=none.
+	* g10/gpg.c (main): Add option "none" to --keyid-format.
+	* g10/options.h (KF_NONE): New.
+	* g10/keyid.c (format_keyid): Implement that.
+	(keystr): Use format "long" is KF_NONE is in use.
+	(keystr_with_sub): Ditto.
+	* g10/keylist.c (list_keyblock_print): Adjust indentaion for KF_NONE.
+	Factor some code out to ...
+	(print_key_line): new.
+	(print_fingerprint): Add mode 20.
+	* g10/mainproc.c (list_node): Use print_key_line.  Replace MAINKEY by
+	flags.primary in the PK.  Fix putting a " revoked..." string into the
+	colons format.
+	* g10/pkclist.c (do_edit_ownertrust): Use print_key_line.  This
+	slightly changes the putput format.
+	* g10/revoke.c (gen_standard_revoke): Use print_key_line.  This may
+	also put "expires: " into the output.
+
+2016-06-04  Werner Koch  <wk@gnupg.org>
+
+	w32: Require --enable-build-timestamp for the BUILD_HOSTNAME.
+	* configure.ac (BUILD_HOSTNAME): Set to "<anon>" bey default.
+	* build-aux/speedo.mk (speedo_pkg_gnupg_configure): Add
+	  --enable-build-timestamp.
+
+2016-06-02  Werner Koch  <wk@gnupg.org>
+
+	gpg: Add the fingerprint to KEY_CREATED for subkeys.
+	* g10/keygen.c (print_status_key_created): Make more robust by
+	allowing a NULL for PK.
+	(generate_subkeypair): Use print_status_key_created.
+	(generate_card_subkeypair): Ditto.
+
+	gpg: Try to use the passphrase from the primary for --quick-addkey.
+	* agent/command.c (cmd_genkey): Add option --passwd-nonce.
+	(cmd_passwd): Return a PASSWD_NONCE in verify mode.
+	* g10/call-agent.c (agent_genkey): Add arg 'passwd_nonce_addr' and do
+	not send a RESET if given.
+	(agent_passwd): Add arg 'verify'.
+	* g10/keygen.c (common_gen): Add optional arg 'passwd_nonce_addr'.
+	(gen_elg, gen_dsa, gen_ecc, gen_rsa, do_create): Ditto.
+	(generate_subkeypair): Use sepeare hexgrip var for the to be created
+	for hexgrip feature.  Verify primary key first.  Make use of the
+	passwd nonce.  Allow for a static passphrase.
+
+	gpg: Extend the --quick-gen-key command.
+	* g10/keygen.c (quickgen_set_para): Add arg 'use'.
+	(quick_generate_keypair): Add args 'algostr', 'usagestr', and
+	'expirestr'.  Implement primary only key mode.
+	(parse_algo_usage_expire): Set NBITS for the default algo.
+	* g10/gpg.c (main): Extend --quick-gen-key command.
+
+	gpg: Improve the new parse_subkey_algostr_usagestr fucntion.
+	* g10/keygen.c (parse_usagestr): Allow "cert".
+	(generate_subkeypair): Factor expire parsing out to ...
+	(parse_subkey_algostr_usagestr): here.  Rename to ...
+	(parse_algo_usage_expire): this.  Add arg 'for_subkey'.  Set CERT for
+	primary key and check that it is not set for subkeys.
+
+	gpg: New command --quick-addkey.
+	* g10/keygen.c (DEFAULT_STD_SUBKEYUSE): New.
+	(ask_keysize): Factor code out to ...
+	(get_keysize_range, fixup_keysize): new.
+	(parse_parameter_usage): Factor parsing out to  ...
+	(parse_usagestr): new.  Allow use of "encr" as alias for "encrypt".
+	(parse_subkey_algostr_usagestr): New.
+	(generate_subkeypair): Add new args.  Implement unattended mode.
+
+	* g10/keyedit.c (keyedit_quick_sign): Factor some code out to ...
+	(find_by_primary_fpr): new.
+	(keyedit_quick_addkey): New.
+	* g10/gpg.c (aQuickAddKey): New.
+	(opts): Add --quick-addkey.
+	(main): Implement.
+
+	gpg: Do not abort on certain invalid packets.
+	* g10/build-packet.c (write_fake_data): Check for non-opaque data.
+	* g10/seskey.c (do_encode_md): Return NULL instead of abort.
+
+	common: New function openpgp_is_curve_supported.
+	* common/openpgp-oid.c: Include openpgpdefs.h.
+	(oidtable): Add field pubkey_algo.
+	(openpgp_is_curve_supported): New.
+
+2016-06-01  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Allow User ID length >= 256.
+	* build-packet.c (do_user_id): Call write_header2 with HDRLEN not set.
+
+2016-05-31  Werner Koch  <wk@gnupg.org>
+
+	gpg: New status code NOTATION_FLAGS.
+	* common/status.h (STATUS_NOTATION_FLAGS: New.
+	* g10/packet.h (struct notation): Add flags.human.
+	(notation_t): New typedef.
+	* g10/build-packet.c (sig_to_notation): Set flags.human.
+	* g10/keylist.c (show_notation): Write STATUS_NOTATION_FLAGS.
+
+2016-05-28  Werner Koch  <wk@gnupg.org>
+
+	common: Add a status callback to gnupg_exec_tool_stream.
+	* common/exectool.h (exec_tool_status_cb_t): New.
+	* common/exectool.c: Include missing exectool.h.
+	(read_and_log_buffer_t): Replace array by pointer.
+	(gnupg_exec_tool_stream): Add args 'status_cb' and 'status_cb_value'.
+	Change all callers to pass NULL for them.  Malloc buffer for
+	FDERRSTATE.
+	(read_and_log_stderr): Implement status_fd feature.
+
+2016-05-27  Werner Koch  <wk@gnupg.org>
+
+	common: Allow a second input stream for gnupg_exec_tool_stream.
+	* common/exechelp-posix.c (do_exec): Add arg 'except' and pass to
+	close_all_fds.
+	(gnupg_spawn_process): Add arg 'except'.  Change callers to pass NULL
+	for it.
+	* common/exechelp-w32.c (gnupg_spawn_process): Add dummy arg 'except'.
+	* common/exechelp-w32ce.c (gnupg_spawn_process): Ditto.
+	* common/exectool.c (copy_buffer_do_copy): Allow NULL for SINK.
+	(gnupg_exec_tool_stream): Add arg 'inextra'. Change callers to pass
+	NULL for it.  Allow NULL for OUTPUT.
+
+	common: Simplify the fd closing patch 512c56a.
+	* common/exechelp-posix.c (get_max_fds): Use /proc/self.
+
+	common: Speedup closing fds before an exec.
+	* common/exechelp-posix.c [__linux__]: Include dirent.h.
+	(get_max_fds) [__linux__]: Return the actual used highest fd.
+
+	tools: Improve debug output of rfc822parse.
+	* tools/rfc822parse.c (show_event): Add missing events.
+
+	build: Remove obsolete tests for funopen and fopencookie.
+	* configure.ac (AC_CHECK_FUNCS): Remove tests for funopen.
+
+	common: Extend gnupg_create_inbound_pipe et al.
+	* common/exechelp-posix.c (gnupg_create_inbound_pipe): Add args 'r_fp'
+	and 'nonblock'.
+	(gnupg_create_outbound_pipe): Ditto.
+	* common/exechelp-w32.c (gnupg_create_inbound_pipe): Add non yet
+	functional args 'r_fp' and 'nonblock'.
+	(gnupg_create_outbound_pipe): Ditto.
+	* common/exechelp-w32ce.c (gnupg_create_inbound_pipe): Ditto.
+	(gnupg_create_outbound_pipe): Ditto.
+
+	common: Make use of default_errsource in exechelp.
+	* common/exechelp-posix.c (my_error_from_syserror, my_error): New.
+	Use them instead of gpg_error and gpg_error_from_syserror.
+	(create_pipe_and_estream): Remove arg ERRSOURCE and fix use of
+	OUTBOUND which has a wrong name.  Adjust callers.
+	(gnupg_spawn_process): Remove arg ERRSOURCE and replace by use of
+	DEFAULT_ERRSOURCE.
+	* common/exechelp-w32.c (gnupg_spawn_process): Ditto.
+	* common/exechelp-w32ce.c (gnupg_spawn_process): Ditto.
+	* common/exectool.c (gnupg_exec_tool_stream):  Do not pass
+	GPG_ERROR_FROM_SYSERROR.
+	* tools/gpgconf-comp.c (gc_component_check_options): Ditto.
+	(retrieve_options_from_program): Ditto.
+
+	gpg: Keep current and total of PROGESS status lines small enough.
+	* g10/progress.c (progress_filter): Factor status wrote out to...
+	(write_status_progress): New.  Scale values down.
+
+2016-05-27  NIIBE Yutaka  <gniibe@fsij.org>
+
+	configure: Detection of libusb on FreeBSD.
+	* configure.ac (LIBUSB_LIBS): Use LIBUSB_NAME for AC_CHECK_LIB.
+
+2016-05-25  Werner Koch  <wk@gnupg.org>
+
+	build: Switch to new URL for swdb.lst.
+
+2016-05-24  Werner Koch  <wk@gnupg.org>
+
+	gpgtar: Simplify code by using ccparray.
+	* tools/gpgtar-create.c (gpgtar_create): Use ccparray functions.
+	* tools/gpgtar-extract.c (gpgtar_extract): Ditto.
+	* tools/gpgtar-list.c (gpgtar_list): Ditto.
+
+	common: Add simple dynamic array function.
+	* common/ccparray.c: New.
+	* common/ccparray.h: New.
+	* common/t-ccparray.c: New.
+	* common/Makefile.am (common_sources): Add files.
+	(module_tests): Add test file.
+	(t_ccparray_LDADD): New.
+
+2016-05-23  Justus Winter  <justus@g10code.com>
+
+	tests: Test the pinentry interactions when exporting keys.
+	* tests/openpgp/export.test: Test pinentry interactions.
+
+	tests: Add support for a passphrase queue to fake pinentry.
+	* tests/openpgp/fake-pinentry.c (get_passphrase): New function.
+	(main): Add option --passphrasefile and read passphrases from it.
+
+	tests: Add logging to fake pinentry.
+	* tests/openpgp/fake-pinentry.c (log_stream): New variable.
+	(reply): New function.
+	(spacep,skip_options,option_value): Copy from common.
+	(main): Parse arguments, add --logfile option, write logfile.
+
+	tests: Add export test.
+	* tests/openpgp/Makefile.am (TESTS): Add new file.
+	* tests/openpgp/export.test: New file.
+
+2016-05-21  Werner Koch  <wk@gnupg.org>
+
+	gpg: Speed up key listing in Tofu mode.
+	* g10/tofu.c (get_trust): Add arg PK.  Uses this instead of a an extra
+	lookup of the public key by fingerrpint.
+	(tofu_register): Pass PK to get_trust.
+	(tofu_get_validity): Ditto.
+
+	*g10/tofu.c (tofu_register): Remove unused FINGERPRINT_PP.
+
+	gpg: Avoid name spaces clash with future sqlite versions.
+	* g10/sqlite.c: Rename to gpgsql.c.  Change function prefixes to
+	gpgsql_.
+	* g10/sqlite.h: Rename to gpgsql.h.
+	* g10/tofu.c: Adjust for changes.
+
+	gpg: Explicitly close a combined Tofu DB.
+	* g10/tofu.c (tofu_closedbs): Close combined DB.
+
+	gpg: Store the Tofu meta handle for databases in CTRL.
+	* g10/gpg.h (struct tofu_dbs_s, tofu_dbs_t): New declarations.
+	(struct server_control_s): Add field tofu.dbs.
+	* g10/tofu.c (struct dbs): Rename to tofu_dbs_s.  Replace all users by
+	by tofu_dbs_t.
+	(opendbs):  Add arg CTRL.  Cache the DBS in CTRL.
+	(closedbs): Rename to tofu_closedbs and make global.  Add arg CTRL.
+	(tofu_register): Add arg CTRL.  Change all callers.  Do not call
+	closedbs.
+	(tofu_get_validity): Ditto.
+	(tofu_set_policy): Ditto.
+	(tofu_get_policy): Ditto.
+	(tofu_set_policy_by_keyid): Add arg CTRL.
+	* g10/gpg.c (gpg_deinit_default_ctrl): Call tofu_closedbs.
+
+	gpg: Pass CTRL object down to the trust functions.
+
+	gpg: Fix the TOFU_STATS_LONG status.
+	* g10/tofu.c (show_statistics): Print TOFU STATS with formatting
+	characters.
+
+2016-05-19  Werner Koch  <wk@gnupg.org>
+
+	gpg: Print "[  never ]" instead of err for validity.
+	* g10/trust.c (uid_trust_string_fixed): Handle NEVER.
+
+2016-05-18  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Adjust the WKD lookup to specs version -01.
+	* dirmngr/server.c (cmd_wkd_get): Remove second occurrence of the
+	domain part.
+
+2016-05-17  Werner Koch  <wk@gnupg.org>
+
+	gpg: Emit new status line KEY_CONSIDERED.
+	* common/status.h (STATUS_KEY_CONSIDERED): New.
+	* g10/getkey.c: Include status.h.
+	(LOOKUP_NOT_SELECTED, LOOKUP_ALL_SUBKEYS_EXPIRED): New.
+	(finish_lookup): Add arg R_FLAGS.  Count expired and revoked keys and
+	set flag.  Check a requested usage before checking for expiraion or
+	revocation.
+	(print_status_key_considered): New.
+	(lookup): Print new status.
+
+2016-05-11  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Fix signature checking.
+	* g10/sig-check.c (check_signature_over_key_or_uid): Fix call to
+	walk_kbnode.
+
+2016-05-10  Werner Koch  <wk@gnupg.org>
+
+	gpg: Allow unattended deletion of secret keys.
+	* agent/command.c (cmd_delete_key): Make the --force option depend on
+	--disallow-loopback-passphrase.
+	* g10/call-agent.c (agent_delete_key): Add arg FORCE.
+	* g10/delkey.c (do_delete_key): Pass opt.answer_yes to
+	agent_delete_key.
+
+2016-05-09  Werner Koch  <wk@gnupg.org>
+
+	gpg: Fix buglet in the check_all_keysigs function.
+	* g10/keyedit.c (sig_comparison): Actually compare the pubkey
+	algorithms.
+
+	gpg: Request a "save" after cmd "check" fixed something.
+	* g10/keyedit.c (keyedit_menu) <cmdCHECK>: Set modified.
+
+2016-05-09  NIIBE Yutaka  <gniibe@fsij.org>
+
+	po: Update Japanese translation.
+
+2016-05-04  Werner Koch  <wk@gnupg.org>
+
+	Release 2.1.12.
+
+	speedo,w32: Remove the installation directory page.
+	* build-aux/speedo/w32/inst.nsi (MUI_PAGE_DIRECTORY): Remove.
+
+	gpg: Fix const char pointer mismatch with gettext.
+	* g10/tofu.c (get_trust): Use const char *.
+
+	speedo: Build sqlite with static-libgcc.
+	* build-aux/speedo/patches/sqlite.patch: New.
+	* Makefile.am (EXTRA_DIST): Add file.
+
+	speedo: Also try patch files w/o version number.
+	* build-aux/speedo.mk (SPKG_template): Try such a patch file.
+
+2016-05-04  Andre Heinecke  <aheinecke@intevation.de>
+
+	speedo,w32: Install sqlite.
+	* build-aux/speedo/w32/inst.nsi (-sqlite, -un.sqlite): New.
+
+	speedo,w32: Fix uninstallation.
+	* build-aux/speedo/w32/inst.nsi (-un.gnupg): Delete distsigkey and
+	dirmngr-conf.skel
+
+	speedo,w32: Install localisation.
+	* build-aux/speedo/w32/inst.nsi (-libgpg-error, GnuPG): Install l10n.
+	(-un.libgpg-error, -un.gnupg): Uninstall l10n files.
+
+2016-05-04  Werner Koch  <wk@gnupg.org>
+
+	tests: Disable the migrations tests.
+	* tests/Makefile.am (SUBDIRS): Remove migrations.
+	* configure.ac (AC_CONFIG_FILES): Remove migrations Makefile.
+
+2016-05-04  Ineiev  <ineiev@gnu.org>
+
+	po: Update Russian translation.
+
+2016-05-04  Werner Koch  <wk@gnupg.org>
+
+	po: Update German translation.
+
+	Some minor string changes and fixed a printf format.
+	* g10/build-packet.c (notation_value_to_human_readable_string): Use
+	%zu for size_t.
+
+	build: Update config.{guess,sub} to 2016-04-02 and 2016-03-30.
+	* build-aux/config.guess: Update.
+	* build-aux/config.sub: Update.
+
+	agent: Make --allow-loopback-pinentry the default.
+	* agent/gpg-agent.c (oNoAllowLoopbackPinentry): New.
+	(opts): Add --no-allow-loopback-pinentry.  Hide
+	description of --allow-loopback-pinentry.
+	(parse_rereadable_options): Set opt.allow_loopback_pinentry by
+	default.
+	(main): Replace allow-loopback-pinentry by no-allow-loopback-pinentry
+	in the gpgconf list.
+	* tools/gpgconf-comp.c (gc_options_gpg_agent): Ditto.
+
+2016-05-03  Werner Koch  <wk@gnupg.org>
+
+	common: Print https URLs in help messages.
+	* common/argparse.c (strusage): Print https URLS.
+
+	tests: Silence output of some tests.
+	* common/t-exechelp.c (print_open_fds): Silence non-verbose output.
+	(test_close_all_fds): Ditto.
+	* common/t-session-env.c (show_stdnames): Indent output.
+	* g10/test.c (TEST): Silence non-verbose okay output.
+	(exit_tests): Ditto.
+	* tools/gpg-zip.in (tar_verbose_opt): Add option --quiet.
+	* tests/openpgp/gpgtar.test (GPGZIP): Pass option --quiet.
+	* tests/openpgp/mds.test: Indent MD5 notice.
+	* tests/openpgp/version.test: Indent --version output.
+
+	gpg: Emit status lines TOFU_STATS and TOFU_STATS_LONG.
+	* g10/tofu.c (NO_WARNING_THRESHOLD): Rename to BASIC_TRUST_THRESHOLD.
+	(FULL_TRUST_THRESHOLD): New.
+	(write_stats_status): New.
+	(show_statistics): Call new function.  Print TOFU_STATS_LONG.
+
+2016-05-02  Werner Koch  <wk@gnupg.org>
+
+	gpg: Extend TRUST_foo status lines with the trust model.
+	* g10/trustdb.h (TRUST_FLAG_TOFU_BASED): New.
+	* g10/trustdb.c (trust_model_string): Lowercase the strings.  Add arg
+	"model" and change callers to call with OPT.TRUST_MODEL.
+	* g10/tofu.c (tofu_wot_trust_combine): Set TRUST_FLAG_TOFU_BASED.
+	* g10/pkclist.c (write_trust_status): New.
+	(check_signatures_trust): Call new function.
+
+	gpg: Improve line wrapping for a tofu message.
+	* g10/tofu.c (time_ago_str): Mark non-breakable spaces.
+	(show_statistics): Remove marks.
+
+	gpg: Re-format some tofu messages.
+	* common/status.h (STATUS_TOFU_USER, STATUS_TOFU_STATS)
+	(STATUS_TOFU_STATS_SHORT, STATUS_TOFU_STATS_LONG): New.
+	* g10/tofu.c (NO_WARNING_THRESHOLD): New.
+	(record_binding, tofu_register): Take care of --dry-run.
+	(show_statistics): Print STATUS_TOFU_USER.  Reformat some messages.
+	Fix the ngettext/strcmp thing.  Use log_string instead of log_info.
+	Use NO_WARNING_THRESHOLD constant.
+	(get_trust): Use format_text and print a compact fingerprint.
+
+2016-05-02  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: More fix of error return path.
+	* scd/command.c (open_card): Return GPG_ERR_ENODEV on the failure of
+	apdu_connect.
+
+2016-04-29  Werner Koch  <wk@gnupg.org>
+
+	common: Extend log_string to indent lines.
+	* common/logging.c (do_logv): Add indentation when called via
+	log_string.
+
+	gpg: Factor some code code out of tofu.c.
+	* g10/tofu.c (string_to_long): New.
+	(string_to_ulong): New.
+	(get_single_unsigned_long_cb): Replace strtol/strtoul by new function.
+	(get_single_long_cb): Ditto.
+	(signature_stats_collect_cb):  Ditto.
+	(get_policy): Ditto.
+	(show_statistics): Ditto.  Uese es_free instead of free.
+
+	gpg: Remove all assert.h and s/assert/log_assert/.
+
+	common: Improve log_assert.
+	* common/logging.c (bug_at): Do not i18n the string.
+	(_log_assert): New.
+	* common/logging.h (log_assert): Use new function and pass line
+	information.
+
+2016-04-28  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Fix error return path.
+	* scd/ccid-driver.c (bulk_in): Remove EAGAIN handling.
+	Handle LIBUSB_ERROR_NO_DEVICE to return CCID_DRIVER_ERR_NO_READER.
+
+2016-04-27  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Fix memory leaks.
+	* scd/ccid-driver.c (scan_or_find_usb_device): Return on
+	LIBUSB_ERROR_NO_MEM.  Free CONFIG before return except on error.
+	(scan_or_find_devices): Free device list.
+
+2016-04-27  Werner Koch  <wk@gnupg.org>
+
+	gpg: Add experimental AKL method "wkd" and option --with-wkd-hash.
+	* g10/getkey.c (parse_auto_key_locate): Add method "wkd".
+	(get_pubkey_byname): Implement that method.  Also rename a variable.
+	* g10/call-dirmngr.c (gpg_dirmngr_wkd_get): New.
+	* g10/keyserver.c (keyserver_import_wkd): New.
+	* g10/test-stubs.c (keyserver_import_wkd): Add stub.
+	* g10/gpgv.c (keyserver_import_wkd): Ditto.
+	* g10/options.h (opt):  Add field 'with_wkd_hash'.
+	(AKL_WKD): New.
+
+	* g10/gpg.c (oWithWKDHash): New.
+	(opts): Add option --with-wkd-hash.
+	(main): Set that option.
+	* g10/keylist.c (list_keyblock_print): Implement that option.
+
+	dirmngr: Add experimental command WKD_GET.
+	* dirmngr/server.c (cmd_wkd_get): New.
+	(register_commands): Add command WKD_GET.
+
+	dirmngr: Use system provided root CAs with KS_FETCH.
+	* dirmngr/ks-engine-http.c (ks_http_fetch): Use HTTP_FLAG_TRUST_SYS.
+
+2016-04-26  Werner Koch  <wk@gnupg.org>
+
+	http: Allow to request system defined CAs for TLS.
+	* dirmngr/http.h (HTTP_FLAG_TRUST_DEF, HTTP_FLAG_TRUST_SYS): New.
+	* dirmngr/http.c (http_session_new): Add arg "flags".
+	* dirmngr/ks-engine-hkp.c (send_request): Use new flag
+	HTTP_FLAG_TRUST_DEF for the new arg of http_session_new.
+	* dirmngr/ks-engine-http.c (ks_http_fetch): Ditto.
+	* dirmngr/t-http.c (main): Ditto.
+
+2016-04-25  Werner Koch  <wk@gnupg.org>
+
+	common: Minor fixes for the new private-keys.c.
+	* common/private-keys.c (my_error_from_syserror): New.  Use it in
+	place of gpg_error_from_syserror.
+	(_pkc_add, pkc_lookup, pke_next_value): Use ascii_strcasecmp.
+	(pkc_parse): Use xtrystrdup and append_to_strlist_try as intended.
+
+	(_pkc_add): Add braces around if-statement.
+
+	common: Use new function to print a failure of xtrymalloc.
+	* common/miscellaneous.c (xoutofcore): New.
+	* common/strlist.c (append_to_strlist): Use instead of abort.
+	(append_to_strlist_try): Use xtrymalloc instead of xmalloc.
+
+2016-04-21  Justus Winter  <justus@g10code.com>
+
+	common: Add support for the new extended private key format.
+	* agent/findkey.c (write_extended_private_key): New function.
+	(agent_write_private_key): Detect if an existing file is in extended
+	format and update the key within if it is.
+	(read_key_file): Handle the new format.
+	* agent/keyformat.txt: Document the new format.
+	* common/Makefile.am: Add the new files.
+	* common/private-keys.c: New file.
+	* common/private-keys.h: Likewise.
+	* common/t-private-keys.c: Likewise.
+	* common/util.h (alphap, alnump): New macros.
+	* tests/migrations: Add test demonstrating that we can cope with the
+	new format.
+
+	common: Add 'free_strlist_wipe' which wipes memory.
+	* common/strlist.c (free_strlist_wipe): New function.
+	* common/strlist.h (free_strlist_wipe): New prototype.
+
+	common: Add 'append_to_strlist_try' which can fail.
+	* common/strlist.c (append_to_strlist): Use the new function.
+	(append_to_strlist_try): New function.
+	* common/strlist.h (append_to_strlist_try): New prototype.
+
+	agent: Convert key format document to org.
+	* agent/keyformat.txt: Convert to org mode.
+
+	tests: Make migration test more robust and silent.
+	* tests/migrations/from-classic.test: Fix in-tree build, silence test.
+
+	Fixes-commit: defbc70b
+
+2016-04-21  Werner Koch  <wk@gnupg.org>
+
+	w32: Use --enable-gpg2-is-gpg by default.
+	* autogen.rc: Add option also for plain Windows.
+
+	w32: Replace libiconv DLL by iconv feature of libgpg-error.
+	* configure.ac: Do nor require libiconv for W32.
+	* common/utf8conv.c [W32]: Do not incluce iconv.h.  Request
+	libgpg-error iconv macros.
+	(jnlib_iconv): Use ICONV_CONST macro.
+	* build-aux/speedo/w32/inst.nsi [!WITH_GUI]: Do not install libiconv.
+	* build-aux/speedo.mk (speedo_spkgs) [!WITH_GUI]: Likewise.
+
+2016-04-20  Justus Winter  <justus@g10code.com>
+
+	agent: Sanitize permissions of the private key directory.
+	* agent/gpg-agent.c (create_private_keys_directory): Set permissions.
+	* common/sysutils.c (modestr_to_mode): New function.
+	(gnupg_mkdir): Use new function.
+	(gnupg_chmod): New function.
+	* common/sysutils.h (gnupg_chmod): New prototype.
+	* tests/migrations/from-classic.test: Test migration with existing
+	directory.
+
+	GnuPG-bug-id: 2312
+
+	tests: Test the migration from a classic GnuPG home directory.
+	* configure.ac: Add new directory.
+	* tests/Makefile.am (SUBDIRS): Likewise.
+	* tests/migrations/Makefile.am: New file.
+	* tests/migrations/from-classic.gpghome/pubring.gpg.asc: Likewise.
+	* tests/migrations/from-classic.gpghome/secring.gpg.asc: Likewise.
+	* tests/migrations/from-classic.gpghome/trustdb.gpg.asc: Likewise.
+	* tests/migrations/from-classic.test: Likewise.
+
+2016-04-20  Werner Koch  <wk@gnupg.org>
+
+	speedo: Use swdb.lst to define the SQLite version.
+	* build-aux/speedo.mk: Change sqlite to use our mirror and the
+	swdb.lst file.
+	* build-aux/speedo/w32/inst.nsi: gpg is now build and installed as
+	gpg.
+
+2016-04-19  Werner Koch  <wk@gnupg.org>
+
+	gpg: Improve UID selction of --quick-sign-key.
+	* g10/keyedit.c (keyedit_quick_sign): Improve UID selection and print
+	error for non-found userids.
+
+	gpg: Avoid debug like output at start of --edit-key.
+	* g10/keyedit.c (check_all_keysigs): Print info only after something
+	has been modified.
+
+2016-04-15  Andre Heinecke  <aheinecke@intevation.de>
+
+	dirmngr: Fix https never reported in general help.
+	* dirmngr/ks-engine-http.c (ks_hkp_help): Also print https
+	when supported and no uri provided.
+
+	dirmngr: Fix https incorrectly reported in help.
+	* dirmngr/ks-engine-http.c (ks_hkp_help): Only print https if tls
+	is supported.
+
+2016-04-14  Werner Koch  <wk@gnupg.org>
+
+	agent: Fix regression due to recent commit 4159567.
+	* agent/protect.c (do_encryption): Fix CBC hashing.
+
+	agent: Allow gpg-protect-tool to handle openpgp-native protection.
+	* agent/protect-tool.c (read_and_unprotect): Add arg ctrl and pass to
+	agent_unprotect.
+	(main): Allocate a simple CTRL object and pass it to
+	read_and_unprotect.
+	(convert_from_openpgp_native): Remove stub.
+	(agent_key_available, agent_get_cache): New stubs.
+	(agent_askpin): New emulation for the one in call-pinentry.c.
+	(agent_write_private_key): New to dump key.
+	* agent/Makefile.am (gpg_protect_tool_SOURCES): Add cvt-openpgp.c
+
+	tests: Set fake-pinentry's stdout and stdin to _IOLBF.
+	* tests/openpgp/fake-pinentry.c (main): Call setvbuf.  Show passphrase
+	at startup.  Increase buffer.
+
+2016-04-12  Werner Koch  <wk@gnupg.org>
+
+	agent: Implement new protection mode openpgp-s2k3-ocb-aes.
+	* agent/protect.c (agent_protect): Add arg use_ocb.  Change all caller
+	to pass -1 for default.
+	* agent/protect-tool.c: New option --debug-use-ocb.
+	(oDebugUseOCB): New.
+	(opt_debug_use_ocb): New.
+	(main): Set option.
+	(read_and_protect): Implement option.
+
+	* agent/protect.c (OCB_MODE_SUPPORTED): New macro.
+	(PROT_DEFAULT_TO_OCB): New macro.
+	(do_encryption): Add args use_ocb, hashbegin, hashlen, timestamp_exp,
+	and timestamp_exp_len.  Implement OCB.
+	(agent_protect): Change to support OCB.
+	(do_decryption): Add new args is_ocb, aadhole_begin, and aadhole_len.
+	Implement OCB.
+	(merge_lists): Allow NULL for sha1hash.
+	(agent_unprotect): Change to support OCB.
+	(agent_private_key_type): Remove debug output.
+
+	indent: Help Emacs not to get confused by conditional compilation.
+	* agent/protect.c (calibrate_get_time) [W32]: Use separate function
+	calls for W32 and W32CE.
+
+2016-04-07  Justus Winter  <justus@g10code.com>
+
+	g10: Fix exporting secret keys of certain sizes.
+	* g10/build-packet.c (do_key): Do not use the header length specified
+	by the public key packet from the keyring, but let 'write_header2'
+	compute the required length.
+
+2016-04-06  Justus Winter  <justus@g10code.com>
+
+	Revert "g10: Support armored keyrings in gpgv."
+	This reverts commit abb352de51bc964c06007fce43ed6f6caea87c15.
+
+2016-04-05  Justus Winter  <justus@g10code.com>
+
+	dirmngr: Autodetect PEM format in dirmngr-client.
+	* dirmngr/dirmngr-client.c (init_asctobin): New function.
+	(main): Move the initialization code to the new function.
+	(read_pem_certificate): Initialize base64 table.
+	(read_certificate): Try to decode certificates given in files as PEM
+	first.
+
+	GnuPG-bug-id: 1844
+
+2016-04-05  Werner Koch  <wk@gnupg.org>
+
+	build: Fix for: Build gpgcompose only in maintainer mode.
+	* g10/Makefile.am (noinst_PROGRAMS): Always add module_tests.
+
+	doc: Install gpg and gpgv man pages under the correct name.
+	* doc/mkdefsinc.c (main): Add double include guard.  Set variable
+	gpgtwohack. Define macros gpgname and gpgvname.
+	* doc/gpg.texi: Remove macro definition for gpgname.  Use Texinfo var
+	gpgtwohack to prepare the man pages.  Use @gpgname everywhere.
+	* doc/gpgv.texi: Likewise.
+	* doc/Makefile.am (myman_pages): Remove gpg2.1 and gpgv2.1 but add
+	them depending on USE_GPG2_HACK.
+
+	build: Build gpgcompose only in maintainer mode.
+	* g10/Makefile.am (noinst_PROGRAMS): Add gpgcompose only in maintainer
+	mode.
+
+	gpg: Replace use of "gpg2" by GPG_NAME.
+
+2016-04-04  Werner Koch  <wk@gnupg.org>
+
+	Now build "gpg" binary but install as "gpg2"
+	* configure.ac (USE_GPG2_HACK): New ac_define am_conditional.
+	* common/homedir.c (gnupg_module_name): Replace use of macro
+	NAME_OF_INSTALLED_GPG.
+	* g10/keygen.c (generate_keypair): Ditto.
+	* g10/Makefile.am (bin_PROGRAMS): Remove.
+	(noinst_PROGRAMS): Add gpg or gpg2 and gpgv or gpg2.
+	(gpg2_hack_list): New.
+	(use_gpg2_hack): New.
+	(gpg2_SOURCES): Rename to gpg_SOURCES.
+	(gpgv2_SOURCES): Rename to gpgv_SOURCES.
+	(gpg2_LDADD): Rename to gpg_LDADD.
+	(gpgv2_LDADD): Rename to gpgv_LDADD.
+	(gpg2_LDFLAGS): Rename to gpg_LDFLAGS.
+	(gpgv2_LDFLAGS): Rename to gpgv2_LDFLAGS.
+	(install-exec-hook): Remove WinCE specific rules and add new rules.
+	(uninstall-local): Uninstall gpg/gpg2 and gpgv/gpgv2.
+	* tests/openpgp/Makefile.am (required_pgms): s/gpg2/gpg/.
+	* tests/openpgp/defs.inc: Ditto.
+	* tests/openpgp/gpgtar.test: Ditto.
+	* tests/openpgp/mkdemodirs: Ditto.
+	* tests/openpgp/signdemokey: Ditto.
+
+	* Makefile.am (DISTCHECK_CONFIGURE_FLAGS): Remove obsolete
+	--enable-mailto, add --enable-gpg2-is-gpg.
+
+	tests: Add missing file.
+	* tests/openpgp/Makefile.am (TEST_FILES): Add plain-largeo.asc.
+
+2016-04-04  Justus Winter  <justus@g10code.com>
+
+	g10: Support armored keyrings in gpgv.
+	* doc/gpgv.texi: Document the feature.
+	* g10/Makefile.am (gpgv2_SOURCES): Add dearmor.c.
+	* g10/dearmor.c (dearmor_file): Add sink argument.
+	* g10/gpg.c (main): Adapt accordingly.
+	* g10/gpgv.c (make_temp_dir): New function.
+	(main): De-armor keyrings.
+	* g10/main.h (dearmor_file): Adapt prototype.
+
+	GnuPG-bug-id: 2290
+
+	tests: Fix default key test.
+	* tests/openpgp/default-key.test: Avoid using the option
+	'--trust-model' unconditionally.
+
+2016-04-01  Justus Winter  <justus@g10code.com>
+
+	build: Check for conflicting trust model options.
+	* configure.ac: Disable TOFU if configured without trust models, and
+	check for conflicting options.
+
+	g10: Remove option --always-trust if compiled without trust models.
+	* g10/gpg.c (opts): Remove option --always-trust if compiled without
+	trust models.
+
+2016-03-31  Justus Winter  <justus@g10code.com>
+
+	speedo,w32: Build libsqlite3.
+	* build-aux/speedo.mk (speedo_spkgs): Add libsqlite3 on w32.
+	(libsqlite3_ver): New variable.
+	(speedo_pkg_libsqlite3_tar): Likewise.
+
+	g10: Use gpg-error abstraction of sched_yield.
+	* g10/tofu.c (begin_transaction): Use 'gpgrt_yield'.
+
+2016-03-29  Werner Koch  <wk@gnupg.org>
+
+	gpg: Fix NULL-segv for missing tofu DB.
+	* g10/tofu.c (opendb): Guard call to timeout function.
+
+2016-03-22  Werner Koch  <wk@gnupg.org>
+
+	gpg: Improve message when asking for key capabilities.
+	* g10/keygen.c (ask_key_flags): Improve message.
+
+	gpg: Remove the extra prompt for Curve25519.
+	* g10/keygen.c (MY_USE_ECDSADH): New macro local to ask_curve.
+	(ask_curve): Use a fixed table of curve names and reserve a slot for
+	Curve448.  Simplify CurveNNNN/EdNNNN switching.
+	(ask_curve): Remove the Curve25519 is non-standard prompt.
+
+2016-03-19  Werner Koch  <wk@gnupg.org>
+
+	gpg: Silence trustdb computation with --quiet.
+	* g10/trustdb.c (validate_keys): Do not print log_info stuff in quiet
+	mode.
+
+2016-03-17  Werner Koch  <wk@gnupg.org>
+
+	sm: Always create a keybox header when creating a new keybox.
+	* sm/keydb.c (maybe_create_keybox): Create the header blob.
+
+2016-03-17  Neal H. Walfield  <neal@g10code.com>
+
+	doc: Improve documentation of --enable-large-rsa.
+	* doc/gpg.texi (--enable-large-rsa): Improve text.
+
+2016-03-17  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: allow removal of the shadowed key.
+	* agent/findkey.c (agent_delete_key): Remove the key when asked.
+
+2016-03-16  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Add const qualifier.
+	* g10/gpgcompose.c (show_help): Those are strings not to be modified.
+
+2016-03-15  Werner Koch  <wk@gnupg.org>
+
+	gpg: Do not rely on a certain evaluation order.
+	* g10/keyedit.c (print_and_check_one_sig): Call check_key_signature
+	before derefing IS_SELFSIG.
+
+2016-03-14  Werner Koch  <wk@gnupg.org>
+
+	scd: Add manufacturer id 0x000a.
+	* g10/card-util.c (get_manufacturer): Add it.
+
+2016-03-10  Kevin J. McCarthy  <kevin@8t8.us>
+
+	g10: Silence message if --quiet is given.
+	* g10/getkey.c (parse_def_secret_key): Silence message if --quiet is
+	given.
+
+2016-03-08  Neal H. Walfield  <neal@g10code.com>
+
+	gpg: Add a new test.
+	* g10/Makefile.am (EXTRA_DIST): Add t-stutter-data.asc.
+	(module_tests): Add t-stutter.
+	(t_stutter_SOURCES): New variable.
+	(t_stutter_LDADD): New variable.
+
+2016-03-07  Justus Winter  <justus@g10code.com>
+
+	sm: Implement pinentry loopback and reading passphrases from fd.
+	* doc/gpgsm.texi: Document '--pinentry-mode' and '--passphrase-fd'.
+	* sm/Makefile.am (gpgsm_SOURCES): Add new files
+	* sm/call-agent.c (struct default_inq_parm_s): New definition.
+	(start_agent): Pass in the pinentry mode.
+	(default_inq_cb): Handle 'PASSPHRASE' and 'NEW_PASSPHRASE' inquiries.
+	Adapt all call sites to the new callback cookie.
+	* sm/gpgsm.c (cmd_and_opt_values): Add new values.
+	(opts): Add new options.
+	(main): Handle new options.
+	* sm/gpgsm.h (struct opt): Add field 'pinentry_mode'.
+	* sm/passphrase.c: New file.
+	* sm/passphrase.h: Likewise.
+
+	GnuPG-bug-id: 1970
+
+	sm: Remove unused argument '--fixed-passphrase'.
+	* doc/gpgsm.texi: Drop description.
+	* sm/gpgsm.c (cmd_and_opt_values): Drop enum value.
+	(opts): Drop argument.
+	(main): Drop argument handling.
+	* sm/gpgsm.h (struct opt): Drop field 'fixed_passphrase'.
+
+	kbx: Avoid undefined behavior.
+	* kbx/keybox-file.c (_keybox_read_blob2): Cast to unsigned int before
+	shifting.
+
+2016-03-07  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Bug fix for a device with multiple interfaces.
+	* scd/ccid-driver.c (scan_or_find_usb_device): Use IFC_NO when
+	accessing interface information.
+
+2016-03-04  Justus Winter  <justus@g10code.com>
+
+	build: Make libusb a hard requirement if the ccid driver is requested.
+	* configure.ac: Print an error message and die if the internal ccid
+	driver is requested but no suitable libusb is found.
+
+	g10: Drop superfluous declaration.
+	* g10/main.h (disable_core_dumps): Drop declaration.
+
+	g10: Guard code against errors.
+	* g10/keygen.c (do_generate_keypair): Check for errors, in which case
+	'pri_psk' is NULL.
+
+	Fixes-commit: bf9d1248
+
+2016-03-03  Justus Winter  <justus@g10code.com>
+
+	dirmngr: Add more missing CFLAGS.
+	* dirmngr/Makefile.am (t_ldap_parse_uri_CFLAGS): Add
+	'GCRYPT_CFLAGS'.
+	(t_dns_stuff_CFLAGS): Likewise.
+
+	GnuPG-bug-id: 2235
+
+	tests/openpgp: Skip gpgtar test if it has not been built.
+	* tests/openpgp/gpgtar.test: Check if executable exists.
+
+	GnuPG-bug-id: 2261
+
+2016-03-02  Neal H. Walfield  <neal@g10code.com>
+
+	gpg: Add new program gpgcompose.
+	* g10/packet.h: Include "util.h".
+	* g10/encrypt.c (encrypt_seskey): Don't mark as static.
+	* g10/gpgcompose.c: New file.
+	* g10/Makefile.am (noinst_PROGRAMS): Add gpgcompose.
+	(gpg2_SOURCES): Split everything but gpg.c into...
+	(gpg_sources): ... this new variable.
+	(gpgcompose_SOURCES): New variable.
+	(gpgcompose_LDADD): Likewise.
+	(gpgcompose_LDFLAGS): Likewise.
+
+	gpg: More robustly detect valid non-armored OpenPGP messages.
+	* g10/armor.c (is_armored): More robustly detect valid non-armored
+	OpenPGP messages.
+
+	common: Provide a function for mapping packet types to strings.
+	* common/openpgpdefs.h (pkttype_str): New function.
+
+	gpg: Rename pop_filter to iobuf_pop_filter and export it.
+	* common/iobuf.c (pop_filter): Rename from this...
+	(iobuf_pop_filter): ... to this.  Don't mark it as static.
+
+	gpg: Split write_pubkey_enc_from_list.
+	* g10/encrypt.c (write_pubkey_enc_from_list): Split the body of this
+	function out into...
+	(write_pubkey_enc): ... this new function.
+
+	gpg: Allow the caller to write the contents of a plaintext packet.
+	* g10/build-packet.c (do_plaintext): Change the semantics such that if
+	PT->BUF is NULL, it is the caller's responsibility to write the
+	content (and disable partial body length mode, if appropriate).
+
+	gpg: Add a new function for creating binary notations.
+	* g10/build-packet.c (blob_to_notation): New function.
+
+	gpg: Refactor the printing of binary notations.
+	* g10/build-packet.c (sig_to_notation): Break printing of binary
+	notations into...
+	(notation_value_to_human_readable_string): ... this new function.
+	Provide a small preview of the binary data substituting non-printable
+	characters with '?'.
+
+2016-03-02  Uldis Anšmits  <uldis.ansmits@tieto.com>
+
+	tests/openpgp: Make tests more portable.
+	* tests/openpgp/default-key.test: Avoid 'grep -q'.
+	* tests/openpgp/gpgtar.test: Avoid 'grep -qe' and 'diff -q'.
+	* tests/openpgp/use-exact-key.test: Avoid 'grep -q'.
+
+	GnuPG-bug-id: 2262
+
+2016-03-02  Justus Winter  <justus@g10code.com>
+
+	common: Consolidate Assuan server argument handling.
+	* common/Makefile.am (common_sources): Add new files.
+	* common/server-help.c: New file.
+	* common/server-help.h: Likewise.
+	* agent/command.c: Drop argument handling primitives in favor of using
+	the consolidated ones.
+	* dirmngr/server.c: Likewise.
+	* g10/server.c: Likewise.
+	* g13/server.c: Likewise.
+	* scd/command.c: Likewise.
+	* sm/server.c: Likewise.
+
+2016-03-01  Justus Winter  <justus@g10code.com>
+
+	dirmngr: Add missing CFLAGS.
+	* dirmngr/Makefile.am (t_ldap_parse_uri_CFLAGS): Add
+	'GPG_ERROR_CFLAGS'.
+	(t_dns_stuff_CFLAGS): Likewise.
+
+	tools: Drop superfluous include.
+	* tools/gpgtar.c: Do not include unused 'npth.h'.
+
+2016-02-26  Werner Koch  <wk@gnupg.org>
+
+	gpg: Prettify a 2 octet hex output.
+	* g10/sig-check.c (check_key_signature2): Wrap line and use %02x.
+
+2016-02-25  Neal H. Walfield  <neal@g10code.com>
+
+	gpg: Show debugging info if a sig with an unsupported sig class is used.
+	* g10/sig-check.c (check_key_signature2): If SIG->CLASS is
+	unsupported, show some debugging information.  Don't use BUG to fail.
+	Just return GPG_ERR_BAD_SIGNATURE.
+
+	gpg: More carefully encode a packet's length.
+	* g10/build-packet.c (write_header2): Make sure the length bits are
+	cleared.  Fail if HDRLEN is set and the specified length can't be
+	encoded in the available space.
+
+	gpg: Avoid directly twiddling bits.
+	* g10/build-packet.c (do_plaintext): Use ctb_new_format_p to check the
+	packet's format.
+	(write_header2): Likewise.
+
+	gpg: Add some asserts.
+	* g10/build-packet.c (ctb_new_format_p): New function.
+	(ctb_pkttype): New function.
+	(do_user_id): Add some asserts.
+	(do_key): Likewise.
+	(do_symkey_enc): Likewise.
+	(do_pubkey_enc): Likewise.
+	(do_plaintext): Likewise.
+	(do_encrypted): Likewise.
+	(do_encrypted_mdc): Likewise.
+	(do_compressed): Likewise.
+	(do_signature): Likewise.
+	(do_signature): Likewise.
+	(write_header2): Likewise.
+
+	gpg: Avoid an unnecessary copy.
+	* g10/build-packet.c (sig_to_notation): Avoid an unnecessary copy of
+	the data: the size of the packet is fixed.
+
+2016-02-23  Neal H. Walfield  <neal@g10code.com>
+
+	common: Reduce buffer size.
+	* common/iobuf.c (iobuf_copy): Change buffer size from 1 MB to 32 KB.
+
+	common: Improve a function's documentation and comments.
+	* common/iobuf.c (iobuf_set_partial_body_length_mode): Fix
+	documentation and comment.  Add an assert.
+
+	common: Add log_assert.
+	* common/logging.h (log_assert): New macro.
+
+	gpg: Use higher-level functions.
+	* g10/build-packet.c (do_symkey_enc): Use iobuf_write instead of
+	iobuf_put in a loop.  Use iobuf_copy instead of iobuf_read and
+	iobuf_write in a loop.  Move the memory wiping from here...
+	* common/iobuf.c (iobuf_copy): ... to here.
+
+	common: Check for an error before reading.
+	* common/iobuf.c (iobuf_copy): If DEST has a pending error, don't
+	start copying.
+
+	common: More accurately name function.
+	* common/iobuf.c (iobuf_set_partial_block_mode): Rename from this...
+	(iobuf_set_partial_body_length_mode): ... to this.  Update callers.
+
+2016-02-23  Werner Koch  <wk@gnupg.org>
+
+	g13: Add commands --suspend and --remove.
+	* g13/g13.c (aSuspend, aResume): New.
+	(opts): Add commands --suspend and --resume.
+	(main): Implement dummy command aUmount.  Implement commands aResume
+	and aSuspend.
+	* g13/sh-cmd.c (cmd_suspend): New.
+	(cmd_resume): New.
+	(register_commands): Add commands RESUME and SUSPEND.
+	* g13/server.c (cmd_suspend): New.
+	(cmd_resume): New.
+	(register_commands): Add commands RESUME and SUSPEND.
+	* g13/be-dmcrypt.c (be_dmcrypt_suspend_container): New.
+	(be_dmcrypt_resume_container): New.
+	* g13/backend.c (be_suspend_container): New.
+	(be_resume_container): New.
+	* g13/suspend.c, g13/suspend.h: New.
+	* g13/mount.c (parse_header, read_keyblob_prefix, read_keyblob)
+	(decrypt_keyblob, g13_is_container): Move to ...
+	* g13/keyblob.c: new file.
+	(keyblob_read): Rename to g13_keyblob_read and make global.
+	(keyblob_decrypt): Rename to g13_keyblob_decrypt and make global.
+	* g13/sh-dmcrypt.c (check_blockdev): Add arg expect_busy.
+	(sh_dmcrypt_suspend_container): New.
+	(sh_dmcrypt_resume_container): New.
+	* g13/call-syshelp.c (call_syshelp_run_suspend): New.
+	(call_syshelp_run_resume): New.
+
+	g13: Run mount after dmsetup.
+	* g13/g13-syshelp.c (main): Reject userids with a slash.
+	* g13/sh-dmcrypt.c (sh_dmcrypt_mount_container): Run mount if a
+	mountpoint is known.
+
+2016-02-23  Justus Winter  <justus@g10code.com>
+
+	tests/openpgp: Qualify executables with extension.
+	* tests/openpgp/Makefile.am (required_pgms): Qualify executables with
+	'$EXEEXT'.
+
+	tests/openpgp: Reimplement 'pinentry.sh' in c.
+	* tests/openpgp/Makefile.am: Build new program.
+	* tests/openpgp/defs.inc: Use the new program.
+	* tests/openpgp/fake-pinentry.c: New file.
+
+	tests/openpgp: Avoid dependency on source files.
+	* tests/openpgp/plain-largeo.asc: New file.
+	* tests/openpgp/version.test: Dearmor the new file instead of relying
+	on the source being present.
+
+	tests/openpgp: Fix file removal.
+	* tests/openpgp/version.test: Fix file removal.
+
+	common/exechelp: Provide a way to wait for multiple processes.
+	* common/exechelp-posix.c (gnupg_wait_process): Generalize to
+	'gnupg_wait_processes'.
+	* common/exechelp-w32.c (gnupg_wait_process): Likewise.
+	* common/exechelp-w32ce.c (gnupg_wait_process): New function stub.
+	* common/exechelp.h (gnupg_wait_process): New prototype.
+
+	common/exechelp: Add general pipe function.
+	* common/exechelp-posix.c (gnupg_create_pipe): New function.
+	* common/exechelp-w32.c (INHERIT_{READ,WRITE,BOTH}): New macros.
+	(create_inheritable_pipe): Generalize so that both ends can be
+	inherited.
+	(do_create_pipe): Rename argument accordingly.
+	(gnupg_create_{in,out}bound_pipe): Use new flags.
+	(gnupg_create_pipe): New function.
+	(gnupg_spawn_process): Use new flags.
+	* common/exechelp-w32ce.c (gnupg_create_pipe): New stub.
+	* common/exechelp.h (gnupg_create_pipe): New prototype.
+
+	common/exechelp: Mute the Windows version.
+	* common/exechelp-w32.c (gnupg_wait_process): Do not print an error if
+	the exit code can be returned.  This makes the Windows version behave
+	like the POSIX version.
+
+	common/exechelp: Avoid magic numbers.
+	* common/exechelp-w32.c (do_create_pipe): Use symbolic names.
+
+	common/exechelp: Disable debugging by default.
+	* common/exechelp-w32.c (DEBUG_W32_SPAWN): Set to 0.
+
+	common/exechelp: Fix handle leak.
+	* common/exechelp-w32.c (gnupg_spawn_process_detached): Close process
+	handle.
+
+	common/exechelp: Fix opening the 'nul' device.
+	* common/exechelp-w32.c (gnupg_spawn_process): Fix opening the 'nul'
+	device.
+
+	common/exechelp: Fix error handling.
+	* common/exechelp-w32.c (gnupg_spawn_process): Close the right handle.
+
+	common/exechelp: Fix pipe creation.
+	* common/exechelp-w32.c (gnupg_spawn_process): Fix the creation of the
+	input pipe.
+
+	tools/mk-tdata: Fix data generation on Windows.
+	* tools/mk-tdata.c (main): Set stdout to binary mode to avoid newline
+	conversion.
+
+2016-02-19  Neal H. Walfield  <neal@g10code.com>
+
+	gpg: Systematically detect and fix signatures that are out of order.
+	* g10/keyedit.c (sig_comparison): New function.
+	(fix_key_signature_order): Merge functionality into...
+	(check_all_keysigs): ... this function.  Rewrite to eliminate
+	duplicates and use a systematic approach to detecting and moving
+	signatures that are out of order instead of a heuristic.
+	(fix_keyblock): Don't call fix_key_signature_order.  Call
+	check_all_keysigs instead after collapsing the uids.
+
+	gpg: Split check_key_signature2.
+	* g10/sig-check.c (hash_uid_node): Rename from this...
+	(hash_uid_packet): ... to this.  Take a PKT_user_id instead of a
+	KBNODE.
+	(check_key_signature2): Split the basic signature checking
+	functionality into...
+	(check_signature_over_key_or_uid): ... this new function.
+
+	gpg: Split print_and_check_one_sig.
+	* g10/keyedit.c (print_and_check_one_sig): Split the print
+	functionality into...
+	(print_one_sig): ... this new function.
+
+	gpg: Split the function check_signature_end.
+	* g10/sig-check.c (check_signature_end): Break the basic signature
+	check into...
+	(check_signature_end_simple): ... this new function.
+
+	gpg: Use format_keyid rather than manually formatting the keyid.
+	* g10/keyedit.c (menu_addrevoker): Use format_keyid rather than
+	manually formatting the keyid.
+	* g10/keygen.c (card_write_key_to_backup_file): Likewise.
+
+	gpg: Initialize the primary key when generating a key.
+	* g10/keygen.c (do_generate_keypair): Initialize
+	pri_psk->flags.primary, pri_psk->keyid and pri_psk->main_keyid.
+
+	gpg: Add accessor & utility functions for pk->keyid and pk->main_keyid.
+	* g10/keydb.h (keyid_cmp): New function.
+	* g10/keyid.c (pk_keyid): New function.
+	(pk_main_keyid): New function.
+	(keyid_copy): New function.
+	(pk_keyid_str): New function.
+	* g10/packet.h (PKT_public_key): Update comments for main_keyid and
+	keyid.
+
+2016-02-18  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	gpgparsemail: Allow weirdly-mixed pkcs7 signatures.
+	* tools/gpgparsemail.c: Add and check info->signing_protocol_2.
+
+	gpg: Clean up dangling agent_open and agent_closed declarations.
+	* g10/keydb.h: Remove agent_open, agent_close declarations/
+	* g10/migrate.c: #include <unistd.h> for access()
+
+2016-02-16  Werner Koch  <wk@gnupg.org>
+
+	w32: Make scdaemon build again due to libusb problem.
+	* configure.ac: Add hack to disable libusb for Windows.  Also use
+	$host instead of $target in the switch
+	 --
+
+	The new test for libusb does not support cross-compiling.  As a quick
+	workaround we disable libusb for Windows because we can't use it anyway.
+
+	w32: Do not error out if gpgconf is not installed.
+	* common/homedir.c (check_portable_app): Remove error message.
+
+2016-02-16  Neal H. Walfield  <neal@g10code.com>
+
+	gpg: Make ASCII armor decoding more robust to encoding errors.
+	* g10/armor.c (radix64_read): If the = is followed by the string "3D",
+	check if the following four characters are valid radix 64 and are
+	followed by a new line.  If so, warn and ignore the '3D'.
+
+2016-02-16  Werner Koch  <wk@gnupg.org>
+
+	doc: Add a gnupg-module-overview picture.
+	* doc/gnupg-module-overview.svg: New.
+	* doc/debugging.texi (Component interaction): New.
+	* doc/Makefile.am (EXTRA_DIST): Add PNG and PDF versions of
+	gnupg-module-overview.svg.  Remove two eps files.
+	(BUILT_SOURCES): Add gnupg-module-overview.pdf and .png.  Remove
+	gnupg-card-architecture.epsl
+	(gnupg_TEXINFOS): Add gnupg-module-overview.svg
+	(gnupg.dvi): New.
+	(DISTCLEANFILES): Remove build eps files.
+
+2016-02-15  NIIBE Yutaka  <gniibe@fsij.org>
+
+	common, g10: Fix indentation to silence GCC-6.
+	* common/iobuf.c (iobuf_ioctl): Fix.
+	* g10/encrypt.c (encrypt_filter): Likewise.
+	* g10/keyring.c (prepare_search): Likewise.
+
+	dirmngr: fix for memory alignment.
+	* dirmngr/dns-stuff.c (get_dns_cert): Cast through void *.
+	(getsrv, get_dns_cname): Make sure it's aligned for HEADER.
+
+2016-02-14  Werner Koch  <wk@gnupg.org>
+
+	gpg: Add hidden key-edit subcommand "change-usage".
+	* g10/keyedit.c (cmdCHANGEUSAGE): New.
+	(cmds): Add command "change-usage".
+	(keyedit_menu): Handle that command.
+	(menu_changeusage): New.
+	* g10/keygen.c (keygen_add_key_flags): New.
+	(ask_key_flags): Add optional arg current.
+
+2016-02-14  Neal H. Walfield  <neal@g10code.com>
+
+	gpg: Improve API documentation.
+	* g10/seskey.c (make_session_key): Improve documentation.
+	(encode_session_key): Improve documentation.
+	* g10/encrypt.c (encrypt_seskey): Remove gratuitous initialization.
+	* g10/dek.h (DEK): Improve documenation.
+
+	gpg: Fix calc_header_length when LEN is 0 and improve documentation.
+	* g10/build-packet.c (calc_header_length): Return the correct haeder
+	size when LEN is 0.  Fix documentation.
+
+	gpg: Fix format_keyid when dynamically allocating the buffer.
+	* g10/keyid.c (format_keyid): Return a char *, not a const char *.  If
+	BUFFER is NULL, then set LEN to the static buffer's size.
+
+	common: Fix comment.
+	* common/iobuf.c (iobuf_flush_temp): Fix comment.
+
+2016-02-13  Werner Koch  <wk@gnupg.org>
+
+	g13: Require a confirmation before g13 is used for DM-Crypt.
+	* g13/g13-syshelp.c (g13_syshelp_i_know_what_i_am_doing):
+	* g13/sh-dmcrypt.c (sh_dmcrypt_create_container): Call it.
+	(sh_dmcrypt_mount_container): Call it.
+
+	g13: Second chunk of code to support dm-crypt.
+	* g13/be-dmcrypt.c, g13/be-dmcrypt.h: New.
+	* g13/Makefile.am (g13_SOURCES): Add them.
+	* g13/backend.c: Include be-dmcrypt.h and call-syshelp.h.
+	(no_such_backend): Rename to _no_such_backend and provide replacement
+	macro.
+	(be_is_supported_conttype): Support DM-Crypt.
+	(be_take_lock_for_create): Call set_segvice for DM-Crypt.
+	(be_create_new_keys): Make it a dummy for DM-Crypt.
+	(be_create_container): Call be_dmcrypt_create_container.
+	(be_mount_container): call be_dmcrypt_mount_container.
+	* g13/g13-syshelp.c (main): Enable verbose mode.
+	* g13/g13tuple.c (get_tupledesc_data): New.
+	* g13/g13tuple.h (unref_tupledesc): New.
+	* g13/g13.h (server_control_): Add field "recipients".
+	* g13/g13.c (main): Fix setting of recipients via cmdline.
+	(g13_deinit_default_ctrl): Release recipients list.
+	(g13_request_shutdown): New.  Replace all direct update of
+	shutdown_pending by calls this function.
+	* g13/server.c (server_local_s): Remove field recipients which is now
+	part of CTRL.
+	(reset_notify, cmd_recipient, cmd_create): Adjust for this change.
+	* g13/create.c (encrypt_keyblob): Rename to g13_encrypt_keyblob.
+	(g13_create_container): Support DM-Crypt.
+	* g13/mount.c (parse_header): Allow for meta data copies.
+	(g13_mount_container): Support DM-Crypt.
+	* g13/sh-cmd.c (cmd_create): Make it work.
+	(cmd_mount): New.
+	* g13/sh-dmcrypt.c (sh_dmcrypt_create_container): Make it work.
+	(sh_dmcrypt_mount_container): New.
+
+	g13: Improve dump_keyblob.
+	* g13/g13tuple.c: Include keyblob.h.
+	(find_tuple_uint): Factor code out to ...
+	(convert_uint): new.
+	(all_printable): New.
+	* g13/mount.c (dump_keyblob: Move and rename to ...
+	* g13/g13tuple.c (dump_tupledesc): here.  Revamp and pretyy print uint
+	values.
+
+	g13: Define 3 new tags.
+	* g13/keyblob.h (KEYBLOB_TAG_CONT_NSEC): New.
+	(KEYBLOB_TAG_ENC_NSEC): New.
+	(KEYBLOB_TAG_ENC_OFF): New.
+
+	g13: Rename utils.c to g13tuple.c.
+	* g13/utils.c: Rename to g13tuple.c.
+	* g13/utils.h: Rename to g13tuple.h.  Change all users.
+	* g13/Makefile.am: Adjust accordingly
+
+	g13: Add functions to handle uint in a keyblob.
+	* g13/utils.c (append_tuple_uint): New.
+	(find_tuple_uint): New.
+	* g13/t-utils.c: New.
+	* g13/Makefile.am (noinst_PROGRAMS, TESTS): New.
+	(module_tests, t_common_ldadd): New.
+	(t_utils_SOURCES, t_utils_LDADD): New.
+
+	g13: Re-factor high level create code.
+	* g13/create.c (g13_create_container): Factor some code out to ...
+	* g13/backend.c (be_take_lock_for_create): new.
+
+	g13: Return an error for non-existing device.
+	* g13/sh-cmd.c (cmd_device): Set ERR.
+
+	g13: Fix releasing of a syshelp context.
+	* g13/call-syshelp.c (call_syshelp_release): Allow a NULL arg.
+
+	g13: Switch over to common/exectool.c.
+	* g13/sh-exectool.c: Remove.  It has been replaced by common/exectool.c.
+	* g13/Makefile.am (g13_syshelp_SOURCES): Remove sh-exectool.c
+	* g13/sh-blockdev.c: Include exectool.h.  Change sh_exec_tool to
+	gnupg_exec-tool.
+	* g13/sh-dmcrypt.c: Ditto.
+
+	common: Make gnupg_exec_tool conform to spec.
+	* common/exectool.c (gnupg_exec_tool): Allocate extra byte.  Allow
+	zero length read.  Append hidden byte.  Release memory on error.
+
+	g13: First chunk of code to support dm-crypt.
+	* g13/call-syshelp.c, g13/call-syshelp.h: New.
+	* g13/g13-syshelp.c, g13/g13-syshelp.h: New.
+	* g13/sh-cmd.c: New.
+	* g13/sh-blockdev.c: New.
+	* g13/sh-exectool.c: New.
+	* g13/sh-dmcrypt.c: New.
+	* g13/Makefile.am (sbin_PROGRAMS): Add g13-syshelp.c
+	(g13_syshelp_SOURCES): New.
+	(g13_syshelp_LDADD): New.
+
+	* g13/g13.c (opts): Add option --type.
+	(g13_deinit_default_ctrl): New.
+	(main): Implement that option.  Call g13_deinit_default_ctrl.
+	* g13/g13.h (struct call_syshelp_s): New declaration.
+	(server_control_s): Add field syshelp_local.
+	* g13/keyblob.h (KEYBLOB_TAG_CREATED): New.
+	(KEYBLOB_TAG_ALGOSTR): New.
+	(KEYBLOB_TAG_HDRCOPY): New.
+	* g13/backend.c (be_parse_conttype_name): New.
+	(be_get_detached_name): Add CONTTYPE_DM_CRYPT.
+
+	tests: Remove some harmless warnings in regression tests.
+	* tests/openpgp/gpg-agent.conf.tmpl: Remove --use-standard-socket.
+
+2016-02-12  Neal H. Walfield  <neal@g10code.com>
+
+	common: Change simple_query to ignore status messages.
+	* common/simple-pwquery.c (simple_query): Ignore status messages.
+
+2016-02-12  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Make sure to have the directory for trustdb.
+	* g10/tdbio.c (tdbio_set_dbname): Return earlier if !CREATE.  Check
+	the directory and create it if none before calling take_write_lock.
+
+2016-02-02  Neal H. Walfield  <neal@g10code.com>
+
+	doc: Note that rngd can also be used to quickly generate insecure keys.
+	* doc/gpg-agent.texi (Agent Options): Add comment to the description
+	of --debug-quick-random that rngd can also be used to quickly generate
+	key.
+
+2016-01-27  Werner Koch  <wk@gnupg.org>
+
+	scd: Fix size_t/int mismatch in libusb.
+	* scd/ccid-driver.c (bulk_in, abort_cmd, ccid_poll): Change msglen to
+	int.
+
+	scd: Fix detection of libusb.
+	* configure.ac (HAVE_LIBUSB): Clear if no header file was found.
+	(LIBUSB_LIBS): Ditto.
+
+	dirmngr: Build fix for FreeBSD (EAI macros)
+	* dirmngr/dns-stuff.c (map_eai_to_gpg_error): Map EAI_NODATA and
+	EAI_ADDRFAMILY only if defined.
+
+2016-01-27  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Migrate to new API of libusb 1.0.
+	* configure.ac (LIBUSB_CPPFLAGS): New.
+	* scd/Makefile.am (AM_CPPFLAGS): Add LIBUSB_CPPFLAGS.
+	* scd/ccid-driver.c: Use libusb 1.0 API.
+
 2016-01-26  Werner Koch  <wk@gnupg.org>
 
 	Release 2.1.11.
