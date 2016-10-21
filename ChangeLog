@@ -1,3 +1,1592 @@
+2016-08-18  Werner Koch  <wk@gnupg.org>
+
+	Release 2.1.15.
+
+	po: Update German translation.
+
+2016-08-18  Åka Sikrom  <a4@hush.com>
+
+	po: Update Norwegian translation.
+
+2016-08-18  Ineiev  <ineiev@gnu.org>
+
+	po: Update Russian translation.
+
+2016-08-18  Werner Koch  <wk@gnupg.org>
+
+	gpg: Add import filter "drop-sig".
+	* g10/import.c (import_drop_sig): New variable.
+	(cleanup_import_globals): Release that.
+	(parse_and_set_import_filter): Add filter "drop-sig".
+	(filter_getval): Implement properties for drop-sig.
+	(apply_drop_sig_filter): New.
+	(import_one): Apply that filter.
+
+	dirmngr: Remove all system daemon features.
+	* dirmngr/dirmngr.h (opts): Remove fields 'system_service' and
+	'system_daemon'.
+	* common/homedir.c (dirmngr_sys_socket_name): Remove.
+	(dirmngr_user_socket_name): Rename to ...
+	(dirmngr_socket_name): this.  Change call callers.
+	* common/asshelp.c (start_new_dirmngr): Remove the system socket
+	feature.
+	* tools/gpgconf.c (list_dirs): Do not print "dirmngr-sys-socket".
+	* sm/server.c (gpgsm_server): Adjust for removed system socket feature.
+	* dirmngr/server.c (cmd_getinfo): Ditto.
+	(cmd_killdirmngr): Remove check for system daemon.
+	(cmd_reloaddirmngr): Ditto.
+	* dirmngr/dirmngr.c (USE_W32_SERVICE): Remove macro.
+	(aService): Remove.
+	(opts): Remove --service.
+	(w32_service_control): Remove.
+	(real_main, call_real_main) [W32]: Remove wrapper.
+	(main): Remove Windows system service feature.  Remove system dameon
+	feature.  Use only the "~/.gnupg/dirmngr_ldapservers.conf" file.
+	* dirmngr/certcache.c (load_certs_from_dir): Remove warning in the
+	system dameon case.
+	* dirmngr/crlcache.c (DBDIR_D): Always use "~/.gnupg/crls.d".
+	* dirmngr/ocsp.c (validate_responder_cert): Do not call
+	validate_cert_chain which was used only in system daemon mode.
+	* dirmngr/validate.c (validate_cert_chain): Always use the code.
+
+	gpg: New option --sender.
+	* g10/options.h (struct opt): Add field 'sender_list'.
+	* g10/gpg.c: Include mbox-util.h.
+	(oSender): New.
+	(opts): Add option "--sender".
+	(main): Parse option.
+
+2016-08-16  Werner Koch  <wk@gnupg.org>
+
+	agent: Allow import of overly large keys.
+	* agent/command.c (MAXLEN_KEYDATA): Double the size.
+
+2016-08-14  Werner Koch  <wk@gnupg.org>
+
+	g13: Allow the use of a g13tab label for --mount.
+	* g13/mount.c (g13_mount_container): Do not run the first access check
+	if syshelp is required.
+
+	g13: Implement --umount for dm-crypt.
+	* g13/g13.c (main): Implement command --umount.
+	* g13/mount.c (g13_umount_container): use the syshelper if needed.
+	* g13/backend.c (be_umount_container): New.
+	* g13/be-dmcrypt.c (be_dmcrypt_umount_container): New.
+	* g13/call-syshelp.c (call_syshelp_run_umount): New.
+	* g13/sh-cmd.c (cmd_umount): New.
+	(register_commands): Register UMOUNT.
+	* g13/sh-dmcrypt.c (sh_dmcrypt_umount_container): New.
+
+2016-08-13  Werner Koch  <wk@gnupg.org>
+
+	g13: Fix double free bug.
+	* g13/sh-cmd.c (cmd_mount, cmd_resume): Do not xfree TIUPLES.
+
+	g13: Consider g13tab for a mount command.
+	* g13/sh-cmd.c (cmd_getkeyblob): New.
+	(register_commands): Register it.
+	* g13/call-syshelp.c (getkeyblob_data_cb): New.
+	(call_syshelp_get_keyblob): New.
+	* g13/mount.c: Include callsyshelp.h.
+	(g13_mount_container): Ask syshelp whether the filename is managed by
+	g13tab.  Call syshelp to get the encrypted keyblob in this case.
+
+	g13: Move some function around.
+	* g13/keyblob.c (g13_keyblob_decrypt): Move to ...
+	* g13/server.c: to here.
+	* g13/suspend.c, g13/mount.c: Include server.h.
+	* g13/Makefile.am (g13_syshelp_SOURCES): Add keyblob.c
+
+	g13: New command --find-device.
+	* common/status.h (STATUS_BLOCKDEV: New.
+	* g13/call-syshelp.c: Include "call-syshelp.h".
+	(finddevice_status_cb, call_syshelp_find_device): New.
+	* g13/g13.c (aFindDevice): New.
+	(opts): Add "--find-device".
+	(main): Implement --find-device.
+	* g13/sh-cmd.c (cmd_finddevice): New.
+	(register_commands): Register new command.
+
+2016-08-12  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	Avoid leading ": " in the log output when there are no prefixes.
+	* common/logging.c (do_logv): When no prefixes have been requested,
+	omit the ": " separator, since there is nothing on the left-hand
+	side of it.
+
+	Call log_set_prefix() with human-readable labels.
+	* agent/preset-passphrase.c, agent/protect-tool.c, dirmngr/dirmngr.c
+	* dirmngr/t-http.c, g10/gpg.c, g10/gpgv.c, g13/g13-syshelp.c
+	* g13/g13.c, kbx/kbxutil.c, scd/scdaemon.c, sm/gpgsm.c
+	* tests/gpgscm/main.c, tools/gpg-check-pattern.c
+	* tools/gpg-connect-agent.c, tools/gpgconf.c, tools/gpgtar.c
+	* tools/symcryptrun.c: Invoke log_set_prefix() with
+	human-readable labels.
+
+2016-08-11  Werner Koch  <wk@gnupg.org>
+
+	gpg: New option --input-size-hint.
+	* g10/options.h: Include stdint.h.
+	(struct opt): Add field 'input_size_hint'.
+	* g10/gpg.c (oInputSizeHint): New.
+	(opts): Add --input-size-hint.
+	(main): Set opt.input_size_hint.
+	* g10/progress.c (write_status_progress): Use the hint.
+
+	common: New function string_to_u64.
+	* common/stringhelp.c (string_to_u64): New.
+	* dirmngr/http.c (longcounter_t): Remove.
+	(struct cookie_s): Change content_length to uint64_t.
+	(parse_response): Use string_to_u64.
+
+2016-08-11  Justus Winter  <justus@g10code.com>
+
+	common: Remove compatibility code.
+	* common/Makefile.am: Drop deleted files.
+	* common/w32-afunix.c: Delete file.
+	* common/w32-afunix.h: Likewise.
+
+	GnuPG-bug-id: 2408
+
+	common: Rework the simple password query module.
+	* common/simple-pwquery.c (writen, readline): Drop.
+	(agent_send_option, agent_send_all_options, agent_open): Just use
+	libassuan.
+	(simple_pw_set_socket): Simplify.
+	(default_inq_cb): New function.
+	(simple_pwquery, simple_query): Just use libassuan.
+	* agent/Makefile.am (gpg_preset_passphrase_LDADD): Add libassuan.
+	* tools/Makefile.am (symcryptrun_LDADD): Likewise.
+
+	common: Remove simple password query error codes.
+	* common/simple-pwquery.h: Remove mapping function.  Move all
+	definitions of status codes...
+	* common/simple-pwquery.c: ... here, and define them to meaningful gpg
+	error values.
+	* agent/preset-passphrase.c (preset_passphrase): Use error code as-is.
+	(forget_passphrase): Likewise.
+	* tools/symcryptrun.c (confucius_get_pass): Likewise.
+
+2016-08-10  Werner Koch  <wk@gnupg.org>
+
+	gpg: Print the signer's UID during verification.
+	* g10/parse-packet.c (parse_signature): Sanitize the value stored in
+	SIGNERS_UID.
+	* g10/mainproc.c (issuer_fpr_string): New.
+	(check_sig_and_print): Print the signers' UID.  Print the issuer
+	fingerprint in --rfc4880bis mode.
+
+	common: New function try_make_printable_string.
+	* common/stringhelp.c (sanitize_buffer): Remove.  Move code to ...
+	* common/miscellaneous.c (try_make_printable_string): new.
+	(make_printable_string): Call try_make_printable_string.
+
+2016-08-10  Justus Winter  <justus@g10code.com>
+
+	tests: Fix distcheck.
+	* tests/openpgp/issue2417.scm: Copy configuration.
+
+2016-08-10  Werner Koch  <wk@gnupg.org>
+
+	gpg: Remove tofu database format "split".
+	* g10/options.h (struct opt): Remove field tofu_db_format.
+	* g10/gpg.h (server_control_s): Add fields tofu.batch_update_ref and
+	tofu.batch_update_started.
+	* g10/gpg.c (parse_tofu_db_format): Remove.
+	(main): Make option --tofu-db-format obsolete.
+	* g10/tofu.c: Major rework.  Remove the pretty complicated and slower
+	split format and with that all the caching.  Use the dbs struct
+	directly.  Move global vars for batch update into CTRL.  Change
+	calling conventions of some function to take CTRL or DBS pointers
+	instead of  the former low-level database pointer.
+
+2016-08-10  Justus Winter  <justus@g10code.com>
+
+	g10: Fix opening of trust database.
+	* g10/tdbio.c (tdbio_set_dbname): This function explicitly checks for
+	the file size, but handled the case of a zero-sized file incorrectly
+	by returning success.  Fix this by initializing the database in that
+	case.
+	* tests/openpgp/Makefile.am (XTESTS): Add new test.
+	* tests/openpgp/issue2417.scm: New file.
+
+	GnuPG-bug-id: 2417
+
+	tests: Fix distcheck.
+	* tests/openpgp/Makefile.am (EXTRA_DIST): Explicitly add setup and
+	teardown scripts now that they no longer are included in the list of
+	tests.
+
+	tests: Improve temporary directory handling.
+	* tests/gpgscm/ffi.c (ffi_init): Rename 'mkdtemp'.
+	* tests/gpgscm/tests.scm (mkdtemp): New function that uses a sensible
+	location and template if no arguments are given.
+	(with-temporary-working-directory): Simplify accordingly.
+	(make-temporary-file): Likewise.
+	* tests/openpgp/run-tests.scm (run-tests-parallel-isolated): Likewise.
+	(run-tests-sequential-isolated): Likewise.
+
+	gpgscm: Make the name of foreign functions more unique.
+	* tests/gpgscm/ffi-private.h (ffi_define_function_name): Add another
+	underscore.
+
+	tests: Run each test in a clean environment.
+	* tests/openpgp/Makefile.am (TESTS_ENVIRONMENT): Drop obsolete
+	variables, add 'srcdir', use absolute paths.
+	(TESTS): Rename to 'XTESTS' to avoid emitting the automake test
+	runner.  Drop 'setup.scm' and 'finish.scm'.
+	(xcheck): New target that runs 'run-tests.scm', our Scheme test suite
+	runner.  It will run each test in a clean environment, isolated from
+	the other tests.
+	(EXTRA_DIST): Adapt accordingly.
+	* tests/openpgp/README: Likewise.
+
+	tests: Make ssh test more robust.
+	* tests/openpgp/ssh.scm: Drop the 'MD5:' which was not printed by
+	previous ssh versions.
+
+2016-08-10  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: SSH support fix.
+	* agent/command-ssh.c (ssh_handler_request_identities): Keep error
+	message same.
+
+2016-08-09  Werner Koch  <wk@gnupg.org>
+
+	agent: Fix regression in recent ssh changes.
+	* agent/command-ssh.c (sexp_key_construct): Lowercase the algo name.
+
+	gpg: Extend the PROGRESS line to give the used unit.
+	* g10/progress.c (write_status_progress): Print the units parameter.
+
+2016-08-09  Ben Kibbey  <bjk@luxsci.net>
+
+	Cleanup initialization of libgcrypt.
+	* common/init.c (init_common_subsystems): Initialize libgcrypt.
+	* dirmngr/Makefile.am (dirmngr_ldap): Link with libgcrypt.
+
+2016-08-09  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: SSH support improvement.
+	* agent/command-ssh.c (ssh_handler_request_identities): Skip a key with
+	error, not giving up to handle the request itself.
+	* agent/cvt-openpgp.c (extract_private_key): Support "ecdsa" key.
+
+2016-08-08  Werner Koch  <wk@gnupg.org>
+
+	gpg: Cleanup of dek_to_passphrase function (part 2).
+	* g10/passphrase.c (passphrase_get): Remove arg KEYID.  Change arg
+	MODE to NOCACHE.
+	(passphrase_to_dek): Remove args KEYID and PUBKEY_ALGO.  Split arg
+	MODE into CREATE and NOCACHE.  Change all callers and adjust stubs.
+	(passphrase_clear_cache): Remove args KEYID and ALGO.  They are not
+	used.  Change caller.
+
+	gpg: Cleanup of dek_to_passphrase function (part 1).
+	* g10/passphrase.c (passphrase_to_dek_ext): Remove args CUSTDESC and
+	CUSTPROMPT.  Merge into the passphrase_to_dek wrapper.
+	(passphrase_get): Remove args CUSTOM_DESCRIPTION and CUSTOM_PROMPT.
+
+2016-08-08  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: More clean up of SSH support.
+	* common/util.h (get_pk_algo_from_key): New.
+	* common/sexputil.c (get_pk_algo_from_key): The implementation.
+	* agent/gpg-agent.c: Remove include of openpgpdefs.h.
+	* agent/command-ssh.c (struct ssh_key_type_spec): Use integer ALGO.
+	(ssh_key_types): Update with GCRY_PK_*.
+	(make_cstring, sexp_extract_identifier): Remove.
+	(sexp_key_construct): Use gcry_pk_algo_name to get ALGO string.
+	(ssh_key_to_blob): Use cadr to get value list.
+	(ssh_key_type_lookup): Lookup with integer ALGO.
+	(ssh_receive_key): Follow the change of ssh_key_type_lookup.
+	(ssh_send_key_public): Likewise.  Use get_pk_algo_from_key to get ALGO.
+
+	tests: Add openpgp/gpgv-forged-keyring.scm.
+	* tests/openpgp/gpgv-forged-keyring.scm: New.
+	* tests/openpgp/forged-keyring.gpg: New.
+	* tests/openpgp/Makefile.am (TESTS): Add gpgv-forged-keyring.scm.
+	* tests/openpgp/defs.scm (tools): Add GPGV.
+	(GPGV): New.
+
+2016-08-06  Werner Koch  <wk@gnupg.org>
+
+	agent: Fix long standing regression tracking the connection count.
+	* agent/gpg-agent.c (get_agent_active_connection_count): New.
+	(do_start_connection_thread, start_connection_thread_ssh): Bump
+	ACTIVE_CONNECTIONS up and down.
+	* agent/command.c (cmd_getinfo): Add subcommand "connections".
+
+2016-08-06  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: Clean up SSH support.
+	* agent/command-ssh.c (file_to_buffer): Remove.
+	(ssh_handler_request_identities): Use agent_public_key_from_file.
+
+2016-08-05  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	gpg: Avoid publishing the GnuPG version by default.
+	* g10/gpg.c (main): initialize opt.emit_version to 0
+	* doc/gpg.texi: document different default for --emit-version
+
+2016-08-04  Werner Koch  <wk@gnupg.org>
+
+	gpg: Make sure that keygrips are printed for each subkey.
+	* g10/keylist.c (list_keyblock_colon): Print an emprty grip in case of
+	an error.
+
+	gpg: Always print the fingerprint in colons mode.
+	* g10/keylist.c (list_keyblock_colon): Remove arg FPR.  Always print
+	fingerprint records.  For secret keys always print keygrip records.
+
+	tests: Use gpgconf to set the ssh socket envvar.
+	* tests/openpgp/ssh.scm ("SSH_AUTH_SOCK"): Use gpgconf.
+
+	gpgconf: Add limited support for -0.
+	* tools/gpgconf.h (opt): Add field 'null'.
+	* tools/gpgconf.c: Add option --null/-0.
+	(list_dirs): Use it here.
+
+2016-08-04  Justus Winter  <justus@g10code.com>
+
+	tests: Update list of tests in Scheme test runner.
+	* tests/openpgp/run-tests.scm: Add missing tests.
+
+	tests: Fix path to fake-pinentry.
+	* tests/openpgp/defs.scm: Correctly compute the path to fake-pinentry.
+
+2016-08-04  NIIBE Yutaka  <gniibe@fsij.org>
+
+	po: Update Japanese translation.
+
+	po: update Japanese translation.
+
+	g10: Fix checking key for signature validation.
+	* g10/sig-check.c (check_signature2): Not only subkey, but also primary
+	key should have flags.valid=1.
+
+2016-08-03  Justus Winter  <justus@g10code.com>
+
+	kbx: Add missing header file.
+	* kbx/keybox-update.c: Add missing header file.
+
+2016-08-03  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	More cleanup of "allow to".
+	* README, agent/command.c, agent/keyformat.txt, common/i18n.c,
+	  common/iobuf.c, common/keyserver.h, dirmngr/cdblib.c,
+	  dirmngr/ldap-wrapper.c, doc/DETAILS, doc/TRANSLATE,
+	  doc/announce-2.1.txt, doc/gpg.texi, doc/gpgsm.texi,
+	  doc/scdaemon.texi, doc/tools.texi, doc/whats-new-in-2.1.txt,
+	  g10/export.c, g10/getkey.c, g10/import.c, g10/keyedit.c, m4/ksba.m4,
+	  m4/libgcrypt.m4, m4/ntbtls.m4, po/ca.po, po/cs.po, po/da.po,
+	  po/de.po, po/el.po, po/eo.po, po/es.po, po/et.po, po/fi.po,
+	  po/fr.po, po/gl.po, po/hu.po, po/id.po, po/it.po, po/ja.po,
+	  po/nb.po, po/pl.po, po/pt.po, po/ro.po, po/ru.po, po/sk.po,
+	  po/sv.po, po/tr.po, po/uk.po, po/zh_CN.po, po/zh_TW.po,
+	  scd/app-p15.c, scd/ccid-driver.c, scd/command.c, sm/gpgsm.c,
+	  sm/sign.c, tools/gpgconf-comp.c, tools/gpgtar.h: replace "Allow to"
+	  with clearer text.
+
+	In standard English, the normal construction is "${XXX} allows ${YYY}
+	to" -- that is, the subject (${XXX}) of the sentence is allowing the
+	object (${YYY}) to do something.  When the object is missing, the
+	phrasing sounds awkward, even if the object is implied by context.
+	There's almost always a better construction that isn't as awkward.
+
+	These changes should make the language a bit clearer.
+
+	dirmngr: Emit correct spelling of "superseded".
+	* dirmngr/crlcache.c (list_one_crl_entry): Spell superseded correctly.
+	* dirmngr/ocsp.c (ocsp_invalid): Likewise.
+
+	This might break some tools which parse the existing output and expect
+	misspellings, but i'm not sure there are many such tools, and we
+	should use standardized orthography going forward.
+
+	Fix spelling and grammar.
+	* agent/learncard.c: s/coccured/occurred/
+	* doc/dirmngr.texi: s/ommitted/omitted/, s/orginally/originally/,
+	  s/reponses/responses/i
+	* doc/gpg-agent.texi, doc/dirmngr.texi, doc/gpg.texi: Fix "allows
+	  to" to more conventional english usage.
+	* doc/tools.texi, g10/gpgcommpose.c, tests/openpgp/armor.scm,
+	  tests/openpgp/armor.test: s/occured/occurred/
+	* tools/gpgsplit.c: s/calcualting/calculating/
+	* sm/server.c: s/formated/formatted/
+
+2016-08-03  Werner Koch  <wk@gnupg.org>
+
+	gpg,gpgsm: Block signals during keyring/keybox update.
+	* kbx/keybox-util.c (keybox_file_rename): Add arg BLOCK_SIGNALS.
+	* kbx/keybox-update.c (rename_tmp_file): Block all signals when doing
+	a double rename.
+	* g10/keyring.c (rename_tmp_file): Block all signals during the double
+	rename.
+
+	common: New file utilproto.c.
+	* common/util.h: Factor prototypes from signal.c out to ...
+	* common/utilproto.h: new.
+	* common/Makefile.am (common_sources): Add new file.
+
+2016-08-01  Justus Winter  <justus@g10code.com>
+
+	gpgsm: Fix machine-readable key listing.
+	* sm/keylist.c (list_cert_colon): Drop superfluous colon.
+
+	GnuPG-bug-id: 2432
+
+	tests: Distribute standalone test runner.
+	* tests/openpgp/Makefile.am (EXTRA_DIST): Add missing file
+	'run-tests.scm'.
+
+	GnuPG-bug-id: 2431
+
+2016-07-28  Justus Winter  <justus@g10code.com>
+
+	tests: Fix distcheck.
+	* tests/openpgp/Makefile.am (sample_msgs): New variable.
+	(EXTRA_DIST): Also ship the sample msgs.
+
+2016-07-27  Fredrik Fornwall  <fredrik@fornwall.net>
+
+	build: Fix check for Android.
+	* configure.ac: Match other Android targets as well.
+
+2016-07-26  Justus Winter  <justus@g10code.com>
+
+	common: Fix iobuf_peek corner case.
+	Previously, iobuf_peek on a file smaller than 'buflen' would hang.
+
+	* common/iobuf.c (underflow): Generalize by adding a target parameter.
+	(iobuf_peek): Use this to prevent looping here.
+	* tests/openpgp/Makefile.am (TESTS): Add new test.
+	* tests/openpgp/setup.scm (dearmor): Move function...
+	* tests/openpgp/defs.scm (dearmor): ... here.
+	* tests/openpgp/issue2419.scm: New file.
+	* tests/openpgp/samplemsgs/issue2419.asc: Likewise.
+
+	GnuPG-bug-id: 2419
+
+	gpgscm: Do not shadow common function name in catch macro.
+	* tests/gpgscm/init.scm (catch): Do not shadow 'exit'.
+
+	tests: Fix distcheck.
+	* tests/openpgp/Makefile.am (samplekeys): Add missing key.
+
+	Fixes-commit: 4ba11251
+
+	gpgscm: Make the verbose setting more useful.
+	* tests/gpgscm/ffi.c (do_get_verbose): New function.
+	(do_set_verbose): Likewise.
+	(ffi_init): Turn *verbose* into a function, add *set-verbose!*.
+	* tests/gpgscm/tests.scm (call): Adapt accordingly.
+	(call-with-io): Dump output if *verbose* is high.
+	(pipe-do): Adapt accordingly.
+	* tests/openpgp/defs.scm: Set verbosity according to environment.
+	* tests/openpgp/run-tests.scm (test): Adapt accordingly.
+
+	common: Avoid excessive stack use.
+	* common/exectool.c (copy_buffer_shred): Make passing NULL a nop.
+	(gnupg_exec_tool_stream): Allocate copy buffers from the heap.
+
+	common: Rework resource cleanup when handling errors.
+	* common/exectool.c (gnupg_exec_tool_stream): Rework error handling.
+
+	common: Add unit test for exectool.
+	* common/Makefile.am: Build new test.
+	* common/t-exectool.c: New file.
+
+2016-07-25  Justus Winter  <justus@g10code.com>
+
+	g10: Fix key import statistics.
+	'transfer_secret_keys' collects statistics on a subkey-basis, while
+	the other code does not.  This leads to inflated numbers when
+	importing secret keys.  E.g. 'count' is incremented by the main
+	parsing loop in 'import', and again in 'transfer_secret_keys', leading
+	to a total of 3 if one key with two secret subkeys is imported.
+
+	* g10/import.c (import_secret_one): Adjust to the fact that
+	'transfer_secret_keys' collects subkey statistics.
+	* tests/openpgp/Makefile.am (TESTS): Add new test.
+	* tests/openpgp/issue2346.scm: New file.
+	* tests/openpgp/samplekeys/issue2346.gpg: Likewise.
+
+	GnuPG-bug-id: 2346
+
+2016-07-22  Justus Winter  <justus@g10code.com>
+
+	gpgscm: Make function more general.
+	* tests/gpgscm/tests.scm (in-srcdir): Accept more path fragments.
+
+	g10: Properly ignore legacy keys in the keyring cache.
+	* g10/keyring.c (keyring_rebuild_cache): Properly ignore legacy keys
+	in the keyring cache.
+	* tests/migrations/Makefile.am (TESTS): Add new test.
+	* tests/migrations/common.scm (GPG-no-batch): New variable.
+	(run-test): New function.
+	* tests/migrations/issue2276.scm: New file.
+	* tests/migrations/issue2276.tar.asc: Likewise.
+
+	GnuPG-bug-id: 2276
+
+2016-07-21  Justus Winter  <justus@g10code.com>
+
+	g10: Fix error handling.
+	* g10/tofu.c (show_statistics): Fix error handling, 0 is a valid
+	duration.
+
+	g10: Drop superfluous begin transaction.
+	* g10/tofu.c (record_binding): We only need a transaction for the
+	split format.
+
+	gpgscm: Make assert macro more accurate.
+	* tests/gpgscm/lib.scm (assert): Print the representation of the
+	failed expression.
+
+	gpgscm: Make error message more useful.
+	* tests/gpgscm/scheme.c (opexe_0): Include names of missing function
+	parameters in the error message.
+
+	g10: Fix crash.
+	* g10/tofu.c (tofu_closedbs): Fix freeing database handles up to the
+	cache limit.  Previously, this would crash if db_cache_count == count.
+
+	Reported-by: Ben Kibbey <bjk@luxsci.net>
+
+2016-07-20  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Fix card removal/reset on multiple contexts.
+	* scd/app.c (application_notify_card_reset): Add message for debug.
+	*scd/command.c (update_card_removed): Call release_application and set
+	SLOT -1 here.
+	(struct server_local_s): Remove app_ctx_marked_for_release.
+	(do_reset): Don't mark release but call release_application here.
+	(open_card): Remove app_ctx_marked_for_release handling.
+	(update_reader_status_file): Don't set SLOT here, so that it can be
+	released the APP by application_notify_card_reset in
+	update_card_removed.
+
+2016-07-19  Justus Winter  <justus@g10code.com>
+
+	agent: Add known keys to sshcontrol.
+	* agent/command-ssh.c (ssh_identity_register): Add a key to sshcontrol
+	even if it is already in the private key store.
+	* tests/openpgp/ssh.scm: Test this.
+
+	GnuPG-bug-id: 2316
+
+	tests: Add test for ssh support.
+	* tests/gpgscm/tests.scm (path-expand): New function.
+	* tests/openpgp/Makefile.am (TESTS): Add new test.
+	(sample_keys): Add new keys.
+	(CLEANFILES): Clean ssh socket and control file.
+	* tests/openpgp/fake-pinentry.c (main): Add a default passphrase.
+	* tests/openpgp/gpg-agent.conf.tmpl: Enable ssh support.
+	* tests/openpgp/samplekeys/ssh-dsa.key: New file.
+	* tests/openpgp/samplekeys/ssh-ecdsa.key: Likewise.
+	* tests/openpgp/samplekeys/ssh-ed25519.key: Likewise.
+	* tests/openpgp/samplekeys/ssh-rsa.key: Likewise.
+	* tests/openpgp/ssh.scm: Likewise.
+
+2016-07-19  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Fix race conditions for release_application.
+	* scd/command.c (do_reset, cmd_restart): Reset app_ctx before calling
+	release_application.
+
+2016-07-18  Justus Winter  <justus@g10code.com>
+
+	agent: Fix passphrase cache lookups.
+	CACHE_MODE_ANY is supposed to match any cache mode except
+	CACHE_MODE_IGNORE, but the code used '==' to compare cache modes.
+
+	* agent/cache.c (cache_mode_equal): New function.
+	(agent_set_cache): Use the new function to compare cache modes.
+	(agent_get_cache): Likewise.
+	* tests/openpgp/Makefile.am (TESTS): Add new test.
+	* tests/openpgp/issue2015.scm: New file.
+
+	GnuPG-bug-id: 2015
+
+2016-07-15  Justus Winter  <justus@g10code.com>
+
+	build: Always build gpgtar.
+	We use gpgtar to unpack test data, hence we always build it.  If the
+	user opts out, we simply don't install it.
+
+	* configure.ac: Add comment.
+	* tests/migrations/Makefile.am (required_pgms): Make sure gpgtar is
+	built.
+	* tools/Makefile.am: Always build gpgtar, but do not install it if the
+	user used '--disable-gpgtar'.
+
+2016-07-15  Werner Koch  <wk@gnupg.org>
+
+	wks: Publish as binary file.
+	* tools/gpg-wks-server.c (copy_key_as_binary): New.
+	(check_and_publish): Use new function instead of rename.
+
+2016-07-15  Justus Winter  <justus@g10code.com>
+
+	gpgscm: Fix linking.
+	* tests/gpgscm/Makefile.am: Add -lintl.
+
+	g10: Fix building without trust models.
+	* g10/pkclist.c (write_trust_status): Fall back to the previous
+	behavior.
+
+	Fixes-commit: ae188932
+
+	tests: Check for gpgtar.
+	* tests/migrations/extended-pkf.scm: Skip test if gpgtar is not built.
+	* tests/migrations/from-classic.scm: Likewise.
+	* tests/openpgp/gpgtar.scm: Fix check for gpgtar.
+
+2016-07-14  Werner Koch  <wk@gnupg.org>
+
+	Release 2.1.14.
+
+	po: Update the German translation.
+
+2016-07-14  Damien Goutte-Gattat  <dgouttegattat@incenp.org>
+
+	dirmngr: fix handling of HTTP redirections.
+	* dirmngr/ks-engine-http.c (ks_http_fetch): Reinitialize HTTP session
+	when following a HTTP redirection.
+
+2016-07-14  Werner Koch  <wk@gnupg.org>
+
+	gpg: Remove options --print-dane-records and --print-pka-records.
+	* g10/gpg.c (main): Remove options but print a dedicated warning.
+	* g10/options.h (struct opt): Remove fields 'print_dane_records' and
+	'print_pka_records'.
+	* g10/keylist.c (list_keyblock): Do not call list_keyblock_pka.
+	(list_keyblock_pka): Remove.
+
+2016-07-14  Åka Sikrom  <a4@hush.com>
+
+	po: Complete update of the Norwegian translation.
+
+2016-07-14  Yuri Chornoivan  <yurchor@ukr.net>
+
+	Update Ukrainian translation.
+
+2016-07-14  Ineiev  <ineiev@gnu.org>
+
+	Update Russian translation.
+
+2016-07-14  Werner Koch  <wk@gnupg.org>
+
+	gpg: Fix regression since 2.1 in --search-key with a fingerprint.
+	* dirmngr/ks-engine-hkp.c (ks_hkp_search): Prefix fingerprint with 0x.
+
+	gpgscm: Use kludge to avoid improper use of ffi_schemify_name.
+	* tests/gpgscm/ffi.c (ffi_schemify_name): Use xstrdup instead of
+	strdup for now.
+
+	build: Require latest released libraries.
+	* agent/protect.c (OCB_MODE_SUPPORTED): Remove macro.
+	(do_encryption): Always support OCB.
+	(do_decryption): Ditto.
+	(agent_unprotect): Ditto.
+	* dirmngr/server.c (is_tor_running): Unconditionally build this.
+
+2016-07-13  Werner Koch  <wk@gnupg.org>
+
+	build: Update config.{guess,sub} to {2016-05-15,2016-06-20}.
+	* build-aux/config.guess: Update.
+	* build-aux/config.sub: Update.
+
+	gpg: Fix regression due to the new --mimemode options.
+	* g10/gpg.c (opts): Re-add oTextmodeShort.
+
+2016-07-13  Daiki Ueno  <ueno@gnu.org>
+
+	gpg: Make --try-all-secrets work for hidden recipients.
+	* g10/getkey.c (enum_secret_keys): Really enumerate all secret
+	keys if --try-all-secrets is specified.
+
+2016-07-13  Werner Koch  <wk@gnupg.org>
+
+	gpg: Do not print a the short keyid if the high word is zero.
+	* g10/keyid.c (format_keyid): Always returh long keyid ifor KF_LONG.
+
+	gpg: New option --mimemode.
+	* g10/gpg.c (oMimemode): New.
+	(opts): Add --mimemode.
+	(main): Use --mimemode only in rfc4880bis compliance mode.
+	* g10/options.h (struct opt): Add field "mimemode".
+	* g10/build-packet.c (do_plaintext): Allow for mode 'm'.
+	* g10/encrypt.c (encrypt_simple, encrypt_crypt): Use 'm' if requested.
+	* g10/plaintext.c (handle_plaintext): Handle 'm' mode.
+	* g10/sign.c (write_plaintext_packet): Handle 'm' mode.
+	(sign_file, sign_symencrypt_file): Use 'm' if requested.
+
+	wks: Use correct key for the confirmation.
+	* tools/gpg-wks-client.c (send_confirmation_response): Actually
+	encrypt to the recipient.
+
+	wks: New server command --list-domains.
+	* tools/gpg-wks-server.c (aListDomains): New.
+	(opts): Add --list-domains.
+	(parse_arguments): Implement.
+	(main): Ditto.  Use only one final diagnostic message.
+	(command_list_domains): New.
+	(check_and_publish): Remove directory creation.
+	(get_domain_list): New.
+	(expire_pending_confirmations): Rewrite using a list of directories.
+	(command_cron): Get domain list and pass to
+	expire_pending_confirmations.
+
+2016-07-13  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: Fix envvars for UPDATESTARTUPTTY.
+	agent/command.c (cmd_updatestartuptty): Use session_env_list_stdenvnames
+	to get the list.
+
+2016-07-12  Werner Koch  <wk@gnupg.org>
+
+	g13: Fix memleak.
+	* g13/g13tuple.c (create_tupledesc): Init refcount to 1.
+
+	wks: Add --cron command to gpg-wks-server.
+	* tools/gpg-wks-server.c (PENDING_TTL): New.
+	(expire_one_domain, expire_pending_confirmations): New.
+	(command_cron): New.
+	(main): Implement --cron.
+
+	wks: Try to send an encrypted confirmation back.
+	* tools/gpg-wks-client.c (encrypt_response_status_cb): New.
+	(encrypt_response): New.
+	(send_confirmation_response): Encrypt the response.
+
+	* tools/gpg-wks-server.c (send_confirmation_request): Use freeing of
+	BODY and BODYENC.
+
+	wks: Also create DANE record.
+	* tools/gpg-wks-server.c (copy_key_as_dane): New.
+	(check_and_publish): Also publish as DANE record.
+
+	gpg: Extend import-option import-export to print PKA or DANE.
+	* g10/export.c (do_export_stream): Move PKA and DANE printing helper
+	code to ...
+	(print_pka_or_dane_records): this fucntion.
+	(write_keyblock_to_output): Add arg OPTIOSN and call
+	print_pka_or_dane_records if requested.
+
+	gpg: Move a function from import.c to export.c.
+	* g10/import.c (write_keyblock_to_output): Move to ...
+	* g10/export.c (write_keyblock_to_output): here.  Add arg WITH_ARMOR.
+	Also make sure never to export ring trust packets.
+
+2016-07-11  Werner Koch  <wk@gnupg.org>
+
+	gpgconf: Enhance --list-dirs.
+	* tools/gpgconf.c (main) <aListDir>: Factor code out to ...
+	(list_dirs): new.  Rewrite to use a table.  Allow selection of a
+	items.  Add "agent-ssh-socket".
+
+2016-07-09  NIIBE Yutaka  <gniibe@fsij.org>
+
+	gpgv: Tweak default options for extra security.
+	* g10/gpgv.c (main): Set opt.no_sig _cache, so that it doesn't depend on
+	cached status.  Similarly, set opt.flags.require_cross_cert for backsig
+	validation for subkey signature.
+
+2016-07-07  Werner Koch  <wk@gnupg.org>
+
+	gpg: Add export options "export-pka" and "export-dane".
+	* g10/options.h (EXPORT_PKA_FORMAT): New.
+	* g10/keylist.c (list_keyblock_pka): Do not use DANE flag.
+	* g10/export.c: Include zb32.h.
+	(parse_export_options): Add options "export-pka" and "export-dane".
+	(do_export): Do not armor if either of these option is set.
+	(print_pka_or_dane_records): New.
+	(do_export_stream): Implement new options.
+
+	gpg: Split a too large export function.
+	* g10/export.c (do_export_stream): Factor some code out to ...
+	(do_export_one_keyblock): new.
+
+2016-07-07  Justus Winter  <justus@g10code.com>
+
+	gpgscm: Capture output of spawned processes.
+	* tests/gpgscm/tests.scm (call-check): Capture stdout and stderr, and
+	return stdout if the child exited successfully, or include stderr in
+	the error.
+	* tests/openpgp/version.scm: Demonstrate this by checking the stdout.
+
+2016-07-06  Werner Koch  <wk@gnupg.org>
+
+	doc: Escape file names in generated macros.
+	* doc/mkdefsinc.c (print_filename): New.
+	(main): Use it here.
+
+	wks: Let the server take the encrytion key from the file.
+	* tools/gpg-wks-server.c (encrypt_stream): Change arg 'fingerprint' to
+	'keyfile'.
+	(store_key_as_pending): Add arg 'r_fname' to make of the keyfile.
+	(send_confirmation_request): Add arg 'keyfile'.
+	(process_new_key): Pass on the name of the keyfile.
+
+	gpg: New options --recipient-file and --hidden-recipient-file.
+	* g10/gpg.c (oRecipientFile, oHiddenRecipientFile): New.
+	(opts): Add options --recipient-file and --hidden-recipient-file.
+	(main): Implement them.  Also remove duplicate code from similar
+	options.
+	* g10/keydb.h (PK_LIST_FROM_FILE): New.
+	(PK_LIST_SHIFT): Bump up.
+	* g10/pkclist.c (expand_group): Take care of PK_LIST_FROM_FILE.
+	(find_and_check_key): Add and implement arg FROM_FILE.
+	(build_pk_list): Pass new value for new arg.
+	* g10/getkey.c (get_pubkey_fromfile): New.
+	* g10/gpgv.c (read_key_from_file): New stub.
+	* g10/test-stubs.c (read_key_from_file): New stub.
+	* g10/server.c (cmd_recipient): Add flag --file.
+	* g10/import.c (read_key_from_file): New.
+
+	* tests/openpgp/defs.scm (key-file1): New.
+	(key-file2): New.
+	* tests/openpgp/setup.scm: Add their private keys and import the
+	key-file1.
+	* tests/openpgp/encrypt.scm: Add new test.
+
+	gpg: New option --no-keyring.
+	* g10/gpg.c (oNoKeyring): New.
+	(opts): Add "--no-keyring".
+	(main): Do not register any keyring if the option is used.
+
+	gpg: Document use of node flags in import.c and remove unused args.
+	* g10/import.c (NODE_GOOD_SELFSIG): New.  Use instead of 1.
+	(NODE_BAD_SELFSIG): New.  Use instead of 2.
+	(NODE_DELETION_MARK): New.  Use instead of 4.
+	(NODE_FLAG_A): New.  Use to mark new nodes in merge_blocks.
+	(chk_self_sigs): Remove unused args FNAME and PK.
+	(import_one): Adjust call.  Simplify error return because
+	chk_self_sigs does not return an error code.
+	(append_uid, append_key, merge_sigs, merge_keysigs): Remove unsued
+	args FNAME and KEYID.
+	(merge_blocks, import_one, import_secret_one)
+	(import_revoke_cert): Remove unused arg FNAME.
+
+	gpg: Get rid of an unused arg in a function in getkey.c.
+	* g10/getkey.c (pk_from_block): Remove unused arg CTX.  Change all
+	callers.
+
+	gpg: Change calling convention for a function in getkey.c.
+	* g10/getkey.c (merge_selfsigs): Remove arg CTX.  Add args REQ_USAGE
+	and WANT_EXACT.
+	(finish_lookup): Adjust caller.  Set LOOKUP_NOT_SELECTED here...
+	(lookup): and not here.
+
+2016-07-05  Werner Koch  <wk@gnupg.org>
+
+	gpg: Fix possible out-of-bounds read in is_armored.
+	* g10/armor.c (check_input): Call is_armored only if LEN >= 2.
+	(unarmor_pump): Use a 2 byte buffer for is_armored.
+
+2016-07-05  Justus Winter  <justus@g10code.com>
+
+	tests: Honor environment variable 'TMP'.
+	This fixes problems with long socket names, e.g. when doing distcheck.
+
+	* tests/gpgscm/tests.scm (path-join): New function.
+	(with-temporary-working-directory): Honor 'TMP'.
+	(make-temporary-file): Likewise.
+	* tests/migrations/Makefile.am (TMP): Default to '/tmp'.
+	(TESTS_ENVIRONMENT): Set 'TMP'.
+	* tests/openpgp/Makefile.am (TMP): Default to '/tmp'.
+	(TESTS_ENVIRONMENT): Set 'TMP'.
+
+	gpgscm: Improve robustness and compatibility.
+	* tests/gpgscm/ffi.c (do_getenv): Avoid gccism.
+	(do_mkdtemp): Handle errors.
+
+	tests/migrations: Fix distcheck.
+	* tests/migrations/Makefile.am (TESTS): Rename test.
+	(TEST_FILES): Update list.
+	(EXTRA_DIST): Add common.scm.
+	* tests/migrations/common.scm (GPGTAR): New variable.
+	(dearmor): Rename and untar archive.
+	* tests/migrations/extended-private-key-format.scm: Rename.
+	(setup): Update.
+	* tests/migrations/extended-pkf.tar.asc: New file.
+	* tests/migrations/extended-private-key-format.gpghome: Delete.
+	* tests/migrations/from-classic.gpghome: Likewise.
+	* tests/migrations/from-classic.scm (setup): Update.
+	* tests/migrations/from-classic.tar.asc: New file.
+
+	tools/gpgtar: Provide --create and --extract.
+	* tools/gpgtar.c (cmd_and_opt_values): New values.
+	(opts): New actions.
+	(parse_arguments): Handle new actions.
+	* tests/openpgp/gpgtar.scm: Test new interface.
+
+	g10: Fix out-of-bounds read.
+	* g10/armor.c (use_armor_filter): We need two bytes for 'is_armored'.
+
+2016-07-04  Werner Koch  <wk@gnupg.org>
+
+	wks: Add command --read to gpg-wks-client.
+	* tools/gpg-wks-client.c (aRead): New.
+	(opts): Add command "--read".
+	(main): Implement that.
+
+	tests: Add a gettime test for sizeof (time_t) > 4.
+	* common/t-gettime.c (test_isotime2epoch): Add 4 more tests.
+
+2016-07-03  Werner Koch  <wk@gnupg.org>
+
+	gpg: Avoid spurious failures on keyblocks with no or only deleted nodes.
+	* g10/import.c (write_keyblock_to_output): Clear ERR on success.
+
+	wks: Let the client only export the requested UID.
+	* tools/gpg-wks-client.c (get_key): Export only the requested uid.
+
+	tools: Call sendmail directly from the wks tools.
+	* tools/send-mail.c, tools/send-mail.h: New.
+	* tools/wks-util.c: New.
+	* tools/Makefile.am (gpg_wks_server_SOURCES): Add them.
+	(gpg_wks_client_SOURCES): Ditto.
+	* tools/gpg-wks.h (opt): Add fields use_sendmail and output.
+	* tools/gpg-wks-client.c: Add options --send and --output.  Rename
+	command --send to --create.
+	(command_send, send_confirmation_response): Output via wks_send_mime.
+	* tools/gpg-wks-server.c:  Add options --send and --output.
+	(send_confirmation_request): Output via wks_send_mime.
+	(check_and_publish): Add hack for name-value bug.
+
+2016-07-02  Werner Koch  <wk@gnupg.org>
+
+	tools: Add options to gpg-wks-server.
+	* tools/gpg-wks.h (opt): Add 'default_from' and 'extra_headers'.
+	* tools/gpg-wks-server.c (oFrom, oHeader): New.
+	(parse_arguments): Set them and check args.
+	(get_submission_address): New.
+	(send_confirmation_request): Set correct From address.  Add extra
+	headers.
+	(process_new_key): Return an error code.
+
+	tools: Extend mime-maker.c:mime_maker_add_header.
+	* tools/mime-maker.c (add_header): Check header name and allow
+	name-value syntax.
+	(mime_maker_add_header): Add mode for a syntax check.
+
+	doc: Describe filter expressions.
+	* doc/gpg.texi: Remove some superfluous .E.
+	(FILTER EXPRESSIONS): New.
+
+	yat2m: Fix table formatting.
+	* doc/yat2m.c (proc_texi_cmd): Use .TQ for @itemx.  Print a .P at the
+	end of a level 0 table.
+
+2016-07-01  Werner Koch  <wk@gnupg.org>
+
+	gpg: New option --export-filter.
+	* g10/gpg.c (oExportFilter): New.
+	(opts): Add --export-filter.
+	(main): Handle option.
+	* g10/export.c: Include recsel.h, init.h, and mbox-util.h.
+	(export_keep_uid): New global var.
+	(cleanup_export_globals): New.
+	(parse_and_set_export_filter): New.
+	(filter_getval): New.
+	(apply_keep_uid_filter): New.
+	(do_export_stream): Apply filter if set.
+
+	gpg: New option --import-filter.
+	* g10/gpg.c (oImportFilter): New.
+	(opts): Add --import-filter.
+	(main): Handle option.
+	* g10/import.c: Include recsel.h, init.h, and mbox-util.h.
+	(import_keep_uid): New global var.
+	(cleanup_import_globals): New.
+	(parse_and_set_import_filter): New.
+	(filter_getval): New.
+	(apply_keep_uid_filter): New.
+	(import_one): Apply filter if set.
+
+	gpg: Allow to cache the mbox in a user id struct.
+	* g10/packet.h (PKT_user_id): Add field 'mbox'.
+	* g10/free-packet.c (free_user_id): Free that.
+
+	gpg: Make sure a user ID packet has always a terminating Nul in memory.
+	* g10/keygen.c (write_uid): Avoid overflow.
+
+	common: Add function to select records etc.
+	* common/recsel.c, common/recsel.h: New.
+	* common/t-recsel.c: New.
+
+	common: Smart up register_mem_cleanup_func.
+	* common/init.c (register_mem_cleanup_func): Avoid double registration.
+
+2016-07-01  Justus Winter  <justus@g10code.com>
+
+	common: Annotate semi-static allocation.
+	* common/argparse.c (optfile_parse): Allow string arguments to leak.
+
+	g10: Fix memory leak.
+	* g10/keyserver.c (parse_keyserver_uri): Free URI.
+
+	tools/gpgtar: Annotate semi-static allocation.
+	* tools/gpgtar.c (shell_parse_argv): Annotate argument vector as
+	leaked.
+
+	g10: Fix memory leak.
+	* g10/import.c (transfer_secret_keys): Release curve from the previous
+	iteration.
+
+	g10: Fix build with disabled kbnode cache.
+	* g10/kbnode.c (release_unused_nodes): Fix build with disabled kbnode
+	cache.
+
+	g10: Fix memory leak.
+	* g10/trustdb.c (tdb_get_validity_core): Fix kbnode leak.
+
+	g10: Fix memory leak.
+	* g10/keygen.c (keygen_set_std_prefs): Fix memory leak.
+
+	Fix trivial memory leaks in tests.
+	* dirmngr/t-ldap-parse-uri.c (check_ldap_escape_filter): Free result.
+	* g10/t-stutter.c (main): Free file name.
+
+2016-06-30  Justus Winter  <justus@g10code.com>
+
+	tools: Fix trivial memory leak.
+	* tools/gpg-connect-agent.c (main): Fix trivial memory leak.
+
+	g10: Fix memory leak.
+	* g10/export.c (do_export_stream): Free secret parameters.
+
+	g10: Fix memory leak.
+	* g10/keygen.c (read_parameter_file): Free 'line'.
+
+	g10: Fix memory leak.
+	* g10/sign.c (mk_notation_policy_etc): Free 'mbox'.
+
+	common: Fix memory leak.
+	* g10/textfilter.c (copy_clearsig_text): Free buffer.
+
+	common: Fix memory leak.
+	* common/iobuf.c (iobuf_set_partial_body_length_mode): Only create
+	context if necessary.
+
+	common: Fix memory leak.
+	* common/simple-pwquery.c (agent_open): Free socket path.
+
+	g10: Fix keybox-related memory leaks.
+	* g10/keydb.c (keydb_release): Clear keyblock cache.
+	(keydb_get_keyblock): Revert previous change.
+	* kbx/keybox-blob.c (create_blob_finish): Free previous buffer, free
+	fixups after applying them.
+	(_keybox_release_blob): Free buffer.  Currently, the buffer has been
+	extracted before the keybox is released, but this is the right thing
+	to do here.
+
+	Fixes-commit: c57501cc
+
+	g10: Fix memory leak.
+	* g10/compress.c (release_context): Free buffers.
+
+	g10: Fix memory leak.
+	* g10/sign.c (write_plaintext_packet): Free packet.
+
+	g10: Fix memory leak.
+	* g10/mainproc.c (release_list): Do not exit early if list is NULL,
+	there are other resources that must be released.
+
+	gpgscm: Fix reallocating string ports.
+	* tests/gpgscm/scheme.c (realloc_port_string): Use memcpy because
+	Scheme strings may contain 0s.
+
+	gpgscm: Free memory backing string ports.
+	* tests/gpgscm/scheme.c (finalize_cell): Free memory backing string
+	ports.
+
+	gpgscm: Use the allocator from libgcrypt.
+	* tests/gpgscm/main.c (main): Use the allocator from libgcrypt.
+
+	w32: Fix build.
+	* g10/keyedit.c (keyedit_quick_revuid): Fix call to
+	'check_trustdb_stale'.
+
+	Fixes-commit: 55d112ee
+
+2016-06-30  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	g10: Implement gpg --quick-revuid.
+	* g10/revoke.c (get_default_uid_revocation_reason): New.
+	* g10/keyedit.c (menu_revuid): Break out creation of uid revocation
+	into new function core_revuid.
+	* g10/keyedit.c (keyedit_quick_revuid): New. Selects key and
+	uid, invokes core_revuid.
+	* g10/gpg.c (main): Handle --quick-revuid argument.
+	* doc/gpg.texi: Document --quick-revuid.
+
+2016-06-29  Werner Koch  <wk@gnupg.org>
+
+	tools: Add gpg-wks-client and gpg-wks-server.
+	* configure.ac: Add option --enable-wks-tools
+	* tools/gpg-wks-client.c: New.
+	* tools/gpg-wks-server.c: New.
+	* tools/gpg-wks.h: new.
+	* tools/wks-receive.c: New.
+	* tools/call-dirmngr.c, tools/call-dirmngr.h: New.
+
+	build: Improve GNUPG_BUILD_PROGRAM macro.
+	* acinclude.m4 (GNUPG_BUILD_PROGRAM): Allow for dash in options.
+
+	tools: Add modules for MIME parsing and creating.
+	* tools/mime-maker.c: New.
+	* tools/mime-maker.h: New.
+	* tools/mime-parser.c: New.
+	* tools/mime-parser.h: New.
+
+2016-06-28  Justus Winter  <justus@g10code.com>
+
+	gpgscm: Fix memory leaks.
+	* tests/gpgscm/ffi-private.h (ffi_schemify_name): Fix prototype.
+	(ffi_define_function_name): Free schemified name.
+	(ffi_define_function): Likewise.
+	(ffi_define_constant): Likewise.
+	(ffi_define_variable_pointer): Likewise.
+	* tests/gpgscm/ffi.c (do_wait_processes): Free arrays.
+	(ffi_schemify_name): Fix type.
+	* tests/gpgscm/main.c (main): Free 'sc'.
+
+	gpgscm: Free file names.
+	* tests/gpgscm/scheme.c (scheme_load_named_file): Free file name.
+
+	gpgscm: Fix buffer overflow.
+	* tests/gpgscm/scheme.c (store_string): Avoid writing past allocated
+	buffer.
+
+	g10: Fix memory leaks.
+	* g10/keydb.c (keydb_get_keyblock): Free 'sigstatus' and 'iobuf'.
+	* g10/t-keydb-get-keyblock.c: Fix trivial memory leaks.
+	* g10/t-keydb.c: Likewise.
+
+	common: Fix memory leaks.
+	* common/ccparray.c (ccparray_put): Free old array.
+	* common/stringhelp.c (do_make_filename): Free 'home'.
+	* common/t-convert.c: Fix trivial memory leaks.
+	* common/t-iobuf.c: Likewise.
+	* common/t-mbox-util.c: Likewise.
+	* common/t-name-value.c: Likewise.
+	* common/t-stringhelp.c: Likewise.
+	* common/t-strlist.c: Likewise.
+
+2016-06-28  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: add option to retrieve extra WKS info.
+	* dirmngr/server.c (cmd_wkd_get): Add option --submission-address.
+
+	gpg: Add hack to --quick-gen-key to create Curve25519 keys.
+	* g10/keygen.c (quick_generate_keypair): Add special algo string
+	"test-default".
+
+	common: New function rfctimestamp.
+	* common/gettime.c (rfctimestamp): New.
+
+	common: Add missing header file for clarity.
+	* common/zb32.c: Include zb32.h.
+
+2016-06-28  Justus Winter  <justus@g10code.com>
+
+	tools/gpgtar: Fix handling of '-'.
+	* tools/gpgtar-extract.c (gpgtar_extract): Use stdin if file is '-'.
+	* tools/gpgtar-list.c (gpgtar_list): Likewise.
+
+	common: Close input stream.
+	* common/exechelp-posix.c (gnupg_spawn_process): Also close the input
+	stream in the child.
+
+	common: Fix copying data from the spawned child.
+	Fixes intermittent gpgtar failures.
+
+	* common/exectool.c (copy_buffer_do_copy): Initialize 'nwritten'.
+	(gnupg_exec_tool_stream): Loop until all data is copied.
+
+2016-06-28  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Fix --list-packets.
+	* g10/gpg.c (main): Call set_packet_list_mode after assignment of
+	opt.list_packets.
+	* g10/mainproc.c (do_proc_packets): Don't stop processing with
+	--list-packets as the comment says.
+	* g10/options.h (list_packets): Fix the comment.
+	* g10/parse-packet.c: Fix the condition for opt.list_packets.
+
+2016-06-25  Werner Koch  <wk@gnupg.org>
+
+	build: Add aclocal macro from pkg-config.
+	* m4/pkg.m4: New.
+
+	yat2m: Silence lint warnings and fix a printf format bug.
+	* doc/yat2m.c (ATTR_PRINTF, ATTR_NR_PRINTF, ATTR_MALLOC): New.
+	(die, err, inf, xmalloc, xcalloc): New prototypes with attributes.
+	(get_section_buffer): Take care of !N_SECTIONS.
+	(proc_texi_cmd): Cast precision format arg.
+	(proc_texi_buffer): Do not set IN_CMD when not used afterwards.
+
+2016-06-24  Werner Koch  <wk@gnupg.org>
+
+	gpg: New import option "import-export".
+	* g10/import.c (parse_import_options): Add option "import-export".
+	(write_keyblock_to_output): New.
+	(import_one): Implement option.
+
+2016-06-23  Werner Koch  <wk@gnupg.org>
+
+	gpg: New import option "import-show".
+	* g10/options.h (IMPORT_SHOW): New.
+	* g10/import.c (parse_import_options): Add "import-show".
+	(import_one): Implement that.
+
+	gpg: Do not print the validity after key generation.
+	* g10/keylist.c (struct keylist_context): Add field NO_VALIDITY.
+	(list_keyblock_print): Take care of it.
+	(list_keyblock_direct): Add arg NO_VALIDITY.
+	* g10/keygen.c (do_generate_keypair): Merge keyblock and print w/o
+	validity.
+
+	common: Fix possible small memory leak in b64dec.c.
+	* common/b64dec.c (b64dec_finish): Always release TITLE.
+
+2016-06-23  Justus Winter  <justus@g10code.com>
+
+	tests/openpgp: Fake the system time for the tofu test.
+	The keys in the tofu test are set to expire on 2016-09-17.  Fake the
+	system time for this test.
+
+	This commit includes changes to the old test as well, for those who
+	need to backport it.
+
+	* tests/openpgp/gpg-agent.conf.tmpl: Drop trailing newlines.
+	* tests/openpgp/tofu.scm: Fake system time.
+	* tests/openpgp/tofu.test: Likewise.
+
+	GnuPG-bug-id: 2393
+
+	gpgscm: Handle exceptions in the transformation monad.
+	* tests/gpgscm/tests.scm (pipe:do): Raise errors.
+	(tr:spawn): Catch and return errors.
+	(tr:call-with-content): Likewise.
+	(tr:{open,write-to,pipe-do,assert-identity,assert-weak-identity}):
+	Adapt.
+
+	tests/openpgp: Improve tests.
+	* tests/openpgp/multisig.scm: Simplify test.
+	* tests/openpgp/setup.scm (dearmor): Use pipe.
+
+	gpgscm: Add types for special objects.
+	* tests/gpgscm/scheme.c (enum scheme_types): Add types for boolean,
+	nil, eof, and the sink object.
+	(type_to_string): Handle new types.
+	(scheme_init_custom_alloc): Give special objects a type.
+
+	gpgscm: Fix Scheme initialization.
+	This potentially causes a crash if the garbage collector marks an eof
+	object.
+
+	* tests/gpgscm/scheme.c (scheme_init_custom_alloc): Initialize
+	'EOF_OBJ'.
+
+2016-06-23  Werner Koch  <wk@gnupg.org>
+
+	common: Add dedicated private key functions to name-value.c.
+	* common/name-value.c (struct name_value_container): Add field
+	'private_key_mode'.
+	(my_error): New.  Use instead of gpg_error.
+	(nvc_new_private_key): New.
+	(nve_release): Add arg 'private_key_mode'.
+	(nvc_release): Call nve_release with private_key_mode flag.
+	(nvc_delete): Ditto.
+	(_nvc_add): Do no special case "Key:" in non-private_key_mode.
+	(nvc_get_private_key): Return error in non-private_key_mode.
+	(nvc_set_private_key): Ditto.
+	(nvc_parse):  Factor all code out to ...
+	(do_nvc_parse): new.  Add arg 'for_private_key'.
+	(nvc_parse_private_key): New.
+	* agent/findkey.c (write_extended_private_key): Replace nvc_parse by
+	nvc_parse_private_key.
+	(read_key_file): Ditto.
+
+	* common/t-name-value.c (private_key_mode): New variable.
+	(my_nvc_new): New.  Replace all callers.
+	(test_key_extraction): Take mode in account.
+	(run_tests): Ditto.
+	(run_modification_tests): Ditto.
+	(parse): Ditto.
+	(main): Add option --parse and rename --parse to --parse-key.
+
+	common: Rename external symbols in name-value.c.
+	* common/name-value.c, common/name-value.h: Rename symbol prefixes
+	from "pkc_" to "nvc_" and from "pke_" to "nve_".  Change all callers.
+
+	common: Rename private-keys.c to name-value.c.
+	* common/private-keys.c: Rename to name-value.c.
+	* common/private-keys.h: Rename to name-value.h.  Chage all users.
+	* common/t-private-keys.c: Rename to t-name-value.c.
+	* common/Makefile.am: Adjust accordingly.
+
+	common: Add PGP armor decoding to b64dec.
+	* common/b64dec.c (decoder_states): Add new states.
+	(b64dec_proc): Handle PGP armored format.
+
+2016-06-23  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Fix regression of card-edit/fetch.
+	* g10/card-util.c (fetch_url): Call keyserver_fetch instead of
+	keyserver_import_fprint.
+
+2016-06-21  Justus Winter  <justus@g10code.com>
+
+	tests/migrations: Convert to Scheme and re-enable.
+	* configure.ac: Re-enable.
+	* tests/Makefile.am: Likewise.
+	* tests/migrations/Makefile.am (TESTS): Use Scheme tests.
+	* tests/migrations/common.scm: New file.
+	* tests/migrations/extended-private-key-format.scm: Likewise.
+	* tests/migrations/from-classic.scm: Likewise.
+	* tests/migrations/extended-private-key-format.test: Drop file.
+	* tests/migrations/from-classic.test: Drop file.
+
+	gpgscm: Add more file handling functions.
+	* tests/gpgscm/ffi.c (do_glob): New function.
+	(ffi_init): Define new function.
+	* tests/gpgscm/tests.scm (basename-suffix): New function.x
+
+	tests/openpgp: Port the remaining tests to Scheme.
+	* tests/openpgp/Makefile.am (TESTS): Add new tests.
+	* tests/openpgp/defs.scm (gpg-with-colons): New function.
+	(get-config): Use new function.
+	* tests/openpgp/export.scm: New file.
+	* tests/openpgp/tofu.scm: Likewise.
+
+	gpgscm: Improve test framework.
+	* tests/gpgscm/lib.scm (echo): Move...
+	* tests/gpgscm/tests.scm (echo): ... here.
+	(info, error, skip): And use echo here.
+	(file-exists?): New function.
+	(tr:spawn): Check that source exists and if the sink has been created.
+	(tr:call-with-content): Hand in optional arguments.
+
+	gpgscm: Use native string searching functions.
+	* tests/gpgscm/ffi-private.h: Handle character arguments.
+	* tests/gpgscm/ffi.c (do_string_index): New function.
+	(do_string_rindex): Likewise.
+	(do_string_contains): Likewise.
+	(ffi_init): Define new functions.
+	* tests/gpgscm/ffi.scm (ffi-define): New macro.
+	* tests/gpgscm/lib.scm (string-index): Use native function,
+	demonstrate behavior.
+	(string-rindex): Likewise.
+	(string-contains?): Likewise.
+	Demonstrate behavior of various other functions.
+	(read-all): Rework so that it can handle large files.
+
+	gpgscm: Improve error reporting.
+	* tests/gpgscm/scheme.c (type_to_string): New function.
+	(Eval_Cycle): Include actual type in error message.
+
+	gpgscm: Make memory allocation failures fatal.
+	* tests/gpgscm/scheme.c (Eval_Cycle): Exit if we run out of memory.
+
+2016-06-21  Werner Koch  <wk@gnupg.org>
+
+	sm: Do not install cacert and other root certificates.
+	* doc/Makefile.am (dist_pkgdata_DATA): Move qualified.txt and
+	com-certs.pem to ...
+	(EXTRA_DIST): here.
+
+2016-06-20  Werner Koch  <wk@gnupg.org>
+
+	gpg: Add experimental support for an issuer fpr.
+	* common/openpgpdefs.h (SIGSUBPKT_ISSUER_FPR): New.
+	* g10/build-packet.c (build_sig_subpkt_from_sig): Add arg PKSK and
+	insert the issuer fpr if needed.
+	* g10/sign.c (write_signature_packets): Pass signing key.
+	(make_keysig_packet): Ditto.
+	(update_keysig_packet): Ditto.
+	* g10/parse-packet.c (dump_sig_subpkt): Print issuer fpr.
+	(parse_one_sig_subpkt): Detect issuer fpr.
+	(can_handle_critical): Add issuer fpr.
+	* g10/mainproc.c (check_sig_and_print): Try to get key via fingerprint.
+	* g10/gpgv.c (keyserver_import_fprint): New stub.
+	* g10/test-stubs.c (keyserver_import_fprint): New stub.
+
+	gpg: New option --rfc4880bis.
+	* g10/options.h (struct opt): Add field flags.rfc4880bis.
+	* g10/gpg.c (oRFC4880bis): new.
+	(opts): add --rfc4880bis.
+	(main): Implement that and print a warning.
+
+2016-06-19  Niibe Yutaka  <gniibe@fsij.org>
+
+	scd: Reset nonnull_nad to zero for VENDOR_GEMPC.
+	* (parse_ccid_descriptor): nonnull_nad = 0 for all GEMPC device.
+
+2016-06-17  Werner Koch  <wk@gnupg.org>
+
+	tests: Make make distcheck work again.
+	* Makefile.am (tests): Remove test code which would led to doubling
+	calls to for e.g. "make distclean".
+	* tests/Makefile.am: Typo fixes.
+	* tests/gpgscm/Makefile.am (EXTRA_DIST): Fix name of License file.
+	Add repl.scm.
+	(check): Replace by check-local because check is a standard automake
+	target.
+	* tests/openpgp/Makefile.am (TESTS_ENVIRONMENT): Replace gmake0sim by
+	automake generated macro.
+	(EXTRA_DIST): Add defs.scm
+
+	gpgscm: Silence compiler warnings.
+	* tests/gpgscm/scheme.c (mk_integer): Rename arg NUM to N.
+	(fill_vector): Ditto.
+	(mark): Rename var NUM to N.
+	(set_slot_in_env): Mark SC as unused.
+	(is_any): Mark P as unused.
+
+	Add license notices for TinySCHEME.
+	* tests/gpgscm/COPYING: Rename to ...
+	* tests/gpgscm/LICENSE.TinySCHEME: this.
+	* AUTHORS: Add a note about TinySCHEME.
+	* build-aux/speedo/w32/pkg-copyright.txt: Add TinySCHEME notice.
+
+2016-06-17  Justus Winter  <justus@g10code.com>
+
+	tests/openpgp: Reimplement tests in Scheme.
+	* Makefile.am: Build the test infrastructure on Windows.
+	* tests/openpgp/Makefile.am (required_pgms): Add gpgscm.
+	(TESTS_ENVIRONMENT): Make sure gpgscm and the libraries are found.
+	(TESTS): Replace tests with the new Scheme implementations.
+	* tests/openpgp/4gb-packet.scm: New file.
+	* tests/openpgp/README: Likewise.
+	* tests/openpgp/armdetach.scm: Likewise.
+	* tests/openpgp/armdetachm.scm: Likewise.
+	* tests/openpgp/armencrypt.scm: Likewise.
+	* tests/openpgp/armencryptp.scm: Likewise.
+	* tests/openpgp/armor.scm: Likewise.
+	* tests/openpgp/armsignencrypt.scm: Likewise.
+	* tests/openpgp/armsigs.scm: Likewise.
+	* tests/openpgp/clearsig.scm: Likewise.
+	* tests/openpgp/conventional-mdc.scm: Likewise.
+	* tests/openpgp/conventional.scm: Likewise.
+	* tests/openpgp/decrypt-dsa.scm: Likewise.
+	* tests/openpgp/decrypt.scm: Likewise.
+	* tests/openpgp/default-key.scm: Likewise.
+	* tests/openpgp/defs.scm: Likewise.
+	* tests/openpgp/detach.scm: Likewise.
+	* tests/openpgp/detachm.scm: Likewise.
+	* tests/openpgp/ecc.scm: Likewise.
+	* tests/openpgp/encrypt-dsa.scm: Likewise.
+	* tests/openpgp/encrypt.scm: Likewise.
+	* tests/openpgp/encryptp.scm: Likewise.
+	* tests/openpgp/finish.scm: Likewise.
+	* tests/openpgp/genkey1024.scm: Likewise.
+	* tests/openpgp/gpgtar.scm: Likewise.
+	* tests/openpgp/import.scm: Likewise.
+	* tests/openpgp/mds.scm: Likewise.
+	* tests/openpgp/multisig.scm: Likewise.
+	* tests/openpgp/run-tests.scm: Likewise.
+	* tests/openpgp/seat.scm: Likewise.
+	* tests/openpgp/setup.scm: Likewise.
+	* tests/openpgp/signencrypt-dsa.scm: Likewise.
+	* tests/openpgp/signencrypt.scm: Likewise.
+	* tests/openpgp/sigs-dsa.scm: Likewise.
+	* tests/openpgp/sigs.scm: Likewise.
+	* tests/openpgp/use-exact-key.scm: Likewise.
+	* tests/openpgp/verify.scm: Likewise.
+	* tests/openpgp/version.scm: Likewise.
+
+	tests/gpgscm: Add a TinySCHEME-based test driver.
+	* configure.ac: Add new component.
+	* tests/Makefile.am: Likewise.
+	* tests/gpgscm/Makefile.am: New file.
+	* tests/gpgscm/ffi-private.h: Likewise.
+	* tests/gpgscm/ffi.c: Likewise.
+	* tests/gpgscm/ffi.h: Likewise.
+	* tests/gpgscm/ffi.scm: Likewise.
+	* tests/gpgscm/lib.scm: Likewise.
+	* tests/gpgscm/main.c: Likewise.
+	* tests/gpgscm/private.h: Likewise.
+	* tests/gpgscm/repl.scm: Likewise.
+	* tests/gpgscm/scheme-config.h: Likewise.
+	* tests/gpgscm/t-child.c: Likewise.
+	* tests/gpgscm/t-child.scm: Likewise.
+	* tests/gpgscm/tests.scm: Likewise.
+
+	tests/gpgscm: Foreign objects support for TinySCHEME.
+	* tests/gpgscm/scheme-private.h (struct cell): Add 'foreign_object'.
+	(is_foreign_object): New prototype.
+	(get_foreign_object_{vtable,data}): Likewise.
+	* tests/gpgscm/scheme.c (enum scheme_types): New type.
+	(is_foreign_object): New function.
+	(get_foreign_object_{vtable,data}): Likewise.
+	(mk_foreign_object): Likewise.
+	(finalize_cell): Free foreign objects.
+	(atom2str): Pretty-print foreign objects.
+	(vtbl): Add new functions.
+	* tests/gpgscm/scheme.h (struct foreign_object_vtable): New type.
+	(mk_foreign_object): New prototype.
+	(struct scheme_interface): Add new functions.
+
+	Patch from Thomas Munro,
+	https://sourceforge.net/p/tinyscheme/patches/13/
+
+	tests/gpgscm: Dynamically allocate string buffer.
+	* tests/gpgscm/scheme-config.h (strbuff{,_size}): Make buffer dynamic.
+	* tests/gpgscm/scheme.c (expand_strbuff): New function.
+	(putcharacter): Adapt length test.
+	(readstrexp): Expand buffer if necessary.
+	(scheme_init_custom_alloc): Initialize buffer.
+	(scheme_deinit): Free buffer.
+
+	Patch from Thomas Munro,
+	https://sourceforge.net/p/tinyscheme/patches/11/
+
+	tests/gpgscm: Make exception value available.
+	* tests/gpgscm/init.scm (throw): Hand exception value to the handler.
+	(catch): And bind it to *error*.
+
+	tests/gpgscm: Add package macro.
+	* tests/gpgscm/init.scm: Add package macro from manual.
+
+	tests/gpgscm: Expose function to open streams as Scheme ports.
+	* tests/gpgscm/scheme.c (vtbl): Add 'port_from_file' to the vtable.
+	* tests/gpgscm/scheme.h (struct scheme_interface): New field
+	'mk_port_from_file'.
+
+	tests/gpgscm: Nicer error message.
+	* tests/gpgscm/scheme.c (opexe_0): Include the value that we tried to
+	evaluate as function-like in the error message.
+
+	tests/gpgscm: Fix error hook.
+	* tests/gpgscm/init.scm (*error-hook*): Fix error hook so that the
+	whole error message is displayed.
+
+	tests/gpgscm: Handle unhandled enumeration values.
+	* tests/gpgscm/scheme.c (opexe_{3,4}): Handle unhandled enumeration
+	values in the opcode dispatching code.
+
+	tests/gpgscm: Verbatim import of latest TinySCHEME.
+	Revision 110 from svn://svn.code.sf.net/p/tinyscheme/code/trunk
+
+	* tests/gpgscm/COPYING: New file.
+	* tests/gpgscm/Manual.txt: Likewise.
+	* tests/gpgscm/init.scm: Likewise.
+	* tests/gpgscm/opdefines.h: Likewise.
+	* tests/gpgscm/scheme-private.h: Likewise.
+	* tests/gpgscm/scheme.c: Likewise.
+	* tests/gpgscm/scheme.h: Likewise.
+
+2016-06-17  Werner Koch  <wk@gnupg.org>
+
+	scd: Make option --homedir work.
+	* scd/scdaemon.c (opts): Add --homedir.
+
 2016-06-16  Werner Koch  <wk@gnupg.org>
 
 	Release 2.1.13.
@@ -21,6 +1610,13 @@
 
 	tools: Fix typo in function name of symcryptrun.
 	* tools/symcryptrun.c (main): Fix typo.
+
+2016-06-15  Niibe Yutaka  <gniibe@fsij.org>
+
+	g10: Fix another race condition for trustdb access.
+	* g10/tdbio.c (create_version_record): Call create_hashtable to always
+	make hashtable, together with the version record.
+	(get_trusthashrec): Remove call to create_hashtable.
 
 2016-06-14  Werner Koch  <wk@gnupg.org>
 

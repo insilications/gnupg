@@ -1,3 +1,112 @@
+Noteworthy changes in version 2.1.15 (2016-08-18)
+-------------------------------------------------
+
+ * gpg: Remove the --tofu-db-format option and support for the split
+   TOFU database.
+
+ * gpg: Add option --sender to prepare for coming features.
+
+ * gpg: Add option --input-size-hint to help progress indicators.
+
+ * gpg: Extend the PROGRESS status line with the counted unit.
+
+ * gpg: Avoid publishing the GnuPG version by default with --armor.
+
+ * gpg: Properly ignore legacy keys in the keyring cache.
+
+ * gpg: Always print fingerprint records in --with-colons mode.
+
+ * gpg: Make sure that keygrips are printed for each subkey in
+   --with-colons mode.
+
+ * gpg: New import filter "drop-sig".
+
+ * gpgsm: Fix a bug in the machine-readable key listing.
+
+ * gpg,gpgsm: Block signals during keyring updates to limits the
+   effects of a Ctrl-C at the wrong time.
+
+ * g13: Add command --umount and other fixes for dm-crypt.
+
+ * agent: Fix regression in SIGTERM handling.
+
+ * agent: Cleanup of the ssh-agent code.
+
+ * agent: Allow import of overly long keys.
+
+ * scd: Fix problems with card removal.
+
+ * dirmngr: Remove all code for running as a system service.
+
+ * tools: Make gpg-wks-client conforming to the specs.
+
+ * tests: Improve the output of the new regression test tool.
+
+ * tests: Distribute the standalone test runner.
+
+ * tests: Run each test in a clean environment.
+
+ * Spelling and grammar fixes.
+
+
+Noteworthy changes in version 2.1.14 (2016-07-14)
+-------------------------------------------------
+
+ * gpg: Removed options --print-dane-records and --print-pka-records.
+   The new export options "export-pka" and "export-dane" can instead
+   be used with the export command.
+
+ * gpg: New options --import-filter and --export-filter.
+
+ * gpg: New import options "import-show" and "import-export".
+
+ * gpg: New option --no-keyring.
+
+ * gpg: New command --quick-revuid.
+
+ * gpg: New options -f/--recipient-file and -F/--hidden-recipient-file
+   to directly specify encryption keys.
+
+ * gpg: New option --mimemode to indicate that the content is a MIME
+   part.  Does only enable --textmode right now.
+
+ * gpg: New option --rfc4880bis to allow experiments with proposed
+   changes to the current OpenPGP specs.
+
+ * gpg: Fix regression in the "fetch" sub-command of --card-edit.
+
+ * gpg: Fix regression since 2.1 in option --try-all-secrets.
+
+ * gpgv: Change default options for extra security.
+
+ * gpgsm: No more root certificates are installed by default.
+
+ * agent: "updatestartuptty" does now affect more environment
+   variables.
+
+ * scd: The option --homedir does now work with scdaemon.
+
+ * scd: Support some more GEMPlus card readers.
+
+ * gpgtar: Fix handling of '-' as file name.
+
+ * gpgtar: New commands --create and --extract.
+
+ * gpgconf: Tweak for --list-dirs to better support shell scripts.
+
+ * tools: Add programs gpg-wks-client and gpg-wks-server to implement
+   a Web Key Service.  The configure option --enable-wks-tools is
+   required to build them; they should be considered Beta software.
+
+ * tests: Complete rework of the openpgp part of the test suite.  The
+   test scripts have been changed from Bourne shell scripts to Scheme
+   programs.  A customized scheme interpreter (gpgscm) is included.
+   This change was triggered by the need to run the test suite on
+   non-Unix platforms.
+
+ * The rendering of the man pages has been improved.
+
+
 Noteworthy changes in version 2.1.13 (2016-06-16)
 -------------------------------------------------
 
@@ -214,7 +323,8 @@ Noteworthy changes in version 2.1.9 (2015-10-09)
 ------------------------------------------------
 
  * gpg: Allow fetching keys via OpenPGP DANE (--auto-key-locate).  New
-   option --print-dane-records.
+   option --print-dane-records.  [Update: --print-dane-records replaced
+   in 2.1.4.]
 
  * gpg: Fix for a problem with PGP-2 keys in a keyring.
 
@@ -368,7 +478,8 @@ Noteworthy changes in version 2.1.3 (2015-04-11)
  * gpg: New option --with-icao-spelling.
 
  * gpg: New option --print-pka-records.  Changed the PKA method to use
-   CERT records and hashed names.
+   CERT records and hashed names.  [Update: --print-pka-records
+   replaced in 2.1.4.]
 
  * gpg: New command --list-gcrypt-config.  New parameter "curve"
    for --list-config.
