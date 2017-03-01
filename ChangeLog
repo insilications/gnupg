@@ -1,3 +1,1231 @@
+2017-03-01  Werner Koch  <wk@gnupg.org>
+
+	Release 2.1.19.
+	+ commit 4a28c212b35739ce951bd41cfc6ef1a215846b2e
+
+
+	build: Add kludge for "make distcheck" in a release build.
+	+ commit 246b27921b5dc34f367d879402725784aaee2494
+	* configure.ac: New option --enable-gnupg-builddir-envvar.
+	(ENABLE_GNUPG_BUILDDIR_ENVVAR): New ac_define.
+	* common/homedir.c (gnupg_set_builddir_from_env): Consider
+	ENABLE_GNUPG_BUILDDIR_ENVVAR.
+	* Makefile.am (DISTCHECK_CONFIGURE_FLAGS): Rename to ...
+	(AM_DISTCHECK_CONFIGURE_FLAGS): this to be future proof.  Add option
+	--enable-gnupg-builddir-envvar.
+
+2017-03-01  Yuri Chornoivan  <yurchor@ukr.net>
+
+	po: Update Ukrainian translation.
+	+ commit c7f2a59833728e99e00449da2ddb10cf66693e7e
+
+
+2017-03-01  Ineiev  <ineiev@gnu.org>
+
+	po: Update Russian translation.
+	+ commit 280c724fe26bfd861ac74abc71e221795d8947f0
+
+
+2017-03-01  Werner Koch  <wk@gnupg.org>
+
+	gpg: Make --export-options work with --export-secret-keys.
+	+ commit 891ab23411b7f20ef37d8bde81d9857b083235df
+	* g10/export.c (export_seckeys): Add arg OPTIONS and pass it to
+	do_export.
+	(export_secsubkeys): Ditto.
+	* g10/gpg.c (main): Pass opt.export_options to export_seckeys and
+	export_secsubkeys
+
+	gpg: Allow creating keys using an existing ECC key.
+	+ commit 2bbdeb8ee87a6c7ec211be16391a11b7c6030bed
+	* common/sexputil.c (get_pk_algo_from_canon_sexp): Remove arg R_ALGO.
+	Change to return the algo id.  Reimplement using get_pk_algo_from_key.
+	* g10/keygen.c (check_keygrip): Adjust for change.
+	* sm/certreqgen-ui.c (check_keygrip): Ditto.
+
+2017-02-28  Werner Koch  <wk@gnupg.org>
+
+	gpg: Do not require a trustdb for decryption.
+	+ commit e182542e90cbeff4f2ac6c8d71061356d7cdcdea
+	* g10/trustdb.c (init_trustdb): Add and implement arg NO_CREATE.
+	Change to return an error code.  Change all callers to to pass False
+	for NO_CREATE.
+	(tdb_get_ownertrust): New arg NO_CREATE.  Call init_trustdb to test
+	for a non-existing trustdb.  Change all callers to to pass False for
+	NO_CREATE.
+	(tdb_get_min_ownertrust): Ditto.
+	* g10/trust.c (get_ownertrust_with_min): Add arg NO_CREATE.  Call
+	init_trustdb for a quick check.
+	(get_ownertrust_info): Add arg NO_CREATE.
+	(get_ownertrust_string): Ditto.
+	* g10/gpgv.c (get_ownertrust_info): Adjust stub.
+	* g10/test-stubs.c (get_ownertrust_info): Ditto.
+	* g10/mainproc.c (list_node): Call get_ownertrust_info with NO_CREATE
+	set.
+	* g10/pubkey-enc.c (get_it): Ditto.
+
+2017-02-28  Justus Winter  <justus@g10code.com>
+
+	gpgscm: Improve parsing.
+	+ commit e4583ae14e52482ab390c102d071755f91ab211d
+	* tests/gpgscm/scheme.c (port_increment_current_line): Avoid creating
+	the same integer if the delta is zero.  This happens a lot during
+	parsing, and puts pressure on the memory allocator.
+
+	gpgscm: Fix calculating the line number.
+	+ commit 058c97f9fc485405246b1adfcc905c1891550652
+	* tests/gpgscm/scheme.c (opexe_5): Only increment the line number on
+	newlines.
+
+	gpg,tools: Make auto-key-retrieve configurable via gpgconf.
+	+ commit d379a0174cca595204b32da9a66c513a1304e6d0
+	* g10/gpg.c (gpgconf_list): Add 'auto-key-retrieve'.
+	* tools/gpgconf-comp.c (gc_options_gpg): Likewise.
+
+	tests: Improve support for gpgconf.
+	+ commit 41900175cf046dd9abe3d7a6805f6a403d68df15
+	* tests/openpgp/defs.scm: Improve high-level inteface to gpgconf.
+	* tests/openpgp/gpgconf.scm: Adapt.
+	* tests/openpgp/tofu.scm: Use it to select the trust model.
+
+	gpg,tools: Make trust-model configurable via gpgconf.
+	+ commit ebeccd73eb85f9027f0985d77dfe901266c6ddef
+	* g10/gpg.c (gpgconf_list): Add 'trust-model'.
+	* tools/gpgconf-comp.c (gc_options_gpg): Likewise.
+
+	gpgscm: Track source locations in every kind of ports.
+	+ commit 7cc57e2c63d0fa97569736419db5c76117e7685b
+	* tests/gpgscm/scheme-private.h (struct port): Move location
+	information out of the union.
+	* tests/gpgscm/scheme.c (mark): All ports need marking now.
+	(gc): Likewise all ports on the load stack.
+	(port_clear_location): Adapt accordingly.  Also, add an empty function
+	for !SHOW_ERROR_LINE.
+	(port_increment_current_line): Likewise.
+	(port_reset_current_line): Drop function in favor of...
+	(port_init_location): ... this new function.
+	(file_push): Simplify.
+	(file_pop): Likewise.
+	(port_rep_from_filename): Likewise.
+	(port_rep_from_file): Likewise.
+	(port_rep_from_string): Also initialize the location.
+	(port_rep_from_scratch): Likewise.
+	(port_close): Simplify and generalize.
+	(skipspace): Likewise.
+	(token): Likewise.
+	(_Error_1): Generalize.
+	(opexe_5): Likewise.
+	(scheme_deinit): Simplify and generalize.
+	(scheme_load_named_file): Likewise.
+	(scheme_load_string): Also initialize the location.
+
+2017-02-28  Werner Koch  <wk@gnupg.org>
+
+	gpgv,w32: Fix --status-fd.
+	+ commit 8a67dc4c4324b617b5a3fea51c59c674488544d6
+	* g10/gpgv.c (main): Use translate_sys2libc_fd_int for --status-fd.
+
+	w32: Make pipes really pollable.
+	+ commit 1192449207f41b26be8950b04df84a52c8a2a886
+	* common/exectool.c (gnupg_exec_tool_stream) [W32]: Use _get_osfhandle
+	to print the fd for the command line.
+	* common/exechelp-w32.c (create_pipe_and_estream): Use es_sysopen so
+	that the streams are actually pollable.
+
+2017-02-26  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	dirmngr: Avoid warnings during non-ntbtls build.
+	+ commit f5782e11a560fd590221042391254c810a42e45f
+	* dirmngr/t-http.c (my_http_tls_verify_cb): Avoid warnings when not
+	using ntbtls.
+
+	trustdb: Respect --quiet during --import-ownertrust.
+	+ commit ddf01a67d6388d988f1db50a06facb21c14d9426
+	* g10/tdbdump.c (import_ownertrust): If opt.quiet is set, do not send
+	log_info messages.
+
+2017-02-26  Manish Goregaokar  <manish@mozilla.com>
+
+	g10: fix typo.
+	+ commit 64ec21bebd3f136722e608649906b59c6add6947
+	I already have copyright assignment with the FSF for GDB. I don't
+	think I'll need to do the DCO thing.
+
+2017-02-24  Werner Koch  <wk@gnupg.org>
+
+	gpgv: New options --log-file and --debug.
+	+ commit 7af5d61c6e210210c777be9e6e87720dd4a055d9
+	* g10/gpgv.c (oLoggerFile, oDebug): New consts.
+	(opts): Add options --log-file and --debug.
+	(main): Implement options.
+
+2017-02-24  Andre Heinecke  <aheinecke@intevation.de>
+
+	speedo,w32: Fix gpg-wks-client installation.
+	+ commit 49b4a676148523b51beca3ae929e9d78ed7ba110
+	* build-aux/speedo/w32/inst.nsi: gpg-wks-client is an exe.
+
+2017-02-23  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Add new debug flag "extprog"
+	+ commit 22b69b9edfdf6e6172239cbd1075ffe29077d339
+	* dirmngr/dirmngr.h (DBG_EXTPROG_VALUE, DBG_EXTPROG): New macros.
+	* dirmngr/dirmngr.c (debug_flags): Add flag "extprog".
+	(handle_connections): Use a macro instead of -1 for an invalid socket.
+	* dirmngr/loadswdb.c (verify_status_cb): Debug the gpgv call.
+
+	wks: Make sure that the draft 2 request is correctly detected.
+	+ commit d30e17ac62dea8913b7f353971d546b6b1a09bd5
+	* tools/gpg-wks.h (WKS_DRAFT_VERSION): New.
+	* tools/wks-receive.c (new_part): Move test wks draft version to ...
+	(t2body): new callback.
+	(wks_receive): Register this callback.
+	* tools/gpg-wks-server.c (send_confirmation_request): Emit draft
+	version header.
+	(send_congratulation_message): Ditto.
+	* tools/gpg-wks-client.c (decrypt_stream_parm_s): New.
+	(decrypt_stream_status_cb): Check DECRYTPION_KEY status.
+	(decrypt_stream): Get infor from new callback.
+	(process_confirmation_request): New arg 'mainfpr'.  Check that it
+	matches the decryption key.
+	(read_confirmation_request): Check that the decryption key has been
+	generated by us.
+	(command_send): Use macro from draft version header.
+	(send_confirmation_response): Emit draft version header.
+
+	wks: New callback for the mime parser.
+	+ commit a2090250829fe8989be2afc8cf41ba2a022072fc
+	* tools/mime-parser.c (mime_parser_context_s): New field 't2body'.
+	(parse_message_cb): Call that callback.
+	(mime_parser_set_t2body): New.
+
+	gpg: Emit new status DECRYPTION_KEY.
+	+ commit effa80e0b5fd8cf9e31a984afe391c2406edee8b
+	* common/status.h (STATUS_DECRYPTION_KEY): New.
+	* g10/pubkey-enc.c (get_it): Emit that status.
+
+	dirmngr,w32: Make https with ntbtls work.
+	+ commit a42bf00b4edce789999aa3bdfce235cf726463ae
+	* dirmngr/http.c (simple_cookie_functions): New.
+	(send_request) [HTTP_USE_NTBTLS, W32]: Use es_fopencookie.
+	(cookie_read): Factor some code out to ...
+	(read_server): new.
+	(simple_cookie_read, simple_cookie_write) [W32]: New.
+
+2017-02-22  Werner Koch  <wk@gnupg.org>
+
+	scd,agent: Improve the OpenPGP PIN prompt texts.
+	+ commit f98c8cb013033c08e98ebedcc0e084fbd2a85b0c
+	* scd/app-openpgp.c (get_prompt_info): Change texts.
+	* agent/call-pinentry.c (struct entry_features): New.
+	(getinfo_features_cb): New.
+	(start_pinentry): Set new fucntion as status callback.
+	(build_cmd_setdesc): New.  Replace all snprintf for SETDESC by this
+	one.
+
+2017-02-22  Andre Heinecke  <aheinecke@intevation.de>
+
+	scd: Nitpicks on the improved card prompts.
+	+ commit 143ca039e1e81140ae520cc1025f8e25c01acc80
+	* src/app-openpgp.c (get_prompt_info): Change wording and order
+	slightly.
+
+2017-02-22  Werner Koch  <wk@gnupg.org>
+
+	scd: Improve the prompts for OpenPGP cards.
+	+ commit e3944f34e3220f96fb1be449eb6f3d7360bc2d0b
+	* scd/app-openpgp.c (get_disp_name): New.
+	(get_disp_serialno): New.
+	(get_prompt_info): New.
+	(build_enter_admin_pin_prompt): Rework the prompt texts.  Factor some
+	code out to ...
+	(get_remaining_tries): New.
+	(verify_a_chv): Print a remaining counter also for the standard PIN.
+	Rework the prompt texts.
+
+	* agent/divert-scd.c (ask_for_card): Pretty format an OpenPGP serial
+	no.
+
+	agent: Prepend the description to a PIN prompt.
+	+ commit 6488ffb767733a2cf92ca5ba3e61fc0c53e0f673
+	* agent/divert-scd.c (has_percent0A_suffix): New.
+	(getpin_cb): Prepend DESC_TEXT to the prompt.
+	* agent/findkey.c (modify_description): Rename to ...
+	(agent_modify_description): this.  MAke global.  Add kludge to remove
+	empty parentheses from the end.
+	(agent_key_from_file, agent_delete_key): Adjust for above change.
+	* agent/pksign.c (agent_pksign_do): Modify DESC_TEXT also when
+	diverting to a card.
+
+	agent: Prepare to pass an additional parameter to the getpin callback.
+	+ commit 78d875a0f83bc046279b951aea76cd74f3c44fd8
+	* agent/call-scd.c (writekey_parm_s, inq_needpin_s): Merge into ...
+	(inq_needpin_parm_s): new struct.  Add new field 'getpin_cb_desc'.
+	Change users to set all fields.
+	(inq_needpin): Pass GETPIN_CB_DESC to the GETPIN_CB.
+	(agent_card_pksign): Add arg 'desc_text' and change arg 'getpin_cb' to
+	take an additional arg 'desc_text'.
+	(agent_card_pkdecrypt): Ditto.
+	(agent_card_writekey): Change arg 'getpin_cb' to take an additional
+	arg 'desc_text'.
+	(agent_card_scd): Ditto.
+	* agent/divert-scd.c (getpin_cb): Add new arg 'desc_text'.
+	(divert_pksign): Add new arg 'desc_text' and pass is to
+	agent_card_pksign.
+	(divert_pkdecrypt): Add new arg 'desc_text' and pass is to
+	agent_card_pkdecrypt.
+	* agent/pkdecrypt.c (agent_pkdecrypt): Pass DESC_TEXT to
+	divert_pkdecrypt.
+	* agent/pksign.c (agent_pksign_do):  Pass DESC_TEXT to
+	divert_pksign.
+
+2017-02-22  NIIBE Yutaka  <gniibe@fsij.org>
+
+	tests: No spelling fix for test text.
+	+ commit ef424353f342f80ca6d18ede8b63c1b02215d105
+	* tests/openpgp/verify.scm (msg_ed25519_rshort): Revert the spelling
+	fix.
+
+2017-02-21  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Add special treatment for the standard hkps pool to ntbtls.
+	+ commit 831d014550863026dfefa774c961a21bd20c1e48
+	* dirmngr/validate.h (VALIDATE_FLAG_SYSTRUST): Remove
+	(VALIDATE_FLAG_EXTRATRUST): Remove
+	(VALIDATE_FLAG_TRUST_SYSTEM): New.
+	(VALIDATE_FLAG_TRUST_CONFIG): New.
+	(VALIDATE_FLAG_TRUST_HKP): New.
+	(VALIDATE_FLAG_TRUST_HKPSPOOL): New.
+	(VALIDATE_FLAG_MASK_TRUST): New.
+	* dirmngr/validate.c (check_header_constants): New.
+	(validate_cert_chain): Call new function.  Simplify call to
+	is_trusted_cert.
+	* dirmngr/crlcache.c (crl_parse_insert): Pass
+	VALIDATE_FLAG_TRUST_CONFIG to validate_cert_chain
+	* dirmngr/server.c (cmd_validate): Use VALDIATE_FLAG_TRUST_SYSTEM and
+	VALIDATE_FLAG_TRUST_CONFIG.
+	* dirmngr/http-ntbtls.c (gnupg_http_tls_verify_cb): Check provided TLS
+	context.  Set trustclass flags using the new VALIDATE_FLAG_TRUST
+	values.
+
+	* dirmngr/certcache.c (cert_cache_init): Load the standard pool
+	certificate prior to the --hkp-cacerts.
+
+	dirmngr: Load --hkp-cacert values into the certificate cache.
+	+ commit d1625a9a82b1e5d96bbbf2132c49c53108565ae1
+	* dirmngr/dirmngr.c (hkp_cacert_filenames): New var.
+	(parse_rereadable_options): Store filenames from --hkp-cacert in the
+	new var.
+	(main, dirmngr_sighup_action): Pass that var to cert_cache_init.
+	* dirmngr/certcache.c (cert_cache_init): Add arg 'hkp_cacert' and load
+	those certs.
+	(load_certs_from_file): Use autodetect so that PEM and DER encodings
+	are possible.
+
+	dirmngr: Load "sks-keyservers.netCA.pem" into the cache.
+	+ commit 9741aa24d9056b56cd5366ff5379bd8a3e6118df
+	* dirmngr/certcache.c (load_certs_from_file): Always build this
+	function.  Add args 'trustclasses' and 'no_error'.  Pass TRUSTCLASSES
+	to put_cert.
+	(load_certs_from_system): Pass CERTTRUST_CLASS_SYSTEM to
+	load_certs_from_file.
+	(cert_cache_init): Try to load "sks-keyservers.netCA.pem".  Don't make
+	function fail in an out-of-core condition.
+
+	dirmngr: Implement trust classes for the cert cache.
+	+ commit 50b9828eacc39c1ca75cb8313db896e4bdc8b270
+	* dirmngr/certcache.h (CERTTRUST_CLASS_SYSTEM): New.
+	(CERTTRUST_CLASS_CONFIG): New.
+	(CERTTRUST_CLASS_HKP): New.
+	(CERTTRUST_CLASS_HKPSPOOL): New.
+	* dirmngr/certcache.c (MAX_EXTRA_CACHED_CERTS): Rename to ...
+	(MAX_NONPERM_CACHED_CERTS): this.
+	(total_extra_certificates): Rename to ...
+	(total_nonperm_certificates): this.
+	(total_config_certificates): Remove.
+	(total_trusted_certificates): Remove.
+	(total_system_trusted_certificates): Remove.
+	(cert_item_s): Remove field 'flags'.  Add fields 'permanent' and
+	'trustclasses'.
+	(clean_cache_slot): Clear new fields.
+	(put_cert): Change for new cert_item_t structure.
+	(load_certs_from_dir): Rename arg 'are_trusted' to 'trustclass'
+	(load_certs_from_file): Use CERTTRUST_CLASS_ value for put_cert.
+	(load_certs_from_w32_store): Ditto.
+	(cert_cache_init): Ditto.
+	(cert_cache_print_stats): Rewrite.
+	(is_trusted_cert): Replace arg 'with_systrust' by 'trustclasses'.
+	Chnage the test.
+	* dirmngr/validate.c (allowed_ca): Pass CERTTRUST_CLASS_CONFIG to
+	is_trusted_cert.
+	(validate_cert_chain): Pass CERTTRUST_CLASS_ values to
+	is_trusted_cert.
+
+	dirmngr: New Assuan option "http-crl".
+	+ commit 493c142e582ff5ef1b5fdfcb9653715ef43e83e9
+	* dirmngr/dirmngr.h (server_control_s): New flag 'http_no_crl'.
+	* dirmngr/dirmngr.c (dirmngr_init_default_ctrl): Set this flag.
+	* dirmngr/server.c (option_handler): New option "http-crl"
+	* dirmngr/http.h (HTTP_FLAG_NO_CRL): New flag.
+	* dirmngr/http-ntbtls.c (gnupg_http_tls_verify_cb): Consult this flag.
+	* dirmngr/ks-engine-hkp.c (send_request): Set flag depending on CTRL.
+	* dirmngr/ks-engine-http.c (ks_http_fetch): Ditto.
+
+	* dirmngr/t-http.c (main): New option --no-crl.
+
+	dirmngr: Add a magic field to the http structs.
+	+ commit 39c745038181edd097e188434b3f9c971ed3987f
+	* dirmngr/http.c (HTTP_SESSION_MAGIC): New.
+	(http_session_s): New field 'magic'.
+	(HTTP_CONTEXT_MAGIC): New.
+	(http_context_s): New field 'magic'.
+	(my_ntbtls_verify_cb): Assert MAGIC.
+	(fp_onclose_notification): Ditto.
+	(session_unref): Ditto.  Reset MAGIC.
+	(http_session_new): Set MAGIC.
+	(http_open): Ditto.
+	(http_raw_connect): Ditto.
+	(http_close): Assert MAGIC.  Reset MAGIC.
+
+	* dirmngr/t-http.c (my_http_tls_verify_cb): MArk HTTP_FLAGS unused.
+
+2017-02-21  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Support primary key generation by keygrip.
+	+ commit 3fc69224b7b22ad1df1395ebcb21549384839cd1
+	* g10/keygen.c (para_name): Add pKEYGRIP.
+	(generate_keypair): Use pKEYGRIP for key generation.
+	(do_generate_keypair): Call do_create_from_keygrip with pKEYGRIP.
+
+2017-02-20  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Setup a log handler for ntbtls.
+	+ commit a022baa4a487eec769411255a64088450c4c8a49
+	* dirmngr/dirmngr.c (my_ntbtls_log_handler) [HTTP_USE_NTBTLS]: New.
+	(main) [HTTP_USE_NTBTLS]: Register log handler.
+
+	common: New function log_logv_with_prefix.
+	+ commit 3e9512e557d95c7dc36835365b127b25f6a5cdd9
+	* common/logging.c (do_logv): Add arg 'prefmt' and print it.  Chnage
+	call callers to pass NULL.
+	(log_logv_with_prefix): New.
+
+	dirmngr.c: Make http.c build without any TLS support.
+	+ commit e174893262d8de0f52faa8abe4fc0402719a35d8
+	* dirmngr/http.c (http_session_new): Remove used of tls_prority.
+
+	 dirmngr: Make t-http.c work again with gnutls - second try.
+	+ commit 81ea24b8637ac08e44e9e44816689413c2ae7e08
+	* dirmngr/t-http.c: Always include ksba.h.
+
+	dirmngr: Make t-http.c work again with gnutls.
+	+ commit f923873863fd863d71349f20f5568f80aecc020b
+	* dirmngr/Makefile.am (t_http_CFLAGS, t_http_LDADD): Add KSBA flags
+	and libs.
+
+2017-02-19  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: First take on ntbtls cert verification.
+	+ commit 64fffd0ce2a4fd9cba152cf07497b585410cc652
+	* dirmngr/http-ntbtls.c: New.
+	* dirmngr/Makefile.am (dirmngr_SOURCES): Add file.
+	* dirmngr/dirmngr.h (SERVER_CONTROL_MAGIC): New.
+	(server_conrol_s): Add field 'magic',
+	* dirmngr/dirmngr.c (dirmngr_init_default_ctrl): Set MAGIC.
+	(dirmngr_deinit_default_ctrl): Set MAGIC to deadbeef.
+	* dirmngr/http.c (my_ntbtls_verify_cb): New.
+	(http_session_new) [HTTP_USE_NTBTLS]: Remove all CA setting code.
+	(send_request) [HTTP_USE_NTBTLS]: Set the verify callback.  Do not call
+	the verify callback after the handshake.
+	* dirmngr/ks-engine-hkp.c (send_request): Pass
+	gnupg_http_tls_verify_cb to http_session_new.
+	* dirmngr/ks-engine-http.c (ks_http_fetch): Ditto.
+
+	* dirmngr/t-http.c (my_http_tls_verify_cb): New.
+	(main): Rename option --gnutls-debug to --tls-debug.
+	(main) [HTTP_USE_NTBTLS]: Create a session.
+
+2017-02-18  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Add per-session verify callback to http.c.
+	+ commit a74902cccde539ee2bd216caec0da6eb54b67c1b
+	* dirmngr/http.h (http_verify_cb_t): New type.
+	* dirmngr/http.c (http_session_s): Add fields flags, verify_cb, and
+	verify_cb_value.
+	(http_session_new): Remove arg tls_priority.  Add args verify_cb and
+	verify-cb_value.  Store them in the session object.
+	(send_request): Use per-session verify callback.
+	(http_verify_server_credentials) [HTTP_USE_NTBTLS]: Return
+	GPG_ERR_NOT_IMPLEMENTED.
+	* dirmngr/ks-engine-hkp.c (send_request): Adjust for changed
+	http_session_new.
+	* dirmngr/ks-engine-http.c (ks_http_fetch): Ditto.
+	* dirmngr/t-http.c (main): Ditto.
+
+	* dirmngr/server.c (do_get_cert_local): Replace xmalloc by malloc.
+
+2017-02-17  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Strip the default https port from the Host: header.
+	+ commit cd32ebd152a522e362469ab969d91f8d49f28a60
+	* dirmngr/http.c (send_request): Strip the default https port.
+
+	dirmngr: Add option --no-crl to the VALIDATE cmd.
+	+ commit f07811ee2c0a8044551e2ec063eda61cff7f6e39
+	* dirmngr/validate.h: Remove enums VALIDATE_MODE_*.
+	(VALIDATE_FLAG_SYSTRUST, VALIDATE_FLAG_EXTRATRUST)
+	(VALIDATE_FLAG_CRL, VALIDATE_FLAG_RECURSIVE)
+	(VALIDATE_FLAG_OCSP, VALIDATE_FLAG_TLS)
+	(VALIDATE_FLAG_NOCRLCHECK): New constants.
+	* dirmngr/validate.c (validate_cert_chain): Change arg 'mode' to
+	'flags'.  Change code accordingly.  Remove NO-CRL in TLS mode kludge.
+	* dirmngr/crlcache.c (crl_parse_insert): Change to use flag values for
+	the validate_cert_chain call.
+	* dirmngr/server.c (cmd_validate): Ditto.  Add new option --no-crl.
+
+	dirmngr: Add options --tls and --systrust to the VALIDATE cmd.
+	+ commit 070211eb990f5ea41271eba432b6a6b485cef7c7
+	* dirmngr/certcache.h (certlist_s, certlist_t): New.
+	* dirmngr/certcache.c (read_certlist_from_stream): New.
+	(release_certlist): New.
+	* dirmngr/server.c (MAX_CERTLIST_LENGTH): New.
+	(cmd_validate): Add options --tls and --systrust.  Implement them
+	using a kludge for now.
+	* dirmngr/validate.c (validate_cert_chain): Support systrust
+	checking.  Add kludge to disable the CRL checking for tls mode.
+
+	dirmngr: Remove use of hardcoded numbers in validate.
+	+ commit ed99af030d19305dd7cd41c41ac581306cb91fd5
+	* dirmngr/validate.c (enum cert_usage_modes): New.
+	(cert_usage_p): Change type of arg MODE.  Use enums instead of
+	hardwired values.  Use a switch instead of tricky bit tests.
+	(cert_use_cert_p, cert_use_ocsp_p, cert_use_crl_p): Adjust.
+
+	* dirmngr/validate.c (cert_usage_p): Rename to check_cert_usage.
+	(cert_use_cert_p): Rename to check_cert_use_cert.
+	(cert_use_ocsp_p): Rename to check_cert_use_ocsp.
+	(cert_use_crl_p): Rename to check_cert_use_crl.
+
+	* dirmngr/validate.h (VALIDATE_MODE_CERT_SYSTRUST): New.
+	(VALIDATE_MODE_TLS, VALIDATE_MODE_TLS_SYSTRUST): New.
+
+2017-02-17  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: No cards is not an error.
+	+ commit dea4b3c742acbd195d6ab12b279b4dda315f2582
+	* agent/command-ssh.c (card_key_list): Care the case of no cards.
+
+	agent: Send back all public keys for available cards.
+	+ commit 3f4f64b6ac0d7160fd9e1301f95820894b219c3f
+	* agent/call-scd.c (card_cardlist_cb, agent_card_cardlist): New.
+	* agent/command-ssh.c (card_key_list): New.
+	(ssh_handler_request_identities): Call card_key_list and loop for the
+	list to send public keys for all available cards.
+
+2017-02-17  Justus Winter  <justus@g10code.com>
+
+	gpgscm: Guard use of tagged expressions.
+	+ commit aab6ba0bb60528b9e816e430be51170cf39611b0
+	* tests/gpgscm/init.scm (vm-history-print): Check that the tag added
+	to expressions when parsing source files matches the expected format.
+	* tests/gpgscm/lib.scm (assert): Likewise.
+
+2017-02-17  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Fix RESET command handling (more).
+	+ commit 99d4dfe83661d05ef3a20ed04e6cec5647536738
+	* scd/app-common.h (struct app_ctx_s): Add reset_requested.
+	* scd/app.c (app_reset): Locking APP, set reset_requested.
+	(deallocate_app): Release the lock.
+	(release_application): Add LOCKED_ALREADY argument.
+	(scd_update_reader_status_file): Hold the lock when accessing APP.
+	When reset_requested is set, close the reader and deallocate APP.
+	* scd/command.c (open_card_with_request, cmd_restart): Follow the
+	change of release_application.
+	(send_client_notifications): Here it calls release_application holding
+	the lock.
+
+2017-02-16  Werner Koch  <wk@gnupg.org>
+
+	dirmngr,w32: Load all system provided certificates.
+	+ commit 7006352da773d82c47797bbf11e570ecafac6501
+	* dirmngr/certcache.c (CERTOPENSYSTEMSTORE) [W32]: New type.
+	(CERTENUMCERTIFICATESINSTORE) [W32]: New type.
+	(CERTCLOSESTORE) [W32]: New type.
+	(load_certs_from_file) [W32]: Do not build.
+	(load_certs_from_w32_store) [W32]: New.
+	(load_certs_from_system) [W32]: Call new function.
+
+	dirmngr: Load all system provided certificates.
+	+ commit 9a1a5ca0bc2cfb17ccf632de3e134b6d789c6855
+	* configure.ac: Add option --default-trust-store.
+	(DEFAULT_TRUST_STORE_FILE): New ac_define.
+	* dirmngr/certcache.c: Include ksba-io-support.h.
+	(total_trusted_certificates, total_system_trusted_certificates): New.
+	(put_cert): Manage the new counters.
+	(cert_cache_deinit): Reset them.
+	(cert_cache_print_stats): Print them.
+	(is_trusted_cert): Add arg WITH_SYSTRUST.  Change all callers to pass
+	false.
+	(load_certs_from_file): New.
+	(load_certs_from_system): New.
+	(cert_cache_init): Load system certificates.
+
+	common: Rename remaining symbols in ksba-io-support.
+	+ commit e1dfd862367cf91b66abe86bd73664409354bb14
+	* common/ksba-io-support.c (gpgsm_reader_eof_seen): Rename to ...
+	(gnupg_ksba_reader_eof_seen): this.  Change all callers.
+	(gpgsm_destroy_reader): Rename to ...
+	(gnupg_ksba_destroy_reader): this.  Change all callers.
+	(gpgsm_finish_writer): Rename to ...
+	(gnupg_ksba_finish_writer): this.  Change all callers.
+	(gpgsm_destroy_writer): Rename to ...
+	(gnupg_ksba_destroy_writer): this.  Change all callers.
+	* common/ksba-io-support.c (struct base64_context_s): Rename to ...
+	(gnupg_ksba_io_s): this.
+	* common/ksba-io-support.h (base64_context_s): Ditto.
+	(Base64Context): Rename this typedef to ...
+	(gnupg_ksba_io_t): this.  Change all users.
+
+	common: Remove gpgsm dependencies from ksba-io-support.
+	+ commit 28c31524be84f20b34573c78bd3a94a81e4b1d61
+	* common/ksba-io-support.c: Include ksba-io-support.h instead of
+	../sm/gpgsm.h.  Include util.h.
+	(writer_cb_parm_s): Remove const from 'pem_name'.
+	(gpgsm_destroy_writer): Free 'pem_name'.
+	(gpgsm_create_reader): Rename to ...
+	(gnupg_ksba_create_reader): this.  Replace args CTRL and
+	ALLOW_MULTI_PEM by a new arg FLAGS.  Change the code to evaluate
+	FLAGS.  Change all callers to pass the FLAGS.
+	(gpgsm_create_writer): Rename to ...
+	(gnupg_ksba_create_writer): this.  Replace arg CTRL by new arg FLAGS.
+	Add arg PEM_NAME.  Evaluate FLAGS.  Store a copy of PEM_NAME.  Change
+	all callers to pass the FLAGS and PEM_NAME.
+
+	common: Change license of ksba-io-support.c.
+	+ commit 919e76b407ac557b0f518ec03f3cc59e9e5740c9
+	* common/ksba-io-support.c: Change from GPLv3+ to LGPLv3+/GPLv2+.
+
+	sm,common: Move ksba reader and writer support to common/.
+	+ commit 04bfa6fe6597b8ffcec61cbcacdc7eb137444e80
+	* sm/base64.c: Rename to ...
+	* common/ksba-io-support.c: this.
+	* common/ksba-io-support.h: New.
+	* common/Makefile.am (common_sources): Add new files.
+	* sm/Makefile.am (gpgsm_SOURCES): Remove base64.c
+
+	dirmngr: Prepare certcache for forthcoming changes.
+	+ commit 5c4e67afd6385b48065de6a0f2dd0bfd936ab90b
+	* dirmngr/certcache.c (cert_item_s): Rename 'flags.loaded' to
+	'flags.config'.  Add 'flags.systrust'.
+	(total_loaded_certificates): Rename to total_config_certificates.
+	(put_cert): Rename args for clarity.  Set SYSTRUST flag.
+	(load_certs_from_dir): Make sure put_cert does not set the SYSTRUST
+	flag.
+
+	dirmngr: Replace stpcpy chains by strconcat.
+	+ commit aef60abe6a1772e18634984a94bd70f57d57ccdd
+	* dirmngr/certcache.c (find_cert_bysn): Use strconcat.
+	(find_cert_bysubject): Ditto.
+	* dirmngr/http.c (store_header): Ditto.
+	* dirmngr/ldap.c (make_url): Ditto.
+	* dirmngr/server.c (get_cert_local_ski): Ditto.
+	(do_get_cert_local): Use xstrconcat.
+
+2017-02-16  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Minor fixes to silence compiler warnings.
+	+ commit 7a666ccb44f43c4efbaa51c1ca16fc0b37c3399d
+	* scd/app.c (app_reset): Initialize ERR.
+	* scd/scdaemon.c (scd_kick_the_loop, handle_connections): Catch the
+	return value.
+
+2017-02-15  Werner Koch  <wk@gnupg.org>
+
+	libdns: Workaround for bracketed numerical addresses.
+	+ commit a3509e12b6626a585ce7da6ceed8cfddcba2460f
+	* dirmngr/dns-stuff.c (resolve_name_libdns): Work around an
+	incompatibility between the glibc resolver and libdns.
+
+	dirmngr: Do PTR lookups only for 'keyserver --hosttable'.
+	+ commit a75325faf163275674a91971e75f1018035ca348
+	* dirmngr/ks-engine-hkp.c (hostinfo_s): Remove fields v4addr and
+	v5addr and add fields iporname and iporname_valid.
+	(create_new_hostinfo): Clear them.
+	(add_host): Remove the code to set the v4addr and v6addr fields.
+	(ks_hkp_print_hosttable): Remove printing of the fields.  Compute the
+	iporname field and display it.
+	(ks_hkp_reload): Force re-computing of the iporname field in
+	ks_hkp_print_hosttable.
+
+	dirmngr: Avoid PTR lookup for hosts in a pool.
+	+ commit da2ba20868093e3054d18adc2b1bc56cb23e4ba7
+	* dirmngr/ks-engine-hkp.c (add_host): Don't to a PTR lookup for hosts
+	in a pool.
+
+2017-02-15  Justus Winter  <justus@g10code.com>
+
+	tests,build: Fix distcheck.
+	+ commit 2f7b6cb279ea0ee27364fbb2b12df47e76166a39
+	* tests/gpgscm/Makefile.am (EXTRA_DIST): Add 'time.scm'.
+
+	tests: Test and document other ways to create keys.
+	+ commit 90d383f1eb07fc823518dea10eb15ca390f5cf8e
+	* doc/gpg.texi: Clarify usage and expiration arguments for key
+	generation.
+	* tests/openpgp/quick-key-manipulation.scm: Test all variants.
+
+	tests: Check expiration times of created keys.
+	+ commit 127e1e532da4083ccd3c307555b6177fab16f408
+	* tests/gpgscm/ffi.c (do_get_time): New function.
+	(ffi_init): Expose new function.
+	* tests/gpgscm/ffi.scm (get-time): Document new function.
+	* tests/gpgscm/time.scm: New file.
+	* tests/openpgp/quick-key-manipulation.scm: Use the new facilities to
+	check the expiration times of created keys.
+	* tests/openpgp/tofu.scm: Use the new module.
+
+2017-02-15  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Fix RESET command handling.
+	+ commit e2792813a55e091c51be7b1b089a71beb6466f1d
+	* scd/app.c (release_application_internal): Remove.
+	(release_application): Merge release_application_internal.
+	(app_reset): Kick the loop and let close the reader.  Sleep is
+	required here to wait closing.
+	(scd_update_reader_status_file): When APP is no use, close it.
+
+2017-02-14  Werner Koch  <wk@gnupg.org>
+
+	gpg: Make --export-ssh-key work for the primary key.
+	+ commit b456e5be91dc064fc9509ea86edab113721ed299
+	* g10/export.c (export_ssh_key): Also check the primary key.
+
+2017-02-13  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Do a DNS lookup even if it is missing from nsswitch.conf.
+	+ commit dee026d761ae3d7594c3dbc5b3fa842df53cc189
+	* dirmngr/dns-stuff.c (libdns_init): Do not print error message for a
+	missing nsswitch.conf.  Make sure that tehre is a DNS entry.
+
+	gpgconf: No ENOENT warning with --change-options et al.
+	+ commit 30dac0486b6357e84fbe79c612eea940b654e4d1
+	* tools/gpgconf-comp.c (retrieve_options_from_program): Check ERRNO
+	before printing a warning.
+
+	gpg: Print a warning if no command has been given.
+	+ commit 810adfd47801fc01e45fb71af9f05c91f7890cdb
+	* g10/gpg.c (main): Print in the default case.
+
+2017-02-13  Justus Winter  <justus@g10code.com>
+
+	g13: Fix build on macOS.
+	+ commit f8ce31a7bf1ee85e5010b628a66e6f69486e5213
+	* g13/Makefile.am (t_common_ldadd): Add iconv.
+
+2017-02-13  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Fix use case of PC/SC.
+	+ commit da4c132cca2c6df81243c9660b7348268a848f88
+	* scd/apdu.c (apdu_open_reader): Add an argument APP_EMPTY.
+	When CCID driver fails to open, try PC/SC if APP is nothing.
+	* scd/app.c (select_application): Supply arg if APP is nothing.
+
+2017-02-10  Werner Koch  <wk@gnupg.org>
+
+	gpg: Fix memory leak in the error case of signature creation.
+	+ commit 5996c7bf99f3a681393fd9589276399ebc956cff
+	* g10/sign.c (write_signature_packets): Free SIG.  Also replace
+	xcalloc by xtrycalloc.
+
+2017-02-08  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	common: Avoid warning about implicit declaration of gnupg_fd_valid.
+	+ commit 8810314e377a9cb6612150a57cf99260ed0bb9f6
+	* common/logging.c: Add #include "sysutils.h".
+
+2017-02-08  Justus Winter  <justus@g10code.com>
+
+	gpg,common: Make sure that all fd given are valid.
+	+ commit 6823ed46584e753de3aba48a00ab738ab009a860
+	* common/sysutils.c (gnupg_fd_valid): New function.
+	* common/sysutils.h (gnupg_fd_valid): New declaration.
+	* common/logging.c (log_set_file): Use the new function.
+	* g10/cpr.c (set_status_fd): Likewise.
+	* g10/gpg.c (main): Likewise.
+	* g10/keylist.c (read_sessionkey_from_fd): Likewise.
+	* g10/passphrase.c (set_attrib_fd): Likewise.
+	* tests/openpgp/Makefile.am (XTESTS): Add the new test.
+	* tests/openpgp/issue2941.scm: New file.
+
+2017-02-07  Justus Winter  <justus@g10code.com>
+
+	tests: Skip key types not supported by OpenSSH.
+	+ commit 56aa85f88f6b35fb03a2dc1a95882d49a74290e3
+	* tests/openpgp/ssh-import.scm (path): New variable.
+	(ssh,ssh-keygen,ssh-version,ssh-supports?): Likewise.
+
+2017-02-07  Werner Koch  <wk@gnupg.org>
+
+	wks: Add WKS-Phase headers to the server messages.
+	+ commit b30ac663cec82c89ca9a3e87e65b36d2552f1533
+	* tools/gpg-wks-server.c (send_confirmation_request): Add custom
+	header.
+	(send_congratulation_message): Ditto.
+
+2017-02-05  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	po: Manual updates of nl translation.
+	+ commit aa3f08794bfc809821e2fc30a09a5ae23925c645
+	* po/nl.po: Apply several minor manual cleanups to nl.po that were
+	previously applied to all the other localizations.
+
+	po: Copied missing nl.po translation from the 2.0 branch.
+	+ commit 8a9d4b55b09d04482b46055f0a60f01b86738df3
+	* po/nl.po: Copy from 2.0 branch.
+
+	gpg: Fix aliases --list-key, --list-sig, and --check-sig.
+	+ commit f31120a5aa40b6e4e89d41d1d5d34e0f7da173b4
+	* g10/gpg.c (opts): Define commands with ARGPARSE_c
+	instead of ARGPARSE_s_n.
+
+2017-02-04  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	doc: Clarify abbreviation of --help.
+	+ commit f2b276dffbe2435b17abf2b3c51684d3636f3f11
+	* doc/gpg.texi: clarify abbreviation of --help.
+
+2017-02-03  Werner Koch  <wk@gnupg.org>
+
+	agent: Tell pinentry the hostname the agent is running on.
+	+ commit 042fe711c76f6377cedb8f83a73ba386cee34bb7
+	* agent/call-pinentry.c [!W32]: Incluse utsname.h
+	(start_pinentry): Pass nodename to OPTION/owner.
+
+	agent: Tell the Pinentry the client's pid.
+	+ commit 309f464a5952c7d7504b875bf4853914b1242346
+	* configure.ac: Check for SO_PEERCRED et al.
+	* agent/agent.h (server_control_s): Add field 'client_pid'.
+	* agent/command.c (start_command_handler): Set CLIENT_PID.
+	* agent/command-ssh.c (get_client_pid): New.
+	(start_command_handler_ssh): Set CLIENT_PID.
+	* agent/call-pinentry.c (start_pinentry): Tell Pinentry the client-pid.
+
+	gpg: More diagnostics for a launched pinentry.
+	+ commit 7052a0d77cf8f3a445b252a809d29be445788625
+	* agent/call-pinentry.c (start_pinentry): Call getinfo/ttyinfo.
+	* g10/server.c (gpg_proxy_pinentry_notify): Simplify the output so
+	that we do not change the code when adding new fields to
+	PINENTRY_LAUNCHED.
+
+2017-02-02  Neal H. Walfield  <neal@g10code.com>
+
+	gpg: Don't assume that strtoul interprets "" as 0.
+	+ commit 407f5f9baea5591f148974240a87dfb43e5efef3
+	* g10/tofu.c (show_statistics): If there are not records, return 0
+	instead of NULL.
+
+	tests: Improve description of test.
+	+ commit 64be8e1e8607944687f3ae45ec64aa30bf4fdf6f
+	* tests/openpgp/issue2929.scm: Improve description of test.
+
+	Revert "Revert "tests: Add test demonstrating issue2929.""
+	+ commit e596b21f4b78dd27489e677699cc4ba648051b3f
+	This reverts commit 59048b0f1aa77313573a1004cd3a9f02692a7521.
+
+	gpg: Ensure TOFU bindings associated with UTKs are registered as usual.
+	+ commit 769272ba87f282a69e8d5f9bb27c86e6bec4496b
+	* g10/tofu.c (get_trust): Call get_policy before short-circuiting the
+	policy lookup for ultimately trusted keys to make sure the binding is
+	added to the bindings table, if necessary.
+
+	gpg: If there is a TOFU conflict, elide the too few message warning.
+	+ commit a08c781739e7561093f32b732c4991f2bd817ec2
+	* g10/tofu.c (tofu_get_validity): If there was a conflict, don't also
+	print out a warning about too few messages.
+
+	gpg: Only print out TOFU statistics for conflicts in interactive mode.
+	+ commit 027b81b35fe36692005b8dba22d9eb2db05e8c80
+	* g10/tofu.c (get_trust): Add arguments POLICYP and CONFLICT_SETP.  If
+	they are not NULL, return the policy and conflict set (if there is
+	one), respectively.  Update callers.  If MAY_ASK is FALSE, don't print
+	out the statistics.
+	(tofu_register_encryption): If there is a conflict and we haven't yet
+	printed the statistics about the conflicting bindings, do so now.
+	(tofu_get_validity): Likewise.
+
+	gpg: Add newline to output.
+	+ commit 74268180e5a3acc827f3a369f1fe5971f3bbe285
+	* g10/tofu.c (ask_about_binding): Add newline to output.
+
+	gpg: Remove period at end of warning.
+	+ commit 6f9d8a956b2ca0f5a0eb7acc656fc17af2f2de47
+	* g10/tofu.c (tofu_register_encryption): Remove period at end of
+	warning.
+
+2017-02-01  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: New option --no-use-tor and internal changes.
+	+ commit 7440119e729d3fdedda8a9b44b70f8959beea8d7
+	* dirmngr/dns-stuff.c (disable_dns_tormode): New.
+	* dirmngr/dirmngr.c (oNoUseTor): New const.
+	(opts): New option --no-use-tor.
+	(tor_mode): New var.
+	(parse_rereadable_options): Change to use TOR_MODE.
+	(dirmngr_use_tor): New.
+	(set_tor_mode): Call disable_dns_tormode.  Implement oNoUseTor.
+	* dirmngr/dirmngr.h (opt): Remove field 'use_tor'.  Replace all
+	references by a call to dirmngr_use_tor().
+	* dirmngr/server.c (cmd_getinfo): Distinguish between default and
+	enforced TOR_MODE.
+
+2017-02-01  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Fix regression tracking the connection count.
+	+ commit 8ddc9268f6aedef0e178b174b89245c33d8189dd
+	* scd/scdaemon.c (get_active_connection_count): New.
+	(start_connection_thread): Bump ACTIVE_CONNECTIONS up and down.
+	* scd/command.c (cmd_getinfo): Add subcommand "connections".
+
+2017-01-31  Justus Winter  <justus@g10code.com>
+
+	gpgscm: Tune the hash tables.
+	+ commit 2e78aa6ff770849415f8eb71ca70c8886e9564c8
+	* tests/gpgscm/scheme.c (oblist_initial_value): Increase the size of
+	the hash table based on the number of symbols used after initializing
+	the interpreter.
+	(new_frame_in_env): Increase the size of the hash table based on the
+	number of variables in the global environement.
+
+	gpgscm: Optimize environment lookups and insertions.
+	+ commit b85d509a8f5c2e6200b8051ca1593c019abce90b
+	* tests/gpgscm/scheme.c (pointercmp): New function.
+	(new_slot_spec_in_env): Add and use slot for insertions.
+	(find_slot_spec_in_env): New variant of 'find_slot_in_env' that
+	returns the slot on failures.
+	(find_slot_in_env): Express using the new function.
+	(new_slot_in_env): Update callsite.
+	(opexe_0): Optimize lookup-or-insert.
+	(opexe_1): Likewise.
+	(scheme_define): Likewise.
+
+	gpgscm: Fix build with list environments.
+	+ commit 874424ee3cc795eae9972b6259a2cc4dcdbb868e
+	* tests/gpgscm/scheme.c (new_slot_spec_in_env): Provide preallocation
+	inforomation if USE_ALIST_ENV.
+
+	gpgscm: Optimize symbol lookups and insertions.
+	+ commit cea6d114b60deaecfbc2eb1aedbdfb7e6700922f
+	* tests/gpgscm/scheme.c (oblist_find_by_name): Keep the list of
+	symbols sorted, return the slot where a new symbol must be inserted on
+	lookup failures.
+	(oblist_add_by_name): Add the new symbol at the given slot.
+	(mk_symbol): Adjust callsite.
+	(gensym): Likewise.
+	(assign_syntax): Likewise.
+
+	gpgscm: Fix build with object list.
+	+ commit 8f0ecb16cbb3798ad18be5f05b826db2aa1aaa00
+	* tests/gpgscm/scheme.c (oblist_add_by_name): Provide preallocation
+	information if USE_OBJECT_LIST.
+
+	gpgscm: Remove unused functions.
+	+ commit 2076cdaf6b93bc73223819895cc7a67323d8cee7
+	* tests/gpgscm/scheme.c (check_cell_alloced): Remove function.
+	(check_range_alloced): Likewise.
+
+2017-01-31  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Require --allow-version-check even if --use-tor is used.
+	+ commit b0e8376e19072ec3c590273c69ab3e8e5edfdaca
+	* dirmngr/dirmngr.c (housekeeping_thread): Load swdb only if the
+	option is set.
+
+2017-01-31  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Remove --debug-disable-ticker option.
+	+ commit e17fa5c75d76af4d4684ee810cb446ecd5110560
+	* scd/scdaemon.c (ticker_disabled): Remove.
+	(handle_tick, need_tick): Remove.
+	(handle_connections): Don't check ticker_disabled.
+
+	scd: Fix SERIALNO for multiple devices.
+	+ commit f08d37af049bf1718b301644020658dd2bb07638
+	* scd/app.c (select_application): Fix the logic if periodical check is
+	needed.  If it is needed for newly found device(s), kick the loop.
+	(scd_update_reader_status_file): Return value if select(2) should be
+	called with timeout.
+	* scd/ccid-driver.c (ccid_require_get_status): Don't return 0 for
+	token with no interrupt transfer for now.
+	* scd/command.c (open_card_with_request): Fix scan by SERIALNO.
+	* scd/scdaemon.c (update_usb): Remove.
+	(handle_connections): Evaluate need_tick after handle_tick.
+
+2017-01-30  Justus Winter  <justus@g10code.com>
+
+	gpgscm: Use a compact vector representation.
+	+ commit 49e2ae65e892f93be7f87cfaae3392b50a99e4b1
+	* tests/gpgscm/scheme-private.h (struct cell): Add a compact vector
+	representation.
+	* tests/gpgscm/scheme.c (vector_length): Use new representation.
+	(vector_size): New macro.
+	(get_vector_object): Use the new representation.
+	(fill_vector): Likewise.
+	(vector_elem): Likewise.
+	(set_vector_elem): Likewise.
+	(mark): Likewise.
+	(gc): Likewise.  Be careful not to confuse immediate values for type
+	flags.
+	(finalize_cell): Vectors now require finalization.
+
+	gpgscm: Provide framework for immediate values.
+	+ commit e343984fc50e87830905614dc87f83f810551ad1
+	* tests/gpgscm/scheme.c (IMMEDIATE_TAG): New macro.
+	({is,set,clr}_immediate): Likewise.
+	(enum scheme_types): Make type tags disjoint from immediate values.
+	(TYPE_BITS): We need one more bit now.
+	(ADJ,T_MASKTYPE): Compute values.
+
+	gpgscm: Fix setting the line of the first gc reservation.
+	+ commit d27a4435bd8c0f0971d51ddf454422fc77d48271
+	* tests/gpgscm/scheme.c (_gc_disable): Negate guard.
+
+	gpgscm: Introduce macro for the vector length.
+	+ commit 489edf84c9a9c2122cef1b4e678154521525b54a
+	* tests/gpgscm/scheme.c (vector_length): New macro.
+	(get_vector_object): Use the new macro.
+	(oblist_add_by_name): Likewise.
+	(oblist_find_by_name): Likewise.
+	(oblist_all_symbols): Likewise.
+	(mk_vector): Likewise.
+	(mark): Likewise.
+	(new_slot_spec_in_env): Likewise.
+	(find_slot_spec_in_env): Likewise.
+	(opexe_2): Likewise.
+	(opexe_5): Likewise.
+
+	Revert "tests: Add test demonstrating issue2929."
+	+ commit 59048b0f1aa77313573a1004cd3a9f02692a7521
+	This reverts commit 5aafa56dffefe3fac55b9d0555c7c86e8a07f072.
+
+2017-01-30  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Fix GetSlotStatus.
+	+ commit 2a025039c1817c7f75c35a898884849a8e5dc926
+	* scd/apdu.c (get_status_reader): Add ON_WIRE arg, here.
+	(ct_get_status, pcsc_get_status_direct, pcsc_get_status_wrapped)
+	(pcsc_get_status, get_status_ccid, my_rapdu_get_status): Likewise.
+	(reset_pcsc_reader_wrapped, open_pcsc_reader_wrapped): Follow the
+	change.
+	(apdu_get_status_internal): It's lower-level driver which judge
+	it's not needed.  Otherwise, it can't detect the removal.
+	* scd/ccid-driver.c (ccid_slot_status): After the POWERED_OFF check,
+	we can skip sending GetSlotStatus packet on wire, when no need.
+
+	scd: Don't send GET_STATUS packet if not needed.
+	+ commit 7c8eee4d396a751d41fd1ee1e1b87b851fca172a
+	* scd/apdu.c (apdu_get_status_internal): Add ON_WIRE arg.
+	(apdu_connect): Call apdu_get_status_internal with ON_WIRE enabled.
+	(apdu_get_status): For periodical check, call apdu_get_status_internal
+	with ON_WIRE disabled.
+
+	scd: Fix cancel INTERRUPT transfer.
+	+ commit 216afba0d99582d0fbae1d6e925f4ddb349d9de3
+	* scd/ccid-driver.c (do_close_reader): Don't lock events, but check the
+	return value of libusb_cancel_transfer.
+
+2017-01-27  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: More changes on watching removal of card/reader.
+	+ commit f3d9b2582bcaa1936b4fed5ec42a889b02df2f42
+	* scd/app-common.h (struct app_ctx_s): Rename field to
+	periodical_check_needed.
+	* scd/scdaemon.c (update_usb): Rename from update_fdset_for_usb.
+	Don't use libusb_get_pollfds any more.
+	(scd_kick_the_loop): New.
+	(need_tick): Follow the rename.
+	(handle_connections): No libusb event handling here.
+	* scd/app.c (app_new_register): Follow the change of rename.
+	(select_application, scd_update_reader_status_file): Likewise.
+	* scd/ccid-driver.c (ccid_usb_thread_is_alive): New.
+	(intr_cb): Call scd_kick_the_loop.
+	(ccid_usb_thread): New.  Thread to invoke INTERRUPT callback.
+	(ccid_open_usb_reader): Add thread invocation.
+	(ccid_require_get_status): Remove
+	LIBUSB_WORKS_EXPECTED_FOR_INTERRUPT_ENDP.
+	(do_close_reader): Carefully handle handle->transfer.
+	(get_escaped_usb_string): Insert npth_unprotect/npth_protect.
+	(do_close_reader, bulk_out, bulk_in, abort_cmd, ccid_slot_status)
+	(ccid_transceive, ccid_transceive_secure): Likewise.
+
+	scd: Fix release of transfer object.
+	+ commit f92fe33f11c44f14fd31682259fcd231e8fa9e75
+	* scd/ccid-driver.c (intr_cb): Handle LIBUSB_TRANSFER_CANCELLED.
+	(do_close_reader): When callback is active, call
+	libusb_cancel_transfer and wait callback is fired off.
+
+	scd: Improve watching USB device removal.
+	+ commit 25cc8575da9a9b8bf60c64c8059cb5f73cc52e1d
+	* scd/apdu.c(struct reader_table_s): Add require_get_status.
+	(apdu_connect): Change return value meaning.  Call apdu_reset here.
+	* scd/app.c (app_new_register): Add require_get_status.
+	(select_application): Use the return value of apdu_connect.
+	(scd_update_reader_status_file): Call update_fdset_for_usb with
+	checking all_have_intr_endp.
+	(app_list_start, app_list_finish): Remove.
+	* scd/ccid-driver.c (struct ccid_driver_s): Add transfer.
+	(intr_cb): Don't call libusb_transfer in this callback.
+	(ccid_require_get_status): New.
+	(do_close_reader): Call libusb_transfer here.
+	* scd/scdaemon.c (update_fdset_for_usb): Remove the first argument.
+
+	scd: Wake up the select when new USB scan.
+	+ commit 031e3fa7b9a6770a4de1a184555250feeba0d26f
+	* scd/scdaemon.c (update_fdset_for_usb): Wake up the select(2).
+	(handle_connections): Use a kind of "self-pipe" technique.
+
+2017-01-26  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Only submit apdu_get_status when needed.
+	+ commit 881dcdfd84ebad36bff20c895e629025bed9d94e
+	* scd/apdu.c (apdu_dev_list_finish): Return Boolean value if
+	all device support INTERRUPT transfer.
+	* scd/ccid-driver.c (ccid_dev_scan_finish): Likewise.
+	* scd/app.c (app_new_register): Fix initial value of card_status.
+	(select_application): Call update_fdset_for_usb.
+	(scd_update_reader_status_file): Ditto.
+	* scd/scdaemon.c (update_fdset_for_usb, need_tick): New.
+	(handle_connections): Call handle_tick when select returns.
+	Let select watch USB file descriptors, too.
+	Call libusb_handle_events_timeout_completed for INTERRUPT transfer.
+
+	scd: Fix APP reference counting.
+	+ commit 9b06633c811e8815c07d744f20b45405cb082367
+	* scd/app.c (scd_update_reader_status_file): Don't call another
+	release_application_internal.
+	* scd/command.c (open_card_with_request): Don't require APPTYPE !=
+	NULL.
+
+	scd: Add INTERRUPT endp support to CCID driver.
+	+ commit bb5ceb78c333129a44c0144f2cf49b17ede898f1
+	* scd/app.c (scd_update_reader_status_file): Fix releas of APP.
+	* scd/ccid-driver.c (struct ccid_driver_s): Add INTR_BUF.
+	(intr_cb, ccid_setup_intr): New.
+	(ccid_open_usb_reader): Call ccid_setup_intr.
+	(ccid_slot_status): Return CCID_DRIVER_ERR_NO_READER when removed.
+
+2017-01-25  Justus Winter  <justus@g10code.com>
+
+	gpg: Fix searching for mail addresses in keyrings.
+	+ commit 3f4f20ee6eff052c88647b820d9ecfdbd8df0f40
+	* g10/keyring.c (compare_name): Fix KEYDB_SEARCH_MODE_MAIL* searches
+	in keyrings when the UID is a plain addr-spec.
+
+	tests,w32: Fix GPGME tests requiring a pinentry.
+	+ commit 02a39f0d1ed717f6fc33392e6ce4ab421c3bcbba
+	* tests/gpgme/gpgme-defs.scm: Use our fake pinentry, and configure it
+	to supply the correct passphrase.
+
+	tests,w32: Fix gpgsm signature verification test.
+	+ commit 7d5a0ed792133d875fcedb6e23a9a3682f1a23f9
+	* tests/gpgsm/verify.scm: Use 'call-with-binary-output-file' to avoid
+	automatic line-ending conversion.
+
+	agent: Fix double free.
+	+ commit e175152ef7515921635bf1e00383e812668d13fc
+	* agent/cache.c (agent_store_cache_hit): Make sure the update is
+	atomic.
+
+	tests: Skip GPGME tests that are not built.
+	+ commit 5f2da5d439debf44615a97de788d8f720b517972
+	* tests/gpgme/wrap.scm: Skip tests that are not built.
+
+	tests,w32: Fix locating GPGME's tests on Windows.
+	+ commit 6ecd8b3e71632bbcca524ad735c83bdc2a4c4a4a
+	* tests/gpgme/run-tests.scm: Qualify the test with the executable
+	extension.
+
+2017-01-24  Werner Koch  <wk@gnupg.org>
+
+	gpg: Print a warning on Tor problems.
+	+ commit 770b75a746836773909af25ccb9b480e61cea677
+	* dirmngr/ks-engine-hkp.c (tor_not_running_p): New.
+	(map_host): Call that to print a warning.
+	(handle_send_request_error): Ditto and avoid marking the host dead.
+	Also print a tor_config_problem warning.  Add arg CTRL; adjust callers
+	to pass that new arg.
+	* g10/call-dirmngr.c (ks_status_cb): Detect and print the new
+	warnings.
+
+	dirmngr: Simplify error returning inside http.c.
+	+ commit 51e5a5e5a46279809848b4ab4419f35045336010
+	* dirmngr/http.c (connect_server): Change to return an gpg_error_t
+	and to store socket at the passed address.
+	(http_raw_connect, send_request): Adjust accordingly.
+
+	dirmngr: New option --disable-ipv4.
+	+ commit 72736af86a501592d974d46ff754a63959e183bd
+	* dirmngr/dirmngr.c (oDisableIPv4): New const.
+	(opts): New option --disable-ipv4.
+	(parse_rereadable_options): Set that option.
+	* dirmngr/dirmngr.h (opt): New field 'disable_ipv4'.
+	* dirmngr/dns-stuff.c (opt_disable_ipv4): bew var.
+	(set_dns_disable_ipv4): New.
+	(resolve_name_standard): Skip v4 addresses when OPT_DISABLE_IPV4 is
+	set.
+	* dirmngr/ks-engine-hkp.c (map_host): Ditto.
+	(send_request): Pass HTTP_FLAG_IGNORE_IPv4 if opt.disable_v4 is set.
+	* dirmngr/crlfetch.c (crl_fetch): Ditto.
+	* dirmngr/ks-engine-finger.c (ks_finger_fetch): Ditto.
+	* dirmngr/ks-engine-http.c (ks_http_fetch): Ditto.
+	* dirmngr/ocsp.c (do_ocsp_request): Ditto.
+
+2017-01-24  Justus Winter  <justus@g10code.com>
+
+	tools: Use platform abstraction for I/O.
+	+ commit 73d6572bd0f260c5aa1e191a1ba4859ec6fa262c
+	* tools/gpg-connect-agent.c (main): Use a gpgrt_stream_t for
+	'script_fp'.  Adapt accordingly.
+
+	tools: Use platform abstraction for I/O.
+	+ commit 77b8aff4e1bb641f497e63230a5006ab70e6c3a8
+	* tools/gpgconf-comp.c (retrieve_options_from_file): Use a
+	gpgrt_stream_t for 'list_file'.  Adapt accordingly.
+	(copy_file): Likewise for 'src' and 'dst'.
+	(change_options_file): Likewise for 'src_file' and 'dest_file'.
+	(change_options_program): Likewise for 'src_file' and 'dest_file'.
+	(gc_process_gpgconf_conf): Likewise for 'config'.
+
+	tools: Use platform abstraction for renaming files.
+	+ commit bfd75e9492fc4edd86f4049a62304943a7b2a29a
+	* tools/gpgconf-comp.c (gc_component_change_options): Use
+	'gnupg_rename_file'.  Also, block signals across all renames in an
+	attempt to make the whole process atomic.
+
+	tools: Add comments explaining the functions parameters.
+	+ commit 82e309ad06884e54693f4856412984331febdda0
+	* tools/gpgconf-comp.c (change_options_file): Add comments explaining
+	the functions parameters.
+	(change_options_program): Likewise.
+
+	tools: Improve error handling.
+	+ commit b0348fdb26637b0bcbd68a96c1746a1613b309af
+	* tools/gpgconf-comp.c (gp_component_change_options): Improve error
+	handling when reading from stdin.
+
+	tools: Fix memory leak.
+	+ commit 5b28f025085b386e0ec49535d4cd3f875a414eb0
+	* tools/gpgconf-comp.c (change_options_file): Fix leak.
+
+	tests: Add test demonstrating issue2929.
+	+ commit 5aafa56dffefe3fac55b9d0555c7c86e8a07f072
+	* tests/openpgp/Makefile.am (XTESTS): Add new test.
+	* tests/openpgp/issue2929.scm: New file.
+
+	tests: Enable gpgconf test.
+	+ commit 628ff843466b42309f850b8d65b13cf5f586b81f
+	* tests/openpgp/Makefile.am (XTESTS): Re-add gpgconf.scm.
+
 2017-01-23  Werner Koch  <wk@gnupg.org>
 
 	Release 2.1.18.
