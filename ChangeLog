@@ -1,3 +1,885 @@
+2017-04-03  Werner Koch  <wk@gnupg.org>
+
+	Release 2.1.20.
+	+ commit e7eb9b12deaf7ebe26967bfb56e980b7efeebdc3
+
+
+	dirmngr: New option --disable-ipv6.
+	+ commit 3533b854408fa93734742b2ee12b62aa0d55ff28
+	* dirmngr/dirmngr.h (struct opt): Add field 'disable_ipv6'.
+	* dirmngr/dirmngr.c (oDisableIPv6): New const.
+	(opts): New option --disable-ipv6.
+	(parse_rereadable_options): Set that option.
+	* dirmngr/dns-stuff.c (opt_disable_ipv6): New var.
+	(set_dns_disable_ipv6): New.
+	(resolve_name_standard): Make use of it.
+	* dirmngr/ks-engine-finger.c (ks_finger_fetch): Take care of
+	OPT.DISABLE_IPV6.
+	* dirmngr/ks-engine-hkp.c (map_host): Ditto.
+	(send_request): Ditto.
+	* dirmngr/ks-engine-http.c (ks_http_fetch): Ditto.
+	* dirmngr/ocsp.c (do_ocsp_request): Ditto.
+
+	dirmngr,w32: Silence the 'certificate already cached' message.
+	+ commit fce36d7ec87be14b874813db277781c87a64ea87
+	* dirmngr/certcache.c (load_certs_from_w32_store): Silenece an info
+	message.
+
+	dirmngr: Handle EIO which is sometimes returned by cookie functions.
+	+ commit cc32ddbcba8c53d3e2cad952d72f62dc73911042
+	* dirmngr/ks-engine-hkp.c (handle_send_request_error): Handle EIO.
+
+	dirmngr: Always print a warning for a missing /etc/hosts.
+	+ commit 35c843c815306f36d1efbc52f5e2f6bac3f67aec
+	* dirmngr/dns-stuff.c (libdns_init): No Windows specific handling of a
+	missing /etc/hosts.
+
+	dirmngr: Do not assume that /etc/hosts exists.
+	+ commit 5d873f288e86edfb684f4dd57ac36466b06494a4
+	* dirmngr/dns-stuff.c (libdns_init): Do not bail out.
+
+	po: Update the German translation.
+	+ commit c7be01dae914c183dd99bd531a388c794d858c61
+
+
+	gpgconf: Add --enable-extended-key-format for the agent.
+	+ commit d23052b04ebb0ac731aa351650c4084f080c640b
+	* tools/gpgconf-conf.c: Add option.
+	* agent/gpg-agent.c (main) <aGPGConfList>: Add option.
+
+2017-04-03  Justus Winter  <justus@g10code.com>
+
+	gpgscm: Slightly improve the procedure dispatch.
+	+ commit 90932bdad607d06f4f040e3457caddba79ba8b7e
+	* tests/gpgscm/scheme.c (procnum): Procedures always have an integer
+	number, so we can safely use the cheaper 'ivalue_unchecked'.
+
+2017-04-03  Werner Koch  <wk@gnupg.org>
+
+	gpg: Handle critical marked 'Reason for Revocation'.
+	+ commit 3f6d949011f485613bb4bd3e06a2643be79cce40
+	* g10/parse-packet.c (can_handle_critical): Add
+	SIGSUBPKT_REVOC_REASON.
+
+2017-04-02  Werner Koch  <wk@gnupg.org>
+
+	agent: Use OCB for key protection with --enable-extended-key-format.
+	+ commit d24375271b97e45deaeb1ef0a8434c64066ba2e8
+	* agent/protect.c (PROT_DEFAULT_TO_OCB): Remove macro.
+	(agent_protect): Make the default protection mode depend on the extend
+	key format option.
+
+2017-04-01  Werner Koch  <wk@gnupg.org>
+
+	kbx: Unify blob reading functions.
+	+ commit 0039d7107bcdfce6f3b02b46ff0495cfba07882a
+	* kbx/keybox-file.c (_keybox_read_blob): Remove.
+	(_keybox_read_blob2): Rename to ....
+	(_keybox_read_blob): this.  Make arg options.  Change all callers.
+	* kbx/keybox-search.c (keybox_search): Factor fopen call out to ...
+	(open_file): new.
+	(keybox_seek): Als use open_file.
+
+2017-03-31  Werner Koch  <wk@gnupg.org>
+
+	gpg: Avoid multiple open calls to the keybox file.
+	+ commit 5556eca5acd46983bff0b38a1ffbc2f07fbaba9f
+	* g10/keydb.h (KEYDB_HANDLE): Move typedef to ...
+	* g10/gpg.h: here.
+	(struct server_control_s): Add field 'cached_getkey_kdb'.
+	* g10/gpg.c (gpg_deinit_default_ctrl): Release that keydb handle.
+	* g10/getkey.c (getkey_end): Cache keydb handle.
+	(get_pubkey): Use cached keydb handle.
+	* kbx/keybox-search.c (keybox_search_reset): Use lseek instead of
+	closing the file.
+
+	gpg: Pass CTRL also to getkey_end.
+	+ commit aca5f494a88776d4974bfa9b0b65cb60c1b42040
+	* g10/getkey.c (getkey_end): Add arg CTRL.  Change all callers.
+
+	gpg: Print more stats for the keydb and the signature cache.
+	+ commit 3a10de3bfd785aefb0150e82b6dbbc7cb9f208c8
+	* g10/sig-check.c (sig_check_dump_stats): New.
+	(cache_stats): New struct.
+	(check_key_signature2): Update stats.
+	* g10/gpg.c (g10_exit): Call new function.
+	* g10/keydb.c (kid_not_found_cache_count): Replace by ...
+	(kid_not_found_stats): ... new struct.  Change users.
+	(keydb_stats): New struct.  Update the counters.
+	(keydb_dump_stats): Print all stats.
+
+	gpg: Assert that an opaque parameter is really what we expect.
+	+ commit 52ba5e67cad4311d0ddbc4f2979e20afd0161d1f
+	* g10/gpg.h (SERVER_CONTROL_MAGIC): New const.
+	(server_control_s): Add field 'magic'.
+	* g10/gpg.c (gpg_init_default_ctrl): Init MAGIC.
+	* g10/import.c (impex_filter_getval): Assert MAGIC.
+
+2017-03-30  Justus Winter  <justus@g10code.com>
+
+	gpg: Consistent use of preprocessor conditionals.
+	+ commit 5e89144cbca36c1e7eb814b3aad4b7c46cd4efbf
+	* g10/parse-packet.c: Use '#if' instead of '#ifdef' when checking
+	DEBUG_PARSE_PACKET.  This fixes the build with '#define
+	DEBUG_PARSE_PACKET 0'.
+
+	common: Avoid undefined behavior.
+	+ commit 214fa9012296d796b78f1a3106d656639cf50aef
+	* common/iobuf.c (iobuf_read_line): Do not consider 'length' if
+	'buffer' is NULL.
+
+2017-03-30  Werner Koch  <wk@gnupg.org>
+
+	gpg: Remove the use of the signature information from a KBX.
+	+ commit a6142dbdbc5783043deb847dc64998c421860941
+	* g10/keydb.c (keyblock_cache): Remove field SIGSTATUS.
+	(keyblock_cache_clear): Adjust for that removal.
+	(parse_keyblock_image): Remove arg SIGSTATUS.  Remove the signature
+	cache setting; this is now done in the parser.
+	(keydb_get_keyblock): Do not set SIGSTATUS.
+	(build_keyblock_image): Remove arg SIGSTATUS and simplify.  Change
+	caller.
+	* kbx/keybox-blob.c: Explain that the signature information is not
+	anymore used.
+	(_keybox_create_openpgp_blob): Remove arg SIGSTATUS and change
+	callers.
+	* kbx/keybox-search.c (keybox_get_keyblock): Remove arg R_SIGSTATUS
+	and change callers.
+	* kbx/keybox-update.c (keybox_insert_keyblock): Likewise.
+
+	gpg: Fix actual leak and possible leaks in the packet parser.
+	+ commit 7bf24e8146116a30c4c9d7b6dbf8bbb27fc35971
+	* g10/packet.h (struct parse_packet_ctx_s): Change LAST_PKT deom a
+	pointer to its struct.
+	(init_parse_packet): Adjust for LAST_PKT not being a pointer.
+	* g10/parse-packet.c (parse): Ditto. Free the last packet before
+	storing a new one in case of a deep link.
+	(parse_ring_trust): Adjust for LAST_PKT not being a pointer.
+	* g10/free-packet.c (free_packet): Ditto.
+	* g10/t-keydb-get-keyblock.c (do_test): Release keyblock.
+
+	gpg: Fix export porting of zero length user ID packets.
+	+ commit 64665404e43051fa50ee030766347e24b7d1e4d5
+	* g10/build-packet.c (do_user_id): Avoid indeterminate length header.
+
+	gpg: Revamp reading and writing of ring trust packets.
+	+ commit a8895c99a7d0750132477d80cd66caaf3a709113
+	* g10/parse-packet.c (parse_trust): Rename to ...
+	(parse_ring_trust): this.  Change args and implement new ring trust
+	packet format.
+	(parse): Add special ring trust packet handling.
+	* g10/packet.h (PKT_user_id): New fields KEYUPDATE, UPDATEURL, and
+	KEYSRC.
+	(PKT_public_key): Ditto.
+	(RING_TRUST_SIG, RING_TRUST_KEY, RING_TRUST_UID): New consts.
+	(PKT_ring_trust): New.
+	(struct packet_struct): Remove member RING_TRUST.
+	(strcu parse_packet_ctx_s): Add field SKIP_META.
+	(init_parse_packet): Init SKIPT_META.
+	* g10/free-packet.c (release_public_key_parts): Free UDPATEURL.
+	(free_user_id): Ditto.
+	* g10/mainproc.c (list_node): Remove printing of non-documented "rtv"
+	lines.
+	* g10/build-packet.c (build_packet_and_meta): New.
+	(do_ring_trust): New.
+	* g10/export.c (write_keyblock_to_output): Use build_packet_and_meta
+	in backup mode.
+	(do_export_one_keyblock): Ditto.
+	* g10/import.c (read_block): Add arg WITH_META.  Skip ring trust
+	packets if that ism not set.
+	(import): Call read_block WITH_META in restore mode.
+	* g10/keydb.h (KEYSRC_UNKNOWN, KEYSRC_FILE, KEYSRC_KS, KEYSRC_PREF_KS)
+	(KEYSRC_WKD, KEYSRC_WKD_SD, KEYSRC_DANE): New constants.  They are not
+	yet used, though.
+	* g10/keydb.c (parse_keyblock_image): Allow ring trust packets.
+	(build_keyblock_image): Ditto.  Use build_packet_and_meta.
+	* g10/keyring.c (keyring_get_keyblock): Remove specila treatment of
+	ring trust packets.
+	(write_keyblock): Use build_packet_and_meta.  Remove special treatment
+	of ring trust packets and initialization of the signature caches.
+
+2017-03-29  Werner Koch  <wk@gnupg.org>
+
+	gpg: Extend free_packet to handle a packet parser context.
+	+ commit afa86809087909a8ba2f9356588bf90cc923529c
+	* g10/packet.h (struct parse_packet_ctx_s): Add fields LAST_PKT and
+	FREE_LAST_PKT.
+	(init_parse_packet): Clear them.
+	(deinit_parse_packet): New macro.  Change all users if
+	init_parse_packet to also call this macro.
+	* g10/free-packet.c (free_packet): Add arg PARSECTX and handle shallow
+	packet copies in the context.  Change all callers.
+	* g10/parse-packet.c (parse): Store certain packets in the parse
+	context.
+
+	gpg: Change parse_packet to take a context.
+	+ commit 0526c99164d3531b5ec763ffc672407eb24b2296
+	* g10/packet.h (struct parse_packet_ctx_s): New.
+	(parse_packet_ctx_t): New type.
+	(init_parse_packet): New macro.
+	* g10/parse-packet.c (parse_packet, dbg_parse_packet): Change to take
+	a parse context.  Change all callers to provide a context instead of
+	directly supplying the input stream.
+	(search_packet, dbg_search_packet): Ditto.
+	(copy_all_packets, dbg_copy_all_packets): Init an use a parse context.
+	(copy_some_packets, dbg_copy_some_packets): Ditto.
+	(skip_some_packets, dbg_skip_some_packets): Ditto.
+
+	gpg: Export ring trust packets in backup mode.
+	+ commit f5b565a5b8de3f2a3d98bc1a655e18333aee223b
+	* g10/export.c (write_keyblock_to_output): Export ring trust packets.
+
+2017-03-28  Justus Winter  <justus@g10code.com>
+
+	tests,w32: Fix importing the extra key for GPGME's keylist test.
+	+ commit b20780658ebb1e1245db18c04db3e815399cf706
+	* tests/gpgme/wrap.scm: Qualify the tests name with the extension for
+	executables (if any).
+
+2017-03-28  Werner Koch  <wk@gnupg.org>
+
+	gpg: Prepare for listing last_update and key origin data.
+	+ commit 4af389c9721fa534ed06a64b80705b631575c775
+	* g10/keylist.c (list_keyblock_colon): Add empty fields 19 and 20.
+
+2017-03-28  Justus Winter  <justus@g10code.com>
+
+	tests: Fix distcheck.
+	+ commit 5128cd74c029d57491a79ca9e918c81facdf1b76
+	* tests/openpgp/Makefile.am (sample_msgs): Add all missing sample
+	messages.
+
+	tests: Add test for '--decrypt --unwrap'.
+	+ commit 211d71f19c24da94f4c58014606125c1a29d86a2
+	* tests/openpgp/Makefile.am (XTESTS): Add new test.
+	* tests/openpgp/decrypt-unwrap-verify.scm: New file.
+
+	g10: Fix memory leak.
+	+ commit 6d3edfd972c1114f43f6b35773dc25e0256f48f4
+	* g10/decrypt-data.c (decrypt_data): Free 'filename'.
+
+2017-03-27  Justus Winter  <justus@g10code.com>
+
+	common: Fix connecting to the agent.
+	+ commit caf00915532e6e8e509738962964edcd14fb0654
+	* common/homedir.c (_gnupg_socketdir_internal): Fix error handling.
+
+2017-03-27  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Support specifying SERIALNO for --card-status.
+	+ commit c1e6302b347caf852a056b9c721469ccb51f44da
+	* g10/gpg.c (main): Allow an argument for --card-status.
+	* g10/card-util.c (current_card_status): Rename from card_status.
+	(card_status): New, which supports multiple cards.
+	(get_one_name): Use current_card_status.
+
+	scd: Change the order of applications when accessed.
+	+ commit d58275703f035e8cfd58cd1c2d0d5ac7dc59e110
+	* scd/app.c (select_application): Move the app to top.
+
+	scd: Fix timeout handling for key generation.
+	+ commit 0848cfcce738150b53bfb65b78efc1e6dc9f3d26
+	* scd/ccid-driver.c (CCID_CMD_TIMEOUT): Back to original value.
+	(CCID_CMD_TIMEOUT_LONGER): New.
+	(ccid_transceive): Add kludge for key generation.
+
+2017-03-24  Werner Koch  <wk@gnupg.org>
+
+	gpg: Improve check for already compressed packets.
+	+ commit 0b3770c421a35b64823a805fa8d49ddd5c653d50
+	* common/miscellaneous.c (is_openpgp_compressed_packet): New.
+	(is_file_compressed): Rerad 2 more bytes and call new function.
+
+	agent: New option --enable-extended-key-format.
+	+ commit 2c237c13628a88ba23742da34ea18d3e205d7c53
+	* agent/gpg-agent.c (oEnableExtendedKeyFormat): New const.
+	(opts): New option --enable-extended-key-format.
+	(parse_rereadable_options): Set option
+	* agent/findkey.c (write_extended_private_key): Add arg 'update'.
+	(agent_write_private_key): Implement new option.
+
+	agent: New option --stub-only for DELETE_KEY.
+	+ commit 6fab7bba879d7794e32112cf3eddd8d87130a5d7
+	* agent/findkey.c (agent_delete_key): Add arg 'only_stubs'.
+	* agent/command.c (cmd_delete_key): Add option --stub-only.
+
+2017-03-23  Werner Koch  <wk@gnupg.org>
+
+	common: Implicitly do a gpgconf --create-socketdir.
+	+ commit 26086b362ff47d21b1abefaf674a6464bf0a8921
+	* common/homedir.c (_gnupg_socketdir_internal): Create the
+	sub-directory.
+
+	tests: Use gpgconf to stop the agent.
+	+ commit 2c9d9ac55ea455a5ec26428989dced0311ed46cc
+	* tests/openpgp/defs.scm (stop-agent): Swap order of actions.  Kill
+	all daemons using gpgconf.
+	* tools/gpgconf.c (main) <aRemoveSocketDir>: Try to remove known
+	socketfails on rmdir failure.  Do no fail for ENONET.
+
+2017-03-23  Justus Winter  <justus@g10code.com>
+
+	gpgscm: Make test cleanup more robust.
+	+ commit 178b6314ab2d2268873067314744c8af74dc331e
+	* tests/gpgscm/tests.scm (mkdtemp-autoremove): New function that
+	cleans up at interpreter shutdown.
+	(run-tests-parallel): Use the new function.
+	(run-tests-sequential): Likewise.
+	(make-environment-cache): Execute setup with an temporary working
+	directory.
+
+2017-03-21  Justus Winter  <justus@g10code.com>
+
+	tests: Test '--quick-set-primary-uid'.
+	+ commit fde885bbc47a4bf14a8570ac62e68adc8cf47a6e
+	* tests/openpgp/quick-key-manipulation.scm: Test
+	'--quick-set-primary-uid'.
+
+	tests,w32: Use GetTempPath to get the path for temporary files.
+	+ commit d17840c3f40111beaf97d96ad3ca52047976e221
+	* tests/gpgscm/ffi.c (do_get_temp_path): New function.
+	(ffi_init): Make function available.
+	* tests/gpgscm/tests.scm (mkdtemp): Use the new function.
+
+2017-03-21  Werner Koch  <wk@gnupg.org>
+
+	gpg: New command --quick-set-primary-uid.
+	+ commit 74c1f30ad6616186f0ab9dbaf34db6c17b1e40c4
+	* g10/gpg.c (aQuickSetPrimaryUid): New const.
+	(opts): New command --quick-set-primary-uid.
+	(main): Implement it.
+	* g10/keyedit.c (keyedit_quick_adduid): Factor some code out to ...
+	(quick_find_keyblock): new func.
+	(keyedit_quick_revuid): Use quick_find_keyblock.
+	(keyedit_quick_set_primary): New.
+
+2017-03-21  Justus Winter  <justus@g10code.com>
+
+	dirmngr: Fix error handling.
+	+ commit 483c1288a8f86dc6bf93d0d3f2865ecc246aecba
+	* dirmngr/dns-stuff.c (libdns_init): Convert error before printing it.
+
+	dirmngr: Load the hosts file into libdns.
+	+ commit 88f1505f0613894d5544290a170119eb538921e5
+	* dirmngr/dns-stuff.c (libdns_init): Actually load the hosts file into
+	libdns.
+
+	tests: Create temporary directories in '/tmp'.
+	+ commit 06f1f163e96f1039304fd3cf565cf9de1ca45849
+	* tests/gpgscm/tests.scm (mkdtemp): Create temporary directories in
+	'/tmp' on UNIX, or in '%Temp' on Windows.
+	* tests/migrations/common.scm (run-test): Turn error into a warning.
+	* tests/openpgp/defs.scm (start-agent): Likewise.
+
+2017-03-20  Justus Winter  <justus@g10code.com>
+
+	tests: Remove debugging remnants.
+	+ commit ceb4b245752bb1fb43fde7e99f8d904ab8a9b5e2
+	* tests/gpgme/gpgme-defs.scm (run-python-tests?): Remove 'trace's.
+
+	tests: Fail if we cannot create the socket directory.
+	+ commit d75d20909d9f60d33ffd210def92278c0f383aad
+	* tests/migrations/common.scm (run-test): Turn warning into an error.
+	* tests/openpgp/defs.scm (start-agent): Likewise.
+
+2017-03-20  Werner Koch  <wk@gnupg.org>
+
+	gpg: Add new field no 18 to the colon listing.
+	+ commit fe0b37e123ded51cc5f4cb5e3547fdfbce37a43e
+	* g10/misc.c (gnupg_pk_is_compliant): New.
+	* g10/keylist.c (print_compliance_flags): New.
+	(list_keyblock_colon): Call it here.
+	* sm/keylist.c (print_compliance_flags): New.
+	(list_cert_colon): Call it here.
+
+	gpg: Remove unused stuff.
+	+ commit e2c63a13e2fa4ce39af8471a34c06d73ff3ee6f6
+	* g10/OPTIONS: Remove.
+	* g10/options.h (struct opt): Remove 'shm_coprocess'.
+
+2017-03-17  Neal H. Walfield  <neal@g10code.com>
+
+	tests: Add test for issue 2959.
+	+ commit fb9d68d636490ca88925051f48b08963c324aed1
+	* tests/openpgp/tofu.scm: Add test for --tofu-default-policy=ask.
+
+	gpg: Make sure the conflict set includes the current key.
+	+ commit b1106b4d640325c60a7212a4a44e4f67c0e3312d
+	* g10/tofu.c (get_trust): Sanity check CONFLICT_SET after calling
+	get_policy.  If POLICY is 'auto' and the default policy is 'ask', make
+	sure CONFLICT_SET includes the current key.
+
+2017-03-17  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Ignore warning alerts in the GNUTLS handshake.
+	+ commit 69c521df422a6c9a6b0a93e45c9373a8b6ceb28e
+	* dirmngr/http.c (send_request) [GNUTLS]: Don't bail out on warning
+	alerts.
+
+2017-03-17  Justus Winter  <justus@g10code.com>
+
+	gpgscm: Simplify hash tables.
+	+ commit 6a3f857224eab108ae38e6259194b01b0ffdad8b
+	* tests/gpgscm/scheme.c (oblist_add_by_name): We now always get a
+	slot.  Simplify accordingly.
+	(oblist_find_by_name): Always return the slot.
+	(vector_elem_slot): New function.
+	(new_slot_spec_in_env): We now always get a slot.  Remove parameter
+	'env'.  Simplify accordingly.
+	(find_slot_spec_in_env): Always return a slot.
+	(new_slot_in_env): Adapt callsite.
+	(opexe_0): Likewise.
+	(opexe_1): Likewise.
+	(scheme_define): Likewise.
+
+	gpgscm: Remove framework for immediate values.
+	+ commit 38c955599f7c6c20faeec57d8e1df7d2c0eeba18
+	* tests/gpgscm/scheme.c (IMMEDIATE_TAG): Remove macro.
+	(is_immediate): Likewise.
+	(set_immediate): Likewise.
+	(clr_immediate): Likewise.
+	(enum scheme_types): Set the LSB in every value.
+	(fill_vector): Adapt.
+	(vector_elem): Likewise.
+	(set_vector_elem): Likewise.
+	(mark): Likewise.
+	(gc): Test for the LSB to tell typeflags apart from pointers stored in
+	the same memory location.
+
+2017-03-16  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent,g10: Remove redundant SERIALNO request.
+	+ commit 8c8ce8711d9c938fcb982b0341e6b052742cb887
+	* agent/learncard.c (agent_handle_learn): Don't call
+	agent_card_serialno.  Get the serialno in status response.
+	* g10/call-agent.c (agent_scd_learn): Don't request "SCD SERIALNO".
+	(agent_scd_serialno): New.
+	(card_cardlist_cb, agent_scd_cardlist): New.
+
+2017-03-15  Justus Winter  <justus@g10code.com>
+
+	tests: Fix using tools from the build directory.
+	+ commit a98459d3f4ec3d196fb0adb0e90dadf40abc8c81
+	* tests/openpgp/defs.scm (gpg-conf'): Explicitly pass the build prefix
+	to gpgconf here...
+	(gpg-components): ... instead of only here.
+
+	tests: Dump the tools that the tests are going to use.
+	+ commit c7833eca38fdb8d9ba7b59438ea87d651b8bf7ba
+	* tests/openpgp/setup.scm: Dump the tools that the tests are going to
+	use.  This will help us diagnose problems with the tests picking the
+	wrong paths in the future.
+
+	build: Remove '--disable-tools' configuration option.
+	+ commit 6993e42088c191f18468317ba2b5b8fbc8c3edff
+	* Makefile.am (SUBDIRS): Unconditionally include 'tools'.
+	* configure.ac: Remove '--disable-tools' configuration option.
+
+2017-03-15  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Fix check of serialno.
+	+ commit 61785b679c542bbd789395fa632eb8b5133b01ad
+	* g10/card-util.c (card_status): Fix.
+
+	g10: Remove unused function.
+	+ commit ed3248219e921ee24f6f1b2985abb7e0945d70e9
+	* g10/call-agent.c (select_openpgp): Remove.
+
+	tests: Fix running python condition.
+	+ commit a672ddec03f96475866d712b28be18b3fab43aef
+	* tests/gpgme/gpgme-defs.scm (run-python-tests?): We need Python.
+
+2017-03-14  Justus Winter  <justus@g10code.com>
+
+	tests: Skip Python tests if the bindings are not built.
+	+ commit d82abbb1b6e80d5980e6259ddcfc770e65a6b1b3
+	* tests/gpgme/wrap.scm (python): Move variable...
+	* tests/gpgme/gpgme-defs.scm (python): ... here.
+	(run-python-tests?): New function.
+	* tests/gpgme/run-tests.scm: Only run Python tests if the bindings can
+	be located in GPGME's build directory.
+
+2017-03-13  Werner Koch  <wk@gnupg.org>
+
+	gpg: Flush stdout before printing stats with --check-sigs.
+	+ commit 9a77b3b6e41f97b1209ad61c04b3dd33242ecae8
+	* g10/keylist.c (print_signature_stats): Flush stdout.
+	(list_keyblock_colon): Use es_flush instead of fflush.
+
+2017-03-09  Justus Winter  <justus@g10code.com>
+
+	tests: Run the tests for the Python bindings of GPGME.
+	+ commit 046a15a88c83b40a753b4ad7ecc1456efa5b527f
+	* tests/gpgme/gpgme-defs.scm (create-file): Write lines.
+	(create-gpgmehome): Extend function to create the right environment
+	for the Python tests.
+	* tests/gpgme/run-tests.scm: Make an environment cache for the Python
+	tests and enable them.
+	* tests/gpgme/wrap.scm: Do not hardcode the path of the Python
+	interpreter.
+
+	tests: Rework environment setup.
+	+ commit cca91a3f8f7e3e36b7149fc93f7b6df11d21eb1d
+	* tests/gpgscm/tests.scm (test::scm): Add a setup argument.
+	(test::binary): Likewise.
+	(run-tests-parallel): Remove setup parameter.
+	(run-tests-sequential): Likewise.
+	(make-environment-cache): New function that handles the cache
+	protocol.
+	* tests/gpgme/run-tests.scm: Adapt accordingly.
+	* tests/gpgsm/run-tests.scm: Likewise.
+	* tests/migrations/run-tests.scm: Likewise.
+	* tests/openpgp/run-tests.scm: Likewise.
+
+2017-03-08  Werner Koch  <wk@gnupg.org>
+
+	wks: Put stdout into binary mode for Windows at another place.
+	+ commit ed5575ec550ff16b0b901a23c6aa3eb3d47b0575
+	* tools/wks-util.c (wks_send_mime): Set stdout to binary.
+
+	wks: Put stdout into binary mode for Windows.
+	+ commit 5c83759364272b19ceafbef46d057f0430a12698
+	* tools/send-mail.c (send_mail_to_file): Call es_set_binary.
+
+2017-03-08  Justus Winter  <justus@g10code.com>
+
+	build: Use macOS' compatibility macros to enable all features.
+	+ commit dd60e868d2bf649a33dc96e207ffd3b8ae4d35af
+	* configure.ac: On macOS, use the compatibility macros to expose every
+	feature of the libc.  This is the equivalent of _GNU_SOURCE on GNU
+	libc.
+
+	g10: Move more flags into the flag bitfield.
+	+ commit 2649fdfff5d9e227025956e015b67502fd4962c4
+	* g10/packet.h (PKT_user_id): Move 'is_primary', 'is_revoked', and
+	'is_expired' into the flags bitfield, and drop the prefix.
+	* g10/call-dirmngr.c: Adapt accordingly.
+	* g10/export.c: Likewise.
+	* g10/getkey.c: Likewise.
+	* g10/import.c: Likewise.
+	* g10/kbnode.c: Likewise.
+	* g10/keyedit.c: Likewise.
+	* g10/keylist.c: Likewise.
+	* g10/keyserver.c: Likewise.
+	* g10/mainproc.c: Likewise.
+	* g10/pkclist.c: Likewise.
+	* g10/pubkey-enc.c: Likewise.
+	* g10/tofu.c: Likewise.
+	* g10/trust.c: Likewise.
+	* g10/trustdb.c: Likewise.
+
+2017-03-08  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Do not put a keyserver into a new dirmngr.conf.
+	+ commit 8f028642239fa992c6c059e3c1b4421a1813c827
+	* g10/dirmngr-conf.skel: Do not define keyservers.
+
+	doc: Add a note to the trust model direct.
+	+ commit f0257b4a86b73f5b956028e68590b6d2a23ea4da
+	* doc/gpg.texi (GPG Configuration Options): Add note.  Chnage Index
+	from trust-mode:foo to trust-model:foo.
+
+2017-03-07  Justus Winter  <justus@g10code.com>
+
+	Revert "build: Improve CFLAGS handling."
+	+ commit b71384c8054ce2f245ccfae02b8ee81e1adfc512
+	This reverts commit 4b57359ef3ce0b87e15889e12ef0fcd23f62dcb4.
+
+	build: Improve CFLAGS handling.
+	+ commit 4b57359ef3ce0b87e15889e12ef0fcd23f62dcb4
+	* configure.ac: Strip any flags matching '-Werror' from CFLAGS before
+	running the tests, and add them back later on.
+
+2017-03-07  Michael Haubenwallner  <michael.haubenwallner@ssi-schaefer.com>
+
+	gpgscm: Use system strlwr if available.
+	+ commit c22a2a89d3bd3d08b3abb8e4e33df32b480338ec
+	* tests/gpgscm/scheme.c: Define local strlwr only when HAVE_STRLWR is
+	not defined in config.h.
+	* tests/gpgscm/scheme-config.h: Remove hack.
+
+2017-03-07  Justus Winter  <justus@g10code.com>
+
+	gpg: Do not allow the user to revoke the last valid UID.
+	+ commit 591b6a9d879cbcabb089d89a26d3c3e0306054e1
+	* g10/keyedit.c (keyedit_quick_revuid): Merge self signatures, then
+	make sure that we do not revoke the last valid UID.
+	(menu_revuid): Make sure that we do not revoke the last valid UID.
+	* tests/openpgp/quick-key-manipulation.scm: Demonstrate that
+	'--quick-revoke-uid' can not be used to revoke the last valid UID.
+
+2017-03-07  NIIBE Yutaka  <gniibe@fsij.org>
+
+	tools: Removal of -Icommon.
+	+ commit 80fb1a8a05b2194af16027555b09bbd5d48ec9ac
+	* tools/gpg-wks-server.c: Follow the change.
+
+	More change for common.
+	+ commit d6c7bf1f8ab8899faba2fb81a35b096921c38f3c
+	* g10, scd, test, tools: Follow the change of removal of -Icommon.
+
+	Remove -I option to common.
+	+ commit 70aca95d6816082b289fceca8eabfcf718a6b701
+	* dirmngr/Makefile.am (AM_CPPFLAGS): Remove -I$(top_srcdir)/common.
+	* g10/Makefile.am (AM_CPPFLAGS): Ditto.
+	* g13/Makefile.am (AM_CPPFLAGS): Ditto.
+	* kbx/Makefile.am (AM_CPPFLAGS): Ditto.
+	* scd/Makefile.am (AM_CPPFLAGS): Ditto.
+	* sm/Makefile.am (AM_CPPFLAGS): Ditto.
+	* tools/Makefile.am (AM_CPPFLAGS): Ditto.
+	* Throughout: Follow the change.
+
+2017-03-07  Justus Winter  <justus@g10code.com>
+
+	tests: Avoid overflowing signed 32 bit time_t.
+	+ commit de3838372ae3cdecbd83eea2c53c8e2656d93052
+	* tests/openpgp/quick-key-manipulation.scm: Use expiration times in
+	the year 2038 instead of 2105 to avoid overflowing 32 bit time_t.
+	time_t is used internally to parse the expiraton time from the iso
+	timestamp.
+
+2017-03-07  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: Resolve conflict of util.h.
+	+ commit 176e07ce10d892fa7c7b96725b38b2fec9a1f916
+	* agent/Makefile.am (AM_CPPFLAGS): Remove -I$(top_srcdir)/common.
+	* agent/call-pinentry.c, agent/call-scd.c: Follow the change.
+	* agent/command-ssh.c, agent/command.c, agent/cvt-openpgp.c: Ditto.
+	* agent/divert-scd.c, agent/findkey.c, agent/genkey.c: Ditto.
+	* agent/gpg-agent.c, agent/pksign.c, agent/preset-passphrase.c: Ditto.
+	* agent/protect-tool.c, agent/protect.c, agent/trustlist.c: Ditto.
+	* agent/w32main.c: Ditto.
+
+	agent: Add include files.
+	+ commit bf03925751abb739f2fd9d631694d3dd33decf92
+	* agent/command-ssh.c: Add sys/socket.h and sys/un.h.
+
+	agent: Fix get_client_pid for portability.
+	+ commit f7f806afa5083617f4aba02fc3b285b06a7d73d4
+	* configure.ac: Simply check getpeerucred and ucred.h, and structure
+	members.
+	* agent/command-ssh.c: Include ucred.h.
+	(get_client_pid) [HAVE_STRUCT_SOCKPEERCRED_PID]: Use sockpeercred
+	structure for OpenBSD.
+	[LOCAL_PEERPID]: Use LOCAL_PEERPID for macOS.
+	[LOCAL_PEEREID]: Use LOCAL_PEEREID for NetBSD.
+	[HAVE_GETPEERUCRED]: Use getpeerucred for OpenSolaris.
+
+	common: Fix warning for portability.
+	+ commit b9ab733fc0dd2ca2a7eaac0bde3a817c07af36c5
+	* common/localename.c (do_nl_locale_name): We don't use CATEGORY.
+
+	tools: More portable for openpty use.
+	+ commit ce37ada87139ef418401f9f35439007a8c04a856
+	* configure.ac (AC_CHECK_HEADERS): Add util.h libutil.h and termios.h.
+	* tools/symcryptrun.c: Include those headers.
+
+	scd: Close THE_EVENT handle.
+	+ commit cc933a96f8e83bc66fb69ed33d9593acdd60c929
+	* scd/scdaemon.c (handle_connections): Close the handle.
+
+2017-03-06  Justus Winter  <justus@g10code.com>
+
+	tests: Harmonize temporary and socket directory handling.
+	+ commit 7e19786a5ddef637d1d9d21593fecf5a36b6f372
+	* tests/gpgscm/tests.scm (mkdtemp): Do not magically obey the
+	environment variable 'TMP', make sure to always return an absolute
+	path.
+	* tests/gpgme/Makefile.am (TMP): Drop variable.
+	(TESTS_ENVIRONMENT): Drop 'TMP'.
+	* tests/gpgme/gpgme-defs.scm (create-gpgmehome): Start the agent.  Do
+	not create private key store, the agent does that for us.
+	* tests/gpgsm/Makefile.am (TMP): Drop variable.
+	(TESTS_ENVIRONMENT): Drop 'TMP'.
+	* tests/gpgme/gpgme-defs.scm (create-gpgsmhome): Start the agent.  Do
+	not create private key store, the agent does that for us.
+	* tests/migrations/Makefile.am (TMP): Drop variable.
+	(TESTS_ENVIRONMENT): Drop 'TMP'.
+	* tests/migrations/common.scm (gpgconf): New variable.
+	(run-test): Create and remove socket directory.
+	* tests/migrations/extended-pkf.scm (src-tarball): Remove variable.
+	(setup): Remove function.
+	(trigger-migration): Likewise.
+	Use 'run-test' to execute the test.
+	* tests/migrations/from-classic.scm (src-tarball): Remove variable.
+	(setup): Remove function.
+	Use 'run-test' to execute the tests.
+	* tests/openpgp/Makefile.am (TMP): Drop variable.
+	(TESTS_ENVIRONMENT): Drop 'TMP'.
+	* tests/openpgp/README: Do not mention 'TMP'.
+	* tests/openpgp/defs.scm (with-home-directory): New macro.
+	(create-legacy-gpghome): Do not create private key store, the agent
+	does that for us.
+	(start-agent): Make sure to terminate the right agent with 'atexit'.
+
+	gpgscm: Fix creation of temporary directories.
+	+ commit 171e4314ebd3ff74af3dcdc8bd68e1100e8910ea
+	* tests/gpgscm/ffi.c (do_mkdtemp): Use a larger buffer for the
+	template.
+
+2017-03-06  Werner Koch  <wk@gnupg.org>
+
+	wks: Set published keys world-readable.
+	+ commit e3589110e01dc6ad04463351ec2ce17201556d09
+	* tools/gpg-wks-server.c (check_and_publish): Set the permissions.
+
+	gpg: Fix attempt to double free an UID structure.
+	+ commit 4a130bbc2c2f4be6e8c6357512a943f435ade28f
+	* g10/getkey.c (get_best_pubkey_byname): Set released .UID to NULL.
+
+2017-03-06  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Fix compiler warnings for app-openpgp.c.
+	+ commit e6ca015ae182a6dbb0466441efc17c99683e9375
+	* scd/app-openpgp.c (retrieve_key_material): Remove touching I.
+	(do_change_pin): Make sure going to leave if PINVALUE == 0.
+	(rsa_writekey): Emit simpler log.
+
+	scd: More cleanup of old code.
+	+ commit 9bf39ed75ddbd35908bcd0996f55325ff801619a
+	* scd/app-dinsig.c (do_sign): Remove assignment to HASHALGO.
+	* scd/app-p15.c (parse_keyusage_flags): Remove assign to MASK.
+	(read_ef_aodf): Likewise.
+	(read_ef_cdf): Change the control to parse_error.
+	* scd/app-sc-hsm.c (parse_keyusage_flags): Remove assign to MASK.
+	(read_ef_prkd): Remove assign to S.
+	(read_ef_prkd): Check if PRKDF is not null.
+	(read_ef_cd): Likewise for CDF.
+
+	scd: Clean up old code.
+	+ commit cb6337329d3c858c695a7e56e2fc31d9d50ca3fe
+	* scd/apdu.c (CT_init, CT_data, CT_close): Remove.
+	(ct_error_string, ct_activate_card, close_ct_reader, reset_ct_reader)
+	(ct_get_status, ct_send_apdu, open_ct_reader): Remove.
+	(new_reader_slot) [NEED_PCSC_WRAPPER]: Remove fd and pid handling.
+	(writen, readn): Remove.
+	(pcsc_get_status, pcsc_send_apdu, control_pcsc, close_pcsc_reader)
+	(reset_pcsc_reader, open_pcsc_reader): Only DIRECT version.
+	(apdu_open_one_reader): Remove CT_api handling.
+	(apdu_get_status_internal, send_le): Fix to stop warnings.
+
+	scd: Fix API of select_file/_path.
+	+ commit 0703de01c8fbc417a99ecf8e950fc306b8c8ac9c
+	* scd/iso7816.c (iso7816_select_file, iso7816_select_path): Remove
+	unused arguments.
+	* scd/app-dinsig.c (do_readcert): Follow the change.
+	* scd/app-help.c (app_help_read_length_of_cert): Likewise.
+	* scd/app-nks.c (keygripstr_from_pk_file, do_readcert, do_readkey)
+	(switch_application): Likewise.
+	* scd/app-p15.c (select_and_read_binary, select_ef_by_path)
+	(micardo_mse, app_select_p15): Likewise.
+	* scd/app.c (app_new_register): Likewise.
+
+	agent: For SSH, robustly handling scdaemon's errors.
+	+ commit 4ce4f2f683a17be3ddb93729f3f25014a97934ad
+	* agent/command-ssh.c (card_key_list): Return 0 when
+	agent_card_serialno returns an error.
+	(ssh_handler_request_identities): Handle errors for card listing
+	and proceed to other cases.
+
+2017-03-03  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Fix commit de6d8313.
+	+ commit 67c203b6bf8d6dd489ceef3391f609986e7b7a49
+	* dirmngr/http-common.c (get_default_keyserver): Fix assert.
+
+2017-03-03  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Fix scd_kick_the_loop.
+	+ commit f9acc7d18bb90f47dafe7e32ae92f567756d6b12
+	* scd/scdaemon.c (notify_fd): Remove.
+	(the_event) [W32]: New.
+	(main_thread_pid) [!W32]: New.
+	(handle_signal): Handle SIGCONT.
+	(scd_kick_the_loop): Use signal on UNIX and event on Windows.
+	(handle_connections): Likewise.
+
+2017-03-03  Werner Koch  <wk@gnupg.org>
+
+	gpg: Fix possible segv when attribute packets are filtered.
+	+ commit 5f6f3f5cae8a95ed469129f9677782c17951dab3
+	* g10/import.c (impex_filter_getval): Handle PKT_ATTRIBUTE the same as
+	PKT_USER_ID
+	(apply_drop_sig_filter): Ditto.
+
+	gpg: Add new variables to the import and export filters.
+	+ commit 1813f3be23bdab5a42070424c47cb8daa9d9e6b7
+	* g10/import.c (impex_filter_getval): Add new variables "expired",
+	"revoked", and "disabled".
+
+2017-03-02  Werner Koch  <wk@gnupg.org>
+
+	tools: Fix compile error with older gcc versions.
+	+ commit b1f48da02b474e985161aa2778d7b602a13c4292
+	* tools/mime-parser.h: Include rfc822parse.h.
+	(struct rfc822parse_context): Remove duplicate definition.
+
+	dirmngr: Rearrange files to fix de6d831.
+	+ commit 1890896fe698c55d15160a53aa6c5c22dc424031
+	* dirmngr/http-common.c: New.
+	* dirmngr/http-common.h: New.
+	* dirmngr/Makefile.am (dirmngr_SOURCES): Add them.
+	(t_http_SOURCES): Add them.
+	(t_ldap_parse_uri_SOURCES): Add them.
+	* dirmngr/misc.c (get_default_keyserver): Move to ...
+	* dirmngr/http-common.c: here.
+	* dirmngr/http.c: Include http-common.h instead of misc.h.
+	* dirmngr/http-ntbtls.c: Ditto.
+
+	dirmngr: Let --gpgconf-list return the default keyserver.
+	+ commit de6d8313f6df32aaa151bee74e1db269ac1e0fed
+	* dirmngr/misc.c (get_default_keyserver): New.
+	* dirmngr/http.c: Include misc.h
+	(http_session_new): Use get_default_keyserver instead of hardwired
+	"hkps.pool.sks-keyservers.net".
+	* dirmngr/http-ntbtls.c (gnupg_http_tls_verify_cb): Ditto.
+	* dirmngr/dirmngr.c (main) <aGPGCongList>: Return default keyserver.
+
+2017-03-02  Justus Winter  <justus@g10code.com>
+
+	gpg: Always initialize the trust db when generating keys.
+	+ commit 0c4d0620d327e8a2069532a5519afefe867a47d6
+	* g10/gpg.c (main): Always initialize the trust db when generating
+	keys.
+	* g10/keygen.c (do_generate_keypair): We can now assume that there is
+	a trust db.
+
+	gpg: Fix (quick) key generation with --always-trust.
+	+ commit 4735ab96aa5577d40ba7b3f72d863057198cc6a7
+	* g10/keygen.c (do_generate_keypair): Only update the ownertrust if we
+	do have a trust database.
+	* g10/trustdb.c (have_trustdb): New function.
+	* g10/trustdb.h (have_trustdb): New prototype.
+	* tests/openpgp/quick-key-manipulation.scm: Remove workaround.
+
+2017-03-02  Werner Koch  <wk@gnupg.org>
+
+	agent: Improve error message for the KEYTOCARD command.
+	+ commit d6f0f368763006abf08818bfefcd32ecedb5c20a
+	* agent/command.c (cmd_keytocard): Always use leave_cmd.  Simplify
+	timestamp checking and do an early test with an appropriate error
+	message.
+
+2017-03-02  Justus Winter  <justus@g10code.com>
+
+	g10: Signal an error when trying to revoke non-existant UID.
+	+ commit 62d21a4ab4029b32ea129f1cf3a0e1f22e2fb7b0
+	* g10/keyedit.c (keyedit_quick_revuid): Signal an error when trying to
+	revoke non-existant UID.
+	* tests/openpgp/quick-key-manipulation.scm: Test that.
+
+	tests: Log information about ssh, add comments to test.
+	+ commit 74cb3b230c1f99afc5fd09bccc24186a63b154b0
+	* tests/openpgp/ssh-import.scm (ssh-version-string): New variable, and
+	log the binary and version used in the test.
+	(ssh-supports?): Document how we test what algorithms are supported by
+	ssh, and log ssh-keygen's replies.
+
+	common,tools: Always escape newlines when escaping data.
+	+ commit e064c75b08a523f738108428fe0c417a46e66238
+	* common/stringhelp.c (do_percent_escape): Always escape newlines.
+	* tools/gpgconf-comp.c (gc_percent_escape): Likewise.
+
 2017-03-01  Werner Koch  <wk@gnupg.org>
 
 	Release 2.1.19.
