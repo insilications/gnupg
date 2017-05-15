@@ -5,11 +5,11 @@
 # Source0 file verified with key 0x249B39D24F25E3B6 (dshaw@jabberwocky.com)
 #
 Name     : gnupg
-Version  : 2.1.20
-Release  : 22
-URL      : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.20.tar.bz2
-Source0  : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.20.tar.bz2
-Source99 : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.20.tar.bz2.sig
+Version  : 2.1.21
+Release  : 23
+URL      : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.21.tar.bz2
+Source0  : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.21.tar.bz2
+Source99 : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.21.tar.bz2.sig
 Summary  : zlib compression library
 Group    : Development/Tools
 License  : BSD-3-Clause CC0-1.0 GPL-3.0 LGPL-3.0 NCSA
@@ -73,12 +73,15 @@ locales components for the gnupg package.
 
 
 %prep
-%setup -q -n gnupg-2.1.20
+%setup -q -n gnupg-2.1.21
 %patch1 -p1
 
 %build
+export http_proxy=http://127.0.0.1:9/
+export https_proxy=http://127.0.0.1:9/
+export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1492173557
+export SOURCE_DATE_EPOCH=1494881567
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
@@ -90,11 +93,11 @@ make V=1  %{?_smp_mflags}
 export LANG=C
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
-export no_proxy=localhost
+export no_proxy=localhost,127.0.0.1,0.0.0.0
 make check || :
 
 %install
-export SOURCE_DATE_EPOCH=1492173557
+export SOURCE_DATE_EPOCH=1494881567
 rm -rf %{buildroot}
 %make_install
 %find_lang gnupg2
@@ -131,9 +134,7 @@ ln -s gpg2 %{buildroot}/usr/bin/gpg
 
 %files data
 %defattr(-,root,root,-)
-/usr/share/gnupg/dirmngr-conf.skel
 /usr/share/gnupg/distsigkey.gpg
-/usr/share/gnupg/gpg-conf.skel
 /usr/share/gnupg/help.be.txt
 /usr/share/gnupg/help.ca.txt
 /usr/share/gnupg/help.cs.txt
