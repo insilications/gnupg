@@ -6,7 +6,7 @@
 #
 Name     : gnupg
 Version  : 2.1.21
-Release  : 23
+Release  : 24
 URL      : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.21.tar.bz2
 Source0  : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.21.tar.bz2
 Source99 : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.21.tar.bz2.sig
