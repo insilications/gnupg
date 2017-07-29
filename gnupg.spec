@@ -5,14 +5,14 @@
 # Source0 file verified with key 0x249B39D24F25E3B6 (dshaw@jabberwocky.com)
 #
 Name     : gnupg
-Version  : 2.1.21
-Release  : 24
-URL      : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.21.tar.bz2
-Source0  : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.21.tar.bz2
-Source99 : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.21.tar.bz2.sig
+Version  : 2.1.22
+Release  : 25
+URL      : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.22.tar.bz2
+Source0  : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.22.tar.bz2
+Source99 : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.22.tar.bz2.sig
 Summary  : zlib compression library
 Group    : Development/Tools
-License  : BSD-3-Clause CC0-1.0 GPL-3.0 LGPL-3.0 NCSA
+License  : BSD-3-Clause CC0-1.0 GPL-2.0 GPL-3.0 LGPL-2.1 LGPL-3.0 NCSA
 Requires: gnupg-bin
 Requires: gnupg-doc
 Requires: gnupg-data
@@ -26,7 +26,6 @@ BuildRequires : libusb-compat-dev
 BuildRequires : npth-dev
 BuildRequires : pkgconfig(gnutls)
 BuildRequires : pkgconfig(sqlite3)
-Patch1: wakeups.patch
 
 %description
 The GNU Privacy Guard 2
@@ -73,15 +72,14 @@ locales components for the gnupg package.
 
 
 %prep
-%setup -q -n gnupg-2.1.21
-%patch1 -p1
+%setup -q -n gnupg-2.1.22
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1494881567
+export SOURCE_DATE_EPOCH=1501297696
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
@@ -97,7 +95,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make check || :
 
 %install
-export SOURCE_DATE_EPOCH=1494881567
+export SOURCE_DATE_EPOCH=1501297696
 rm -rf %{buildroot}
 %make_install
 %find_lang gnupg2
