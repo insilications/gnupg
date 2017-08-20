@@ -6,7 +6,7 @@
 #
 Name     : gnupg
 Version  : 2.1.22
-Release  : 25
+Release  : 26
 URL      : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.22.tar.bz2
 Source0  : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.22.tar.bz2
 Source99 : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.22.tar.bz2.sig
@@ -22,7 +22,6 @@ BuildRequires : libassuan-dev
 BuildRequires : libgcrypt-dev
 BuildRequires : libgpg-error-dev
 BuildRequires : libksba-dev
-BuildRequires : libusb-compat-dev
 BuildRequires : npth-dev
 BuildRequires : pkgconfig(gnutls)
 BuildRequires : pkgconfig(sqlite3)
@@ -79,7 +78,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1501297696
+export SOURCE_DATE_EPOCH=1503188374
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
@@ -95,7 +94,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make check || :
 
 %install
-export SOURCE_DATE_EPOCH=1501297696
+export SOURCE_DATE_EPOCH=1503188374
 rm -rf %{buildroot}
 %make_install
 %find_lang gnupg2
