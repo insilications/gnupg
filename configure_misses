@@ -40,3 +40,4 @@ Configure miss: whether readline via "-lreadline" is present and sane
 Configure miss: whether readline via "-lreadline -ltermcap" is present and sane
 Configure miss: whether readline via "-lreadline -lcurses" is present and sane
 Configure miss: whether readline via "-lreadline -lncurses" is present and sane
+Configure miss: whether "make check" shall run all tests

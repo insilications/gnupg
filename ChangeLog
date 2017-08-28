@@ -1,3 +1,362 @@
+2017-08-28  Werner Koch  <wk@gnupg.org>
+
+	Release 2.2.0.
+	+ commit 9d80fb8e000189e61c173c39f1e1ca417566a7fc
+
+
+2017-08-27  Werner Koch  <wk@gnupg.org>
+	    Arnaud Fontaine  <arnaud.fontaine@ssi.gouv.fr>
+
+	scd: Convey the correct length for Le.
+	+ commit 45d5f5800afe6613f338a26f361cb5e03e861129
+	* scd/app-openpgp.c (determine_rsa_response): Round bits up.
+
+2017-08-24  Werner Koch  <wk@gnupg.org>
+
+	gpg: Fix memory leak while running --check-trustdb.
+	+ commit 13821e15fb9bdddfce79d88731c0f151724b2371
+	* g10/trustdb.c (update_min_ownertrust): Free PK.
+
+	gpg: Fix memory leak in sig-check.
+	+ commit b065a696344eac3007dbd5642143ecaaeebab43a
+	* g10/sig-check.c (check_signature_over_key_or_uid): Remove useless
+	condition.  Actually free when SIGNER was allocated by us.
+
+	build: Remove obsolete option from autogen.rc.
+	+ commit 02a5df614a369519ad7781f95dc977e24a0d4277
+	* autogen.rc: Remove --enable-gpg2-is-gpg.
+
+2017-08-23  Werner Koch  <wk@gnupg.org>
+
+	gpgconf: Swap "auto-key-retrieve" and "no-auto-key-retrieve".
+	+ commit 565e486b8028f9e3cc51ebc5202666b598042175
+	* g10/gpg.c (gpgconf_list): Announce "auto-key-retrieve".
+	(main): Simplify setting of KEYSERVER_AUTO_KEY_RETRIEVE.
+	* tools/gpgconf-comp.c: Make "no-auto-key-retrieve" invisible.  Make
+	"auto-key-retrieve" an expert option.
+
+	tests: Do not run trust-pgp-4.scm.
+	+ commit b917cb66b79597520788cd9264889942247a3377
+	* tests/openpgp/Makefile.am (XTESTS): Remove test.
+	(EXTRA_DIST): Add test file.
+
+	build: Change SWDB tag "gnupg21" to "gnupg22".
+	+ commit 008ae0bd868cb49ad4d67fc8c71707cd2a162137
+	* configure.ac (GNUPG_SWDB_TAG): New ac_define.  Set it to "gnupg22".
+	* tools/gpgconf.c (query_swdb): Use it.
+	* build-aux/speedo.mk: Change tag "gnupg21" to "gnupg22".
+	* Makefile.am (distcheck-hook): Ditto.
+
+2017-08-23  Åka Sikrom  <a4@hush.com>
+
+	po: Update Norwegian translation.
+	+ commit fd0e5b60bed1cfc2aed7b2e13cc449f355eac051
+
+
+2017-08-23  Andre Heinecke  <aheinecke@intevation.de>
+
+	agent: Fix string translation for Windows.
+	+ commit 6158811304937b592601ef30c29c5a5cdbaa88ea
+	* agent/agent.h (L_): Define agent_Lunderscore when simple
+	gettext is used.
+
+2017-08-22  NIIBE Yutaka  <gniibe@fsij.org>
+
+	po: Update Japanese translation.
+	+ commit e6fa6b0ce823effd721c807b2b292287af91c642
+
+
+2017-08-21  Damien Goutte-Gattat  <dgouttegattat@incenp.org>
+
+	tests: Add tests for the PGP trust model.
+	+ commit c23a69970ba38edae9d3b2603825d18fbb732423
+	* tests/openpgp/trust-pgp-1.scm: New file.
+	* tests/openpgp/trust-pgp-2.scm: New file.
+	* tests/openpgp/trust-pgp-3.scm: New file.
+	* tests/openpgp/trust-pgp-4.scm: New file.
+	* tests/openpgp/trust-pgp/common.scm: New file.
+	* tests/openpgp/trust-pgp/scenario1.asc: New file.
+	* tests/openpgp/trust-pgp/scenario2.asc: New file.
+	* tests/openpgp/trust-pgp/scenario3.asc: New file.
+	* tests/openpgp/trust-pgp/scenario4.asc: New file.
+	* tests/openpgp/trust-pgp/alice.sec.asc: New file.
+	* tests/openpgp/trust-pgp/bobby.sec.asc: New file.
+	* tests/openpgp/trust-pgp/carol.sec.asc: New file.
+	* tests/openpgp/trust-pgp/david.sec.asc: New file.
+	* tests/openpgp/trust-pgp/frank.sec.asc: New file.
+	* tests/openpgp/trust-pgp/grace.sec.asc: New file.
+	* tests/openpgp/trust-pgp/heidi.sec.asc: New file.
+	* tests/openpgp/Makefile.am (XTESTS): Add new tests.
+	(TEST_FILES): Add new files.
+	(EXTRA_DIST): Add new common file.
+
+	tests: Move some functions into a common module.
+	+ commit cbe54b28bf3610204e12c50c0606df37337a1156
+	* tests/openpgp/tofu.scm (gettrust): Moved to the common defs.scm
+	module.
+	(checktrust): Likewise.
+	* tests/openpgp/defs.scm (gettrust): New function.
+	(checktrust): Likewise.
+
+	gpgconf: Make WoT settings configurable by gpgconf.
+	+ commit 0161225457e0609509d0d5f4b80a60a1071b4b48
+	* tools/gpgconf-comp.c (gc_options_gpg): Add max-cert-depth,
+	completes-needed, and marginals-needed options.
+	* g10/gpg.c (gpgconf_list): Likewise.
+
+2017-08-21  Justus Winter  <justus@g10code.com>
+
+	gpgscm: Fix -Wimplicit-fallthrough warnings.
+	+ commit 6e596b2a745ae7a75a69038cf00ab4bbae1cebaa
+	* tests/gpgscm/scheme.c (CASE): Rearrange so that the case statement
+	is at the front.
+	(Eval_Cycle): Improve fallthrough annotations.
+
+2017-08-11  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	gpg: default to --no-auto-key-retrieve.
+	+ commit e6f84116abca2ed49bf14b2e28c3c811a3717227
+	* g10/gpg.c (main): remove KEYSERVER_AUTO_KEY_RETRIEVE from the
+	default keyserver options.
+	* doc/gpg.texi: document this change.
+
+2017-08-10  Justus Winter  <justus@g10code.com>
+
+	tests: Improve documentation.
+	+ commit 23107ba20f8b4eb5482b480ad6a8af6b39d2bfeb
+	* tests/openpgp/README: Add quickstart instructions, how to use
+	shell.scm, remove no longer used MKDATA.
+
+2017-08-09  Marcus Brinkmann  <marcus.brinkmann@ruhr-uni-bochum.de>
+
+	g10: Write status error on error of --quick-revoke-uid.
+	+ commit 977fc5f0eb9fdee19e66bea8cd2eb5414789b485
+	* g10/keyedit.c (keyedit_quick_revuid): Write status error on error.
+
+2017-08-09  Werner Koch  <wk@gnupg.org>
+
+	Release 2.1.23.
+	+ commit e8ffa9a6ca5d76660b67207cd1157068e48483de
+
+
+	po: Update German translation.
+	+ commit 2059dbf201963c6f229698ae80c6c774b1f686c8
+
+
+2017-08-08  Werner Koch  <wk@gnupg.org>
+
+	build: New configure option --enable-all-tests.
+	+ commit fb21aa8b50367e2afa13bad73fc21d6f01a97e18
+	* configure.ac: New option --enable-all-tests.
+	* tests/gpgscm/ffi.c (ffi_init): New gloabl var *run-all-tests*.
+	* tests/openpgp/all-tests.scm (all-tests): Use that var instead
+	of *maintainer-mode*.
+	* Makefile.am (AM_DISTCHECK_CONFIGURE_FLAGS): Add --enable-all-tests.
+
+	gpgscm: Make the test summary stand out.
+	+ commit 0bd19dae1161a71053d794e4f75e66f70445f9f0
+	* tests/gpgscm/tests.scm (test-pool): Add delimiter lines.
+
+	sm: Always print the keygrip in colon mode.
+	+ commit 0a8e20c4c639f0c491e2af5ac5fb97005196422b
+	* sm/keylist.c (list_cert_colon): Always print the keygrip as
+	described in the manual.
+
+2017-08-08  Justus Winter  <justus@g10code.com>
+
+	gpg: Add option '--disable-dirmngr'.
+	+ commit c4506f624ed6854aa0ba1629aa2d1d43eb26900d
+	* doc/gpg.texi: Document new option.
+	* g10/call-dirmngr.c (create_context): Fail if option is given.
+	* g10/gpg.c (cmd_and_opt_values): New value.
+	(opts): New option.
+	(gpgconf_list): Add new option.
+	(main): Handle new option.
+	* g10/options.h (struct opt): New field 'disable_dirmngr'.
+	* tools/gpgconf-comp.c (gc_options_gpg): New option.
+
+2017-08-07  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	systemd-user: Drop redundant After=*.socket.
+	+ commit 81074c3b0211854a2dc94600dc892224201536f5
+	* doc/examples/systemd-user/*.service: Drop redundant After=*.socket
+	directive.
+
+	systemd-user: Drop RefuseManualStart=true.
+	+ commit 407da18254dfebcacfaee16952ef0b617b1626ea
+	* doc/examples/systemd-user/*.service: drop RefuseManualStart=true
+
+2017-08-07  Justus Winter  <justus@g10code.com>
+
+	tests: Do not run all tests unless in maintainer mode.
+	+ commit b0112dbca91e720a4ff622ad0e88d99eba56203a
+	* configure.ac: Leak the maintainer mode flag into 'config.h'.
+	* tests/gpgscm/ffi.c: Pass it into the scheme environment.
+	* tests/openpgp/all-tests.scm: Only run tests against non-default
+	configurations (keyring, extended-key-format) in maintainer mode.
+
+2017-08-07  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	Fix spelling.
+	+ commit a611cba142470c52f3303c512f77ae7d195cc41f
+	* doc/gpg.texi: s/occured/occurred/
+
+	Simple typo fix.
+	+ commit f011d8763a009612c858a287cf7cc6a1f1a6d32a
+	* agent/gpg-agent.c: Correct spelling in comment.
+
+2017-08-05  Werner Koch  <wk@gnupg.org>
+
+	gpg: Install gpg by default under the name gpg.
+	+ commit a69464b0b6dac88b360a13d3faf19dd7f2a0e02b
+	* configure.ac: Remove option --enable-gpg2-is-gpg.  Add option
+	--enable-gpg-is-gpg2.
+	* build-aux/speedo.mk (speedo_pkg_gnupg_configure): Remove
+	--enable-gpg2-is-gpg.
+
+	gpg: gpgconf needs to support the now default --auto-key-retrieve.
+	+ commit 69e97d909d586160cc0631c9a6f4d3f24bb0c682
+	* tools/gpgconf-comp.c (gc_options_gpg): Re-add "auto-key_retrieve".
+
+2017-08-04  Werner Koch  <wk@gnupg.org>
+
+	gpg: Fix memory leak in parse_auto_key_locate.
+	+ commit b70e86fd1050fc6da07a177ed142ae9882b4dd0d
+	* g10/getkey.c (parse_auto_key_locate): Fix freeing of OPTIONS.
+
+	tests: Adjust tests for changed --auto-key-locate default.
+	+ commit 0767eada1479c0fa9d4b75781a8c2afb67bdbf90
+	* tests/openpgp/defs.scm (create-gpghome): Disable new defaults.
+
+	gpg: Make --no-auto-key-retrieve gpgconf-igurable.
+	+ commit 9bb13a0e819334681caca38c9074bd7bfc04e45e
+	* g10/gpg.c (gpgconf_list): Print no-auto-key-retrieve instead of
+	auto-key-retrieve.
+	* tools/gpgconf-comp.c (gc_options_gpg): Replace auto-key-retrieve by
+	no-auto-key-retrieve and chnage level from invisible to advanced.
+
+	gpg: Default to --auto-key-locate "local,wkd" and --auto-key-retrieve.
+	+ commit 7e1fe791d188b078398bf83c9af992cb1bd2a4b3
+	* g10/gpg.c (main): Add KEYSERVER_AUTO_KEY_RETRIEVE to the default
+	keyserver options.  Set the default for --auto-key-locate to
+	"local,wkd".  Reset that default iff --auto-key-locate has been given
+	in the option file or in the commandline.
+	* g10/getkey.c (parse_auto_key_locate): Work on a copy of the arg.
+
+	agent: Make --no-grab the default.
+	+ commit 3d78ae4d3de08398fabae5821045a3a1da6dadbe
+	* agent/gpg-agent.c (oGrab): New const.
+	(opts): New option --grab.  Remove description for --no-grab.
+	(parse_rereadable_options): Make --no-grab the default.
+	(finalize_rereadable_options): Allow --grab to override --no-grab.
+	(main) <gpgconflist>: Add "grab".
+	* tools/gpgconf-comp.c (gc_options_gpg_agent): Add "grab".
+
+	gpg: Avoid double fingerprint printing with import-show.
+	+ commit b54d75fb1dcfa2cebb3a2497b81ffb49acac2056
+	* g10/import.c (import_one) <IMPORT_SHOW>: Take care of fingerprint
+	options.
+
+	gpg: New import option show-only.
+	+ commit d9fabcc1989d7235ea0294874803295a30f8711b
+	* g10/options.h (IMPORT_DRY_RUN): New.
+	* g10/import.c (parse_import_options): Add "show-only".
+	(import_one): use that as alternative to opt.dry_run.
+
+2017-08-03  Werner Koch  <wk@gnupg.org>
+
+	wks: Allow gpg-wks-client --supported with just the domain name.
+	+ commit 6cba56d436b56ea5e60042144a8a75a2e80007c8
+	* tools/gpg-wks-client.c (command_supported): Hack for missing local
+	part.
+
+2017-08-02  Marcus Brinkmann  <marcus.brinkmann@ruhr-uni-bochum.de>
+
+	g10: Always save standard revocation certificate in file.
+	+ commit dcfb01959802b27869528dda1d9a4f5e79574bb5
+	* g10/revoke.c (gen_standard_revocation): Set opt.outfile to NULL
+	temporarily to create certificate in right place.
+
+2017-08-01  Marcus Brinkmann  <marcus.brinkmann@ruhr-uni-bochum.de>
+
+	Revert "g10: Always save standard revocation certificate in file."
+	+ commit 624cd2d0bf6cc6dd1b79654295dc76f5b2d6d70b
+	This reverts commit ebc65ff459e6c228fb7406e375819a9fe5637abe.
+
+	g10: Always save standard revocation certificate in file.
+	+ commit ebc65ff459e6c228fb7406e375819a9fe5637abe
+	* g10/main.h (open_outfile): New parameter NO_OUTFILE.
+	* g10/openfile.c (open_outfile): New parameter NO_OUTFILE.  If given,
+	never use opt.outfile.
+	* g10/revoke.c (create_revocation): If FILENAME is true, also set
+	NO_OUTFILE to true (for standard revocation certificates).
+	* g10/dearmor.c, g10/encrypt.c, g10/export.c, g10/revoke.c,
+	g10/sign.c: Adjust all other callers.
+
+	artwork: Add icons.
+	+ commit a8d0b8d2333ddab703d1e346e06c106eeeedfd53
+	* artwork/icons/index.css: New file.
+	* artwork/icons/index.html: New file.
+	* artwork/icons/lock-12.png: New file.
+	* artwork/icons/lock-128.png: New file.
+	* artwork/icons/lock-16.png: New file.
+	* artwork/icons/lock-24.png: New file.
+	* artwork/icons/lock-256.png: New file.
+	* artwork/icons/lock-32.png: New file.
+	* artwork/icons/lock-48.png: New file.
+	* artwork/icons/lock-64.png: New file.
+	* artwork/icons/lock-wing-12.png: New file.
+	* artwork/icons/lock-wing-128.png: New file.
+	* artwork/icons/lock-wing-16.png: New file.
+	* artwork/icons/lock-wing-24.png: New file.
+	* artwork/icons/lock-wing-256.png: New file.
+	* artwork/icons/lock-wing-32.png: New file.
+	* artwork/icons/lock-wing-48.png: New file.
+	* artwork/icons/lock-wing-64.png: New file.
+	* artwork/icons/lock-wing.svg: New file.
+	* artwork/icons/lock.svg: New file.
+	* artwork/icons/wing-12.png: New file.
+	* artwork/icons/wing-128.png: New file.
+	* artwork/icons/wing-16.png: New file.
+	* artwork/icons/wing-24.png: New file.
+	* artwork/icons/wing-256.png: New file.
+	* artwork/icons/wing-32.png: New file.
+	* artwork/icons/wing-48.png: New file.
+	* artwork/icons/wing-64.png: New file.
+	* artwork/icons/wing.svg: New file.
+
+2017-08-01  Werner Koch  <wk@gnupg.org>
+
+	gpg,sm: Error out on compliance mismatch while decrypting.
+	+ commit 4e117f206beb38287ddcd3251fb7baabadfbddbb
+	* g10/pubkey-enc.c (get_session_key): Bail out if the algo is not
+	allowed in the current compliance mode.
+	* sm/decrypt.c (gpgsm_decrypt): Ditto.
+
+2017-08-01  NIIBE Yutaka  <gniibe@fsij.org>
+
+	Simple typo fix.
+	+ commit fde9a8cc6c849fb21f3e6782dbd5c6bc863357eb
+	* tools/rfc822parse.c: Fix.
+
+	po: Update Japanese translation.
+	+ commit 02b571947b9442604faa7509478cd8577c2c0b9c
+
+
+2017-07-31  Werner Koch  <wk@gnupg.org>
+
+	dirmngr,w32: Fix http connection timeout problem.
+	+ commit 482fd5758c1b7e1b33c4cb50656e586a3ae16815
+	* dirmngr/http.c (connect_with_timeout) [W32]: Take care of EAGAIN.
+
+	Explain the "server is older than xxx warning".
+	+ commit 4ad5bc1b6d72483123963c894ee1412b2ceb99b4
+	* g10/call-agent.c (warn_version_mismatch): Print a note on how to
+	restart the servers.
+	* g10/call-dirmngr.c (warn_version_mismatch): Ditto.
+	* sm/call-agent.c (warn_version_mismatch): Ditto.
+	* sm/call-dirmngr.c (warn_version_mismatch): Ditto.
+
 2017-07-28  Werner Koch  <wk@gnupg.org>
 
 	Release 2.1.22.

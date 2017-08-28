@@ -5,11 +5,11 @@
 # Source0 file verified with key 0x249B39D24F25E3B6 (dshaw@jabberwocky.com)
 #
 Name     : gnupg
-Version  : 2.1.22
-Release  : 26
-URL      : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.22.tar.bz2
-Source0  : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.22.tar.bz2
-Source99 : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.22.tar.bz2.sig
+Version  : 2.2.0
+Release  : 27
+URL      : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.2.0.tar.bz2
+Source0  : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.2.0.tar.bz2
+Source99 : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.2.0.tar.bz2.sig
 Summary  : zlib compression library
 Group    : Development/Tools
 License  : BSD-3-Clause CC0-1.0 GPL-2.0 GPL-3.0 LGPL-2.1 LGPL-3.0 NCSA
@@ -25,11 +25,12 @@ BuildRequires : libksba-dev
 BuildRequires : npth-dev
 BuildRequires : pkgconfig(gnutls)
 BuildRequires : pkgconfig(sqlite3)
+BuildRequires : pkgconfig(zlib)
 
 %description
 The GNU Privacy Guard 2
 =========================
-Version 2.1
+Version 2.2
 * INTRODUCTION
 GnuPG is a complete and free implementation of the OpenPGP standard
 as defined by RFC4880 (also known as PGP).  GnuPG enables encryption
@@ -71,14 +72,14 @@ locales components for the gnupg package.
 
 
 %prep
-%setup -q -n gnupg-2.1.22
+%setup -q -n gnupg-2.2.0
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1503188374
+export SOURCE_DATE_EPOCH=1503930386
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
@@ -94,13 +95,10 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make check || :
 
 %install
-export SOURCE_DATE_EPOCH=1503188374
+export SOURCE_DATE_EPOCH=1503930386
 rm -rf %{buildroot}
 %make_install
 %find_lang gnupg2
-## make_install_append content
-ln -s gpg2 %{buildroot}/usr/bin/gpg
-## make_install_append end
 
 %files
 %defattr(-,root,root,-)
@@ -114,13 +112,12 @@ ln -s gpg2 %{buildroot}/usr/bin/gpg
 /usr/bin/gpg
 /usr/bin/gpg-agent
 /usr/bin/gpg-connect-agent
-/usr/bin/gpg2
 /usr/bin/gpgconf
 /usr/bin/gpgparsemail
 /usr/bin/gpgscm
 /usr/bin/gpgsm
 /usr/bin/gpgtar
-/usr/bin/gpgv2
+/usr/bin/gpgv
 /usr/bin/kbxutil
 /usr/bin/watchgnupg
 /usr/libexec/gpg-check-pattern
