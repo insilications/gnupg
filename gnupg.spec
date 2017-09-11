@@ -6,7 +6,7 @@
 #
 Name     : gnupg
 Version  : 2.2.0
-Release  : 27
+Release  : 28
 URL      : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.2.0.tar.bz2
 Source0  : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.2.0.tar.bz2
 Source99 : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.2.0.tar.bz2.sig
@@ -79,7 +79,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1503930386
+export SOURCE_DATE_EPOCH=1505143926
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-semantic-interposition "
@@ -95,10 +95,13 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make check || :
 
 %install
-export SOURCE_DATE_EPOCH=1503930386
+export SOURCE_DATE_EPOCH=1505143926
 rm -rf %{buildroot}
 %make_install
 %find_lang gnupg2
+## make_install_append content
+ln -s gpg %{buildroot}/usr/bin/gpg2
+## make_install_append end
 
 %files
 %defattr(-,root,root,-)
@@ -112,6 +115,7 @@ rm -rf %{buildroot}
 /usr/bin/gpg
 /usr/bin/gpg-agent
 /usr/bin/gpg-connect-agent
+/usr/bin/gpg2
 /usr/bin/gpgconf
 /usr/bin/gpgparsemail
 /usr/bin/gpgscm
