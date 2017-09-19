@@ -1,3 +1,109 @@
+2017-09-19  Werner Koch  <wk@gnupg.org>
+
+	Release 2.2.1.
+	+ commit 355ca9e9498740fb6294eec451507b4891ae01ec
+
+
+2017-09-18  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Use system certs if --hkp-cacert is not used.
+	+ commit df692a6167be5486f9a29da003a00292fd895176
+	* dirmngr/certcache.c (any_cert_of_class): New var.
+	(put_cert): Set it.
+	(cert_cache_deinit): Clear it.
+	(cert_cache_any_in_class): New func.
+	* dirmngr/http-ntbtls.c (gnupg_http_tls_verify_cb): Add hack to
+	override empty list of HKP certs.
+
+	wks: Create a new user id if provider wants mailbox-only.
+	+ commit 50c8b6c88f5d9f4b6c4e9c03aee31fe29afa94b8
+	* tools/gpg-wks-client.c (get_key): Add arg 'exact'.
+	(add_user_id): New.
+	(command_send): Create new user id.
+
+	wks: Send only the newest UID to the server.
+	+ commit 7f7f5d06fa5aa3a3c5ab8d2e59ee76207bfdeaa0
+	* tools/wks-util.c (list_key_status_cb): Rename to key_status_cb.
+	(wks_filter_uid): New.
+	(wks_list_key): Allow FPR to be NULL.  Return an error if no
+	fingerprint was found.
+	* tools/gpg-wks-server.c (process_new_key)
+	(check_and_publish): Remove now useless extra check for FPR.
+	* tools/gpg-wks-client.c (command_check): Ditto.
+	(command_send): Filter out the newest uid.
+
+	wks: Print the UID creation time with gpg-wks-client --check.
+	+ commit a0035986a8615df056182bb9af775b8b7b22003d
+	* tools/gpg-wks.h (uidinfo_list_s): Add field 'created'.
+	* tools/wks-util.c (append_to_uidinfo_list): Add arf 'created'.
+	(wks_list_key): Pass timestamp to append_to_uidinfo_list.
+	* tools/gpg-wks-client.c (command_check): Print UID creation time.
+
+	wks: Use dedicated type to convey user ids.
+	+ commit 4e0696de897cac6a34d55a69d8889faf26f1a923
+	* tools/gpg-wks.h (uidinfo_list_s, uidinfo_list_t): New.
+	* tools/wks-util.c (append_to_uidinfo_list): New.
+	(free_uidinfo_list): New.
+	(wks_list_key): Change arg r_mboxes to uidinfo_list_t.  Use
+	append_to_uidinfo_list.
+	* tools/gpg-wks-server.c (sserver_ctx_s): Replace strlist_t by
+	uidinfo_list_t.
+	(process_new_key): Ditto.
+	(check_and_publish): Ditto.
+	(command_receive_cb): Replace free_strlist by free_uidinfo_list.
+	* tools/gpg-wks-client.c (command_check): Replace strlist_t by
+	uidinfo_list_t.  Also print user id in verbose mode.
+
+2017-09-13  Werner Koch  <wk@gnupg.org>
+
+	gpgv: Initialize compliance checker.
+	+ commit 006ca124ed95845d43af8c14d7ab2bc085b47b4c
+	* g10/gpgv.c (main): Call gnupg_initialize_compliance.
+
+2017-09-12  Werner Koch  <wk@gnupg.org>
+
+	wks: Add hack for the broken posteo system.
+	+ commit a821b4f5567d02c3329c2b94a73dcbe12e6699a2
+	* tools/gpg-wks-client.c (command_send): Additional hack for posteo.
+	Check the protocol-version flag.
+
+	wks: Add new policy flag protocol-version.
+	+ commit 332c9eaa2a3c7cae90b389cdaa2c149c5595fb4d
+	* tools/gpg-wks.h (policy_flags_s): Add field protocol_version.
+	* tools/wks-util.c (wks_parse_policy): Add new policy flag.
+
+	gpg: Fix "Fix key generation with only an email part".
+	+ commit 8b5a2474f21dd4f1aa2a283e2f57d75e42742af5
+	* g10/keygen.c (proc_parameter_file): Don't check the result of
+	stpcpy.
+
+	wks: Use unencrypted draft-1 mode for posteo.de.
+	+ commit c65a7bba7331975d20910f90cf648b6ecc5410f0
+	* tools/gpg-wks-client.c (command_send): Allow sending in draft-1
+	mode.
+
+	tools: New function mime_maker_add_body_data.
+	+ commit 7d15ee88980f88ca62fc7de9492dd08e54d0f0f1
+	* tools/mime-maker.c (mime_maker_add_body_data): New.
+
+2017-09-11  NIIBE Yutaka  <gniibe@fsij.org>
+
+	tests: Fix a test which specifies expiration date.
+	+ commit a172759b5088ae086c0caa2e7d4d0ea346b28a90
+	* tests/openpgp/quick-key-manipulation.scm: Fix expiration time
+	comparison.
+
+	scd: Fix for large ECC keys.
+	+ commit 827abe01a72a50eab1cdcde78985b42a4a8480fb
+	* scd/app-openpgp.c (do_decipher): Support larger length.
+
+2017-09-11  Werner Koch  <wk@gnupg.org>
+
+	gpg: Fix key generation with only an email part.
+	+ commit 7089dcc54099a4909ce7d386c07ab87e1398e2eb
+	* g10/keygen.c (proc_parameter_file): Special case the email only
+	case.
+
 2017-08-28  Werner Koch  <wk@gnupg.org>
 
 	Release 2.2.0.
