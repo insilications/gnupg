@@ -6,7 +6,7 @@
 #
 Name     : gnupg
 Version  : 2.2.1
-Release  : 29
+Release  : 30
 URL      : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.2.1.tar.bz2
 Source0  : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.2.1.tar.bz2
 Source99 : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.2.1.tar.bz2.sig
@@ -22,6 +22,7 @@ BuildRequires : libassuan-dev
 BuildRequires : libgcrypt-dev
 BuildRequires : libgpg-error-dev
 BuildRequires : libksba-dev
+BuildRequires : libusb-dev
 BuildRequires : npth-dev
 BuildRequires : pkgconfig(gnutls)
 BuildRequires : pkgconfig(sqlite3)
@@ -79,7 +80,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1505827954
+export SOURCE_DATE_EPOCH=1507654986
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
@@ -95,7 +96,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make check || :
 
 %install
-export SOURCE_DATE_EPOCH=1505827954
+export SOURCE_DATE_EPOCH=1507654986
 rm -rf %{buildroot}
 %make_install
 %find_lang gnupg2

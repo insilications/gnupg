@@ -3,8 +3,6 @@ Configure miss: whether to allocate extra secure memory
 Configure miss: whether to use a fixed photo ID viewer
 Configure miss: whether use of capabilities is requested
 Configure miss: strerror in -lcposix
-Configure miss: libusb_init in -lusb-1.0
-Configure miss: libusb include dir
 Configure miss: ntbtls-config
 Configure miss: NTBTLS - version >= 0.1.0
 Configure miss: library containing res_query

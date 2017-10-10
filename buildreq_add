@@ -6,3 +6,4 @@ libgcrypt-dev
 libassuan-dev
 libksba-dev
 bzip2-dev
+libusb-dev
