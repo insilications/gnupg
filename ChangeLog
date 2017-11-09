@@ -1,3 +1,246 @@
+2017-11-07  Werner Koch  <wk@gnupg.org>
+
+	Release 2.2.2.
+	+ commit 5bd515005032f9340bd73e4346bbd0aef8518074
+
+
+	dirmngr: Reduce default LDAP timeout to 15 seconds.
+	+ commit 30f21f8b0fa6844a9bba3f24dc41b3ac32170109
+	* dirmngr/dirmngr.c (DEFAULT_LDAP_TIMEOUT): Change to 15.
+	* dirmngr/dirmngr_ldap.c (DEFAULT_LDAP_TIMEOUT): Ditto.
+
+	(cherry picked from commit ab7ac827041b5cd97bbca7a75b0930072dd6611f)
+
+	speedo: Include software versions in the W32 README.
+	+ commit 23bfac6d1a8bd2d0af5a6fac3ba3a6e986d6c9e8
+	(cherry picked from commit f9f72ffbfa9fd7d1a7a1823697d116d76155b407)
+
+2017-11-07  Ineiev  <ineiev@gnu.org>
+
+	po: Update Russian translation.
+	+ commit 1941287c9d2c9e666bad1bd330db169f0e3d6b6c
+
+
+2017-11-07  NIIBE Yutaka  <gniibe@fsij.org>
+
+	po: Update Japanese translation.
+	+ commit 96d441b315ec5c9f329596cfda28ac13a8bfa21a
+
+
+2017-11-06  Werner Koch  <wk@gnupg.org>
+
+	agent: New GETINFO sub-commands "s2k_count_cal" and "s2k_time".
+	+ commit 3607ab2cf382296cb398a92d5ec792239960bf7b
+	* agent/command.c (cmd_getinfo): New sub-commands.
+	* agent/protect.c (get_standard_s2k_count): Factor some code out to ...
+	(get_calibrated_s2k_count): new.
+	(get_standard_s2k_time): New.
+
+	(cherry picked from commit 52d41c8b0f4af6278d18d8935399ddad16a26856)
+
+	agent: New option --s2k-count.
+	+ commit 78a6d0ce88ae14d8324fbab3aee3286b17e49259
+	* agent/agent.h (opt): New field 's2k_count'.
+	* agent/gpg-agent.c (oS2KCount): New enum value.
+	(opts): New option --s2k-count.
+	(parse_rereadable_options): Set opt.s2k_count.
+
+2017-11-06  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Unattended key generation "Key-Grip" and "Subkey-Grip".
+	+ commit 680161647ad56d1ca92988f80bcc4d6fcb20b1eb
+	* g10/keygen.c (pSUBKEYGRIP): New.
+	(read_parameter_file): Add "Key-Grip" and "Subkey-Grip".
+	(do_generate_keypair): Support pSUBKEYGRIP.
+
+	g10: Simplify "factory-reset" procedure.
+	+ commit f183b9768b42a6792c55a6129488bd8fbf5e8e6d
+	* g10/card-util.c (factory_reset): Simplify.
+
+2017-11-02  Ineiev  <ineiev@gnu.org>
+
+	po: Update Russian translation.
+	+ commit 6070f5a61d4d17ff437c69e1b708d49d107c22dc
+
+
+2017-11-02  Werner Koch  <wk@gnupg.org>
+
+	gpg: Introduce magic value 25519 to switch a card to ECC.
+	+ commit acb300543422c660c87ac2f0211a42f792a65cc4
+	* g10/card-util.c (ask_card_keyattr): Handle special value 25519.
+	(do_change_keyattr): Allow changing to cv25519/ed25519.
+	(generate_card_keys): Ditto.
+	(card_generate_subkey): Ditto.
+
+	gpg: Rename two card related functions in card-util.
+	+ commit de3a740c2e1156e58d2f94faa85c051740c8988e
+	* g10/card-util.c (ask_card_rsa_keysize): Rename to ask_card_keyattr.
+	(do_change_rsa_keysize): Rename to do_change_keyattr.
+
+2017-11-02  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: Fix returning GPG_ERR_NOT_FOUND wrongly.
+	+ commit 3da47d19df89d302c0ea25921f4bd8ce55705afe
+	* agent/learncard.c (agent_handle_learn): Find SERIALNO.
+
+2017-11-01  NIIBE Yutaka  <gniibe@fsij.org>
+
+	common: Accept the Z-suffix for yymmddThhmmssZ format.
+	+ commit 0e5bd473a07f188615c4fce26b73bb452d689d68
+	* common/gettime.c (isotime_p): Accept the Z suffix.
+
+2017-10-27  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: Clean up pinentry access locking.
+	+ commit 3924e1442c6625a2b57573a1a634a5ec56b09a29
+	* agent/agent.h (struct server_control_s): Rename PINENTRY_ACTIVE.
+	* agent/call-pinentry.c (entry_owner): Remove.
+	(agent_reset_query): Use thread private object of PINENTRY_ACTIVE.
+	(unlock_pinentry): Add CTRL to arguments to access thread private.
+	Check and decrement PINENTRY_ACTIVE for recursive use.
+	(start_pinentry): Check and increment PINENTRY_ACTIVE for recursion.
+	(agent_askpin): Follow the change of unlock_pinentry API.
+	(agent_get_passphrase, agent_get_confirmation): Likewise.
+	(agent_show_message, agent_popup_message_start): Likewise.
+	(agent_popup_message_stop, agent_clear_passphrase): Likewise.
+
+	agent: Allow recursive use of pinentry.
+	+ commit 4738256f2e0d22302377c9ec7b2ae3999338e6c6
+	* agent/agent.h (struct server_control_s): Add pinentry_level.
+	* agent/call-pinentry.c (agent_popup_message_stop): Not clear
+	ENTRY_CTX here.
+	(unlock_pinentry): Handle recursion.  Clear ENTRY_CTX here.
+	(start_pinentry): Allow recursive use.
+
+2017-10-26  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent, tests: Support --disable-scdaemon build case.
+	+ commit 05cb87276c21c3a47226c75026fa46a955553dd9
+	* agent/command.c (cmd_scd): Support !BUILD_WITH_SCDAEMON.
+	* tests/openpgp/defs.scm (create-gpghome): Likewise.
+	* tests/gpgsm/gpgsm-defs.scm (create-gpgsmhome): Likewise.
+
+	Fix comment of configure.
+	+ commit b13972dfbf7224478652038725ab0d2cb41b7303
+	* configure.ac (BUILD_WITH_DIRMNGR): Comment fix.
+
+2017-10-24  Werner Koch  <wk@gnupg.org>
+
+	gpg: Avoid superfluous sig check info during import.
+	+ commit 84af859e391a757877c9a1d78e35face983e6d23
+	* g10/key-check.c (print_info): New.
+	(key_check_all_keysigs): Print sig checking results only in debug
+	mode.  Prettify the stats info and suppress them in quiet mode.
+
+	build: New configure option --enable-werror.
+	+ commit 812fe29bff42cf7dbd07e0becc55b2ada340dd97
+	* configure.ac: Implement that option.
+
+	build: Do not mess with CFLAGS in configure.
+	+ commit e417aaf69817fcb4a73c38077853dc940a2deabc
+	* configure.ac: Do not mess with the user provided CFLAGS.
+
+2017-10-24  Rainer Perske  <rainer.perske@uni-muenster.de>
+
+	sm: Do not expect X.509 keyids to be unique.
+	+ commit 1067403c8a7fb51decf30059e46901b5ee9f5b37
+	* sm/certlist.c (gpgsm_find_cert): Add arg allow_ambiguous and use it.
+	* sm/call-dirmngr.c (inq_certificate): Pass true to ALLOW_AMBIGUOUS
+	(run_command_inq_cb): Ditto.
+	* sm/gpgsm.c (main): Pass false.
+	* sm/server.c (cmd_passwd): Pass false.
+
+2017-10-24  Werner Koch  <wk@gnupg.org>
+
+	gpgconf: Ignore non-installed components with --apply-profile.
+	+ commit 6e808ae4700dc5e95bf4cc2d5c063df582c234d0
+	* tools/gpgconf-comp.c (retrieve_options_from_program): Add arg
+	only_installed.
+	(gc_component_retrieve_options): Use this if we want to process all
+	components.
+
+	gpg: Improve the "secret key available" notice in keyedit.c.
+	+ commit 560d85ecff4246133d185dc29395f07c918b5556
+	* g10/keyedit.c (KEYEDIT_NEED_SUBSK): New.
+	(cmds): Add this flag to keytocard, bkuptocard, expire, and passwd.
+	(keyedit_menu): Check whether only subkeys are available and take care
+	of that in the command check and in the HELP listing.  Also print a
+	different notice if only subkeys are available.
+
+	gpg: Remove unused flags from keyedit.c.
+	+ commit 016538d82867c40a21bc7cbf44ec386f4699077f
+	* g10/keyedit.c (KEYEDIT_NOT_SK, KEYEDIT_ONLY_SK): Remove.
+	(cmds): Remove them.
+
+2017-10-19  Werner Koch  <wk@gnupg.org>
+
+	gpg: Fix creating on-disk subkey with on-card primary key.
+	+ commit 44fb3fbc85b32552c91f32f099b6b246c12ce0cc
+	* g10/keygen.c (generate_subkeypair): Ignore error code issued for
+	trying to verify a card based key.
+
+	gpg: Print sec/sbb with --import-option import-show or show-only.
+	+ commit 2c7dccca9b617780a3ea760adf460bb3b77f90f3
+	* g10/import.c (import_one): Pass FROM_SK to list_keyblock_direct.
+
+	gpg: Make --dry-run and show-only work for secret keys.
+	+ commit 68c8619114fd5f24cb6bfb9e0f25c428a8805323
+	* g10/import.c (import_secret_one): Check for dry-run before
+	transferring keys.
+
+2017-10-19  Damien Goutte-Gattat  <dgouttegattat@incenp.org>
+
+	dirmngr: Do not follow https-to-http redirects.
+	+ commit 1ba308aa0356a57c21c4c8c2dac75b4d62b8aac3
+	* dirmngr/ks-engine-http.c (ks_http_fetch): Forbid redirects from
+	a https URI to a http URI.
+
+2017-10-19  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Fix find_and_check_key for multiple keyrings.
+	+ commit d07de3862710d88bc80d6f6c5ca8da5cf38ff0eb
+	* g10/pkclist.c (find_and_check_key): Call get_validity on a specific
+	keyblock.
+
+2017-10-19  Werner Koch  <wk@gnupg.org>
+
+	gpg: Keep a lock during the read-update/insert cycle in import.
+	+ commit 7c73db3d31c6457dfbdc82a8dc89951c023f0603
+	* g10/keydb.c (keydb_handle): New field 'keep_lock'.
+	(keydb_release): Clear that flag.
+	(keydb_lock): New function.
+	(unlock_all): Skip if KEEP_LOCK is set.
+	* g10/getkey.c (get_keyblock_byfprint_fast): Call keep_lock if
+	requested.
+
+	gpg: Improve keydb handling in the main import function.
+	+ commit 8448347b5bdee56e6f9938a93ea92fe4d3c8800c
+	* g10/getkey.c (get_pubkey_byfprint_fast): Factor most code out to ...
+	(get_keyblock_byfprint_fast): .. new function.
+	* g10/import.c (revocation_present): s/int rc/gpg_error_t err/.
+	(import_one): Use get_keyblock_byfprint_fast to get the keyblock and a
+	handle.  Remove the now surplus keyblock fetch in the merge branch.
+
+	gpg: Simplify keydb handling of the main import function.
+	+ commit 752cae6dd2ee8982a34c796a3f168ae538f7938c
+	* g10/import.c (import_keys_internal): Return gpg_error_t instead of
+	int.  Change var names.
+	(import_keys_es_stream): Ditto.
+	(import_one): Ditto.  Use a single keydb_new and simplify the use of
+	of keydb_release.
+
+	sm: Fix colon listing of fields > 12 in crt records.
+	+ commit 1bf5cbd3ef01b7f5fdcfa30c882047b924dcf3f0
+	* sm/keylist.c (print_capabilities): Move colon printing ...
+	(list_cert_colon): to here.
+
+2017-09-28  Werner Koch  <wk@gnupg.org>
+
+	gpg: Workaround for junk after --trusted-key.
+	+ commit b509d81cab030cca6abf0d878e1fc884eda344e6
+	* g10/trust.c (register_trusted_key): Cut off everthing starting as a
+	hash sign.
+
 2017-09-19  Werner Koch  <wk@gnupg.org>
 
 	Release 2.2.1.
