@@ -1,3 +1,65 @@
+2017-11-20  Werner Koch  <wk@gnupg.org>
+
+	Release 2.2.3.
+	+ commit 97f4feaaca8da4dcf1ca09a2016693155016f06b
+
+
+	build: Use -Werror only for the check.
+	+ commit 04d9833e71cc9d0c087faec091c29b0b6cf69488
+	* configure.ac: Do not add -Werror to mycflags.
+
+	gpg-agent: Avoid getting stuck in shutdown pending state.
+	+ commit 7ffedfab8909a45a4b0347a5f7b52222e8439f1d
+	* agent/gpg-agent.c (handle_connections): Always check inotify fds.
+
+2017-11-20  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: Use clock or clock_gettime for calibration.
+	+ commit 760aa8aadafb747f33a1461ab0c2570b5ae43716
+	* agent/protect.c (calibrate_get_time): Use clock or clock_gettime.
+
+	build: Check -Wlogical-op flag availability with -Werror.
+	+ commit 3ecd1a41be7c880976987d13e88342c98f37e064
+	* configure.ac: Use -Werror.
+
+	build: BSD make support for yat2m.
+	+ commit e1984969cac06a88c7e6f5e49e5c3104d10a847d
+	* configure.ac (YAT2M): Only define when found.
+	* doc/Makefile.am: Portability fix.
+
+2017-11-17  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Fix double free of a hash context in the error case.
+	+ commit 2aa106d6a4e2b09c257e8d769895d93ebb7f7edf
+	* dirmngr/crlcache.c: Clearly document that this fucntions takes
+	ownership of MD.
+	(abort_sig_check): Allow NULL for MD.
+	(crl_parse_insert): Immediately set MD to NULL.  Remove check for md
+	before a calling abort_sig_check.
+
+2017-11-15  Andre Heinecke  <aheinecke@intevation.de>
+
+	w32: Fix default registry path.
+	+ commit 4f5afaf1fdb5cb13859aca390ccb5a1ba1dba00c
+	* configure.ac (GNUPG_REGISTRY_DIR): Remove leading backslash.
+
+	gpgtar: Prefer --set-filename over implicit name.
+	+ commit 878b8bfdcc3a8becfc46b9287a2d14cd3c875f28
+	* tools/gpgtar-extract.c: Prefer opt.filename over filename
+	for the directory prefix.
+
+2017-11-15  Werner Koch  <wk@gnupg.org>
+
+	gpg: Print AKL info only in verbose mode.
+	+ commit b062ea5bc25157c942047b3fe7f5182a06106340
+	* g10/getkey.c (get_pubkey_byname): Print info only in verbose mode.
+
+2017-11-14  Andre Heinecke  <aheinecke@intevation.de>
+
+	sm, w32: Fix initial keybox creation.
+	+ commit 5ecef193bc2144e6d51a6bd5727bfd08a0d28b66
+	* sm/keydb.c (maybe_create_keybox): Open new keybox in bin mode.
+
 2017-11-07  Werner Koch  <wk@gnupg.org>
 
 	Release 2.2.2.
