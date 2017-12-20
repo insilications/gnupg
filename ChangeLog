@@ -1,3 +1,229 @@
+2017-12-20  Werner Koch  <wk@gnupg.org>
+
+	Release 2.2.4.
+	+ commit 558b17593ae97b8a07d06bf0d6af1a626b304501
+
+
+2017-12-19  Petr Pisar  <petr.pisar@atlas.cz>
+
+	po: Update Czech translation.
+	+ commit 43aaf60449036e870cc25b77fbb7312cf3fb534c
+
+
+2017-12-19  Ineiev  <ineiev@gnu.org>
+
+	po: Update Russian translation.
+	+ commit c7b8ec6c8e57797f0b77dbf7fca85fb600323328
+
+
+2017-12-19  Werner Koch  <wk@gnupg.org>
+
+	wks: New server options --check, --with-dir, with-file.
+	+ commit 7449063b1af2eef73d621a69cdb2fb713ab1ae6c
+	* tools/gpg-wks-server.c (aCheck, oWithDir, oWithFile): New const.
+	(opts): New options --check, --with-dir, and --with-file.
+	(main): Call command_check_key.
+	(command_list_domains): Implement option --with-dir.
+	(fname_from_userid): New.
+	(command_check_key): New.
+	(command_remove_key): Implement existsing command.
+	(command_revoke_key): Call command_remove_key as a simple
+	implementation.
+
+2017-12-18  Werner Koch  <wk@gnupg.org>
+
+	conf: New option --status-fd.
+	+ commit 482e000b8a7e336f342a7fac3b7379257e944b6e
+	* tools/gpgconf.c (oStatusFD): New const.
+	(opts): New option --status-fd.
+	(statusfp): New var.
+	(set_status_fd): New.
+	(gpgconf_write_status): New.
+	(gpgconf_failure): New.
+	(main): Set status fd and replace exit by gpgconf_failure.
+	* tools/gpgconf-comp.c: Repalce exit by gpgconf_failure.
+	(gc_process_gpgconf_conf): Print a few warning status messages.
+
+	gpgconf: Show --compliance in expert mode.
+	+ commit d74c40cef0a97cd98aa05f13b1541a94eda502a6
+	* tools/gpgconf-comp.c (gc_options_gpg): Set compliance to expert.
+	(gc_options_gpgsm): Ditto.
+
+	sm: Allow explicit setting of the default --compliance=gnupg.
+	+ commit 8c878ae4c9dfa9fe26aa15f4f9db3e86833575e9
+	* sm/gpgsm.c (main): Allow setting of the default compliance.
+	* tools/gpgconf-comp.c (gc_options_gpgsm): Add "compliance".
+
+2017-12-18  NIIBE Yutaka  <gniibe@fsij.org>
+
+	po: Update Japanese translation.
+	+ commit e3ddeff66e8c08a37ddf8b6510d69579c245e192
+	* po/ja.po: Fix message with no "%s".
+
+2017-12-13  Werner Koch  <wk@gnupg.org>
+
+	gpg: Print a warning for too much data encrypted with 3DES et al.
+	+ commit 416cf9e9be5d2daf0ef629208031989699b3653f
+	* g10/filter.h (cipher_filter_context_t): Remove unused filed
+	'create_mdc'.  Turn field 'header' into a bit field.  Add new fields
+	'short_blklen_warn' and 'short_blklen_count'.
+	* g10/cipher.c (write_header): Print a warning if MDC is not used.
+	(cipher_filter): Print a warning for long messages encrypted with a
+	short block length algorithm.
+
+	gpg: Simplify cipher:write_header.
+	+ commit b5333e13cbc9db354ed90762190bf70605a02d1f
+	* g10/cipher.c (write_header): Use write_status_printf.
+
+	gpg: Simplify default_recipient().
+	+ commit 9f641430dcdecbd7ee205d407cb19bb4262aa95d
+	* g10/pkclist.c (default_recipient): Use hexfingerprint.
+
+	gpg: Return an error from hexfingerprint on malloc error.
+	+ commit cd26c5482b10bee7658959ae913f2ddb83190587
+	* g10/keyid.c (hexfingerprint): Return NULL on malloc failure.  Chnage
+	all callers.
+
+	gpg: Remove some xmallocs.
+	+ commit 29119a6492eda5dd7920e45e7f2faa043d436591
+	* g10/getkey.c (get_pubkeys): Do not use xmalloc.
+
+2017-12-12  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	gpg: default-preference-list: prefer SHA512.
+	+ commit 8ede3ae29a39641a2f98ad9a4cf61ea99085a892
+	* g10/keygen.c (keygen_set_std_prefs): when producing default internal
+	personal-digest-preferences, keep the same order.  When publishing
+	external preferences, state preference for SHA512 first.
+
+2017-12-12  Werner Koch  <wk@gnupg.org>
+
+	Change backlog from 5 to 64 and provide option --listen-backlog.
+	+ commit c81a447190d2763ac4c64b2e74e22e824da8aba3
+	* agent/gpg-agent.c (oListenBacklog): New const.
+	(opts): New option --listen-backlog.
+	(listen_backlog): New var.
+	(main): Parse new options.
+	(create_server_socket): Use var instead of 5.
+	* dirmngr/dirmngr.c: Likewise.
+	* scd/scdaemon.c: Likewise.
+
+	build: New configure option --enable-run-gnupg-user-socket.
+	+ commit 17efcd2a2acdc3b7f00711272aa51e5be2476921
+	* configure.ac: (USE_RUN_GNUPG_USER_SOCKET): New ac_define.
+	* common/homedir.c (_gnupg_socketdir_internal): Add extra directories.
+
+2017-12-11  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Check for WKD support at session end.
+	+ commit 20b52be9ca29b0bc843fc68a279cb72728ede72f
+	* dirmngr/domaininfo.c (insert_or_update): Copy the name.
+	* dirmngr/misc.c (copy_stream): Allow arg OUT to be NULL.
+	* dirmngr/server.c (set_error): Protect CTX.
+	(dirmngr_status): Protect against missing ASSUAN_CTX.
+	(dirmngr_status_help): Ditto.
+	(dirmngr_status_printf): Ditto.
+	(cmd_wkd_get): Factor code out to ...
+	(proc_wkd_get): new func.  Support silent operation with no CTX.
+	(task_check_wkd_support): New.
+
+	dirmngr: Add a background task framework.
+	+ commit f2997adee0455c8c0fa391a853ec1b0c9fc43342
+	* dirmngr/workqueue.c: New.
+	* dirmngr/Makefile.am (dirmngr_SOURCES): Add new file.
+	* dirmngr/server.c (server_local_s): New field session_id.
+	(cmd_wkd_get): Add a task.
+	(task_check_wkd_support): New stub function.
+	(cmd_getinfo): New sub-commands "session_id" and "workqueue".
+	(start_command_handler): Add arg session_id and store it in
+	SERVER_LOCAL.
+	(dirmngr_status_helpf): New.
+	* dirmngr/dirmngr.h (wqtask_t): New type.
+	* dirmngr/dirmngr.c (main): Pass 0 as session_id to
+	start_command_handler.
+	(start_connection_thread): Introduce a session_id and pass it to
+	start_command_handler.  Run post session tasks.
+	(housekeeping_thread): Run global workqueue tasks.
+
+	dirmngr: Limit the number of cached domains for WKD.
+	+ commit 7a663c296e687f12ccd9a21d414de780feb4dfcf
+	* dirmngr/domaininfo.c (MAX_DOMAINBUCKET_LEN): New.
+	(insert_or_update): Limit the length of a bucket chain.
+	(domaininfo_print_stats): Print just one summary line.
+
+	(cherry picked from commit 26f08343fbccdbaa177c3507a3c5e24a5cf94a2d)
+
+	dirmngr: Keep track of domains used for WKD queries.
+	+ commit 6c1dcd79cf0977844179d9a7b189c10af5e42a7e
+	* dirmngr/domaininfo.c: New file.
+	* dirmngr/Makefile.am (dirmngr_SOURCES): Add file.
+	* dirmngr/server.c (cmd_wkd_get): Check whether the domain is already
+	known and tell domaininfo about the results.
+
+2017-12-08  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: Fix description of shadow format.
+	+ commit 5c121d44443b0a96ec6ea82b90717e3dbafd2cc5
+	* agent/keyformat.txt, agent/protect.c, agent/t-protect.c: Fix.
+
+2017-12-07  Werner Koch  <wk@gnupg.org>
+
+	build: Do not define logging.h constants for libgpg-error dev versions.
+	+ commit 2fedf8583bcc493f587c90bc9632d25dfd10bd10
+	* common/logging.h [GPGRT_LOG_WITH_PREFIX]: Do not define the log
+	constants.
+
+2017-12-07  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: Change intialization of assuan socket system hooks.
+	+ commit b9677ba16f6b386896781a751e4b2fc839e3ec81
+	* agent/gpg-agent.c (initialize_modules): Add hook again.
+	(main): Remove setting of the system houk but add scoket system hook
+	setting after assuan initialization.
+
+2017-12-06  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: Set assuan system hooks before call of assuan_sock_init.
+	+ commit 1524ba9656f0205d8c6ef504f773b832a7a12ab9
+	* agent/gpg-agent.c (initialize_modules): Move assuan_set_system_hooks.
+	(main): ... here, just before assuan_sock_init.
+
+2017-12-04  NIIBE Yutaka  <gniibe@fsij.org>
+	    Damien Goutte-Gattat  <dgouttegattat@incenp.org>
+
+	g10: Fix regexp sanitization.
+	+ commit 0d0b9eb0d4f99e8d293a4ce4b90921a879905115
+	* g10/trustdb.c (sanitize_regexp): Only escape operators.
+
+2017-11-26  Werner Koch  <wk@gnupg.org>
+
+	gpg: Do not read from uninitialized memory with --list-packets.
+	+ commit 4cf3cc6e3d48c8400466ca29c3f1c22ed2da6c2c
+	* g10/parse-packet.c (parse_plaintext): Fill up the allocated NAME.
+
+2017-11-24  Werner Koch  <wk@gnupg.org>
+
+	agent: New option --auto-expand-secmem.
+	+ commit 18af15249de5f826c3fa8d1d40e876734adcd0cf
+	* agent/gpg-agent.c (oAutoExpandSecmem): New enum value.
+	(opts): New option --auto-expand-secmem.
+	(main): Implement that option.
+
+2017-11-22  Werner Koch  <wk@gnupg.org>
+
+	gpg: Fix memory leaking for long inputs via --command-fd.
+	+ commit ea28ea18f3ee6c9f5e69986f39848398b58e242e
+	* g10/cpr.c (do_get_from_fd): Free the old buffer.
+
+2017-11-21  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Enable card removal check after select_application.
+	+ commit 0bb7fd0cab2d53cd0d44b21301b23edfe817e66b
+	* scd/apdu.c (open_ccid_reader): Fix error handling of ccid_get_atr.
+	* scd/app.c (select_application): Always kick the loop if new APP.
+	* scd/ccid-driver.c (ccid_open_usb_reader): Don't setup at open.
+	(ccid_slot_status): Setup interrupt transfer when !ON_WIRE.
+
 2017-11-20  Werner Koch  <wk@gnupg.org>
 
 	Release 2.2.3.

@@ -31,7 +31,6 @@ Configure miss: strlwr
 Configure miss: memicmp
 Configure miss: struct ucred.cr_pid
 Configure miss: struct sockpeercred.pid
-Configure miss: getpeerucred
 Configure miss: direct.h usability
 Configure miss: direct.h presence
 Configure miss: whether your system's regexp library is broken
