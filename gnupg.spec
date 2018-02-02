@@ -6,7 +6,7 @@
 #
 Name     : gnupg
 Version  : 2.2.4
-Release  : 33
+Release  : 34
 URL      : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.2.4.tar.bz2
 Source0  : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.2.4.tar.bz2
 Source99 : ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.2.4.tar.bz2.sig
