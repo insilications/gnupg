@@ -1,3 +1,114 @@
+2018-06-08  Werner Koch  <wk@gnupg.org>
+
+	Release 2.2.8.
+	+ commit cd9aaa7862955846f8adf819cd89d0db33e9c08c
+
+
+2018-06-08  Ineiev  <ineiev@gnu.org>
+
+	po: Update Russian translation.
+	+ commit 77ab99f80a5b0fbc60e05230185a54cd200d5e65
+
+
+2018-06-08  Werner Koch  <wk@gnupg.org>
+
+	gpg: Sanitize diagnostic with the original file name.
+	+ commit 210e402acd3e284b32db1901e43bf1470e659e49
+	* g10/mainproc.c (proc_plaintext): Sanitize verbose output.
+
+2018-06-07  Werner Koch  <wk@gnupg.org>
+
+	gpg: Improve import's repair-key duplicate signature detection.
+	+ commit 6a87a0bd2501d82f4a6263608e4856e841305caf
+	* g10/key-check.c (key_check_all_keysigs): Factor some code out to ...
+	(remove_duplicate_sigs): new.
+	(key_check_all_keysigs): Call remove_duplicate_sigs again after
+	reordering.
+
+	gpg: Fix import's repair-key duplicate signature detection.
+	+ commit cedd754fcb03f6dad6e462efc3d347bcef4ec83a
+	* g10/packet.h (PKG_siganture): Add field 'help_counter'.
+	* g10/key-check.c (sig_comparison): Take care of HELP_COUNTER.
+	(key_check_all_keysigs): De-duplicate on a per-block base.
+
+	gpg: Improve verbose output during import.
+	+ commit 36cc730fa516b3a197f3bb1eb6f3881dd128fbb7
+	* g10/import.c (chk_self_sigs): Print the subkeyid in addition to the
+	keyid.
+	(delete_inv_parts): Ditto.
+
+	(cherry picked from commit 1bc6b5174248ba4d83d648ef6d6f4550540d1f20)
+
+2018-06-06  Werner Koch  <wk@gnupg.org>
+
+	agent: Add DBUS_SESSION_BUS_ADDRESS et al. to the startup list.
+	+ commit c5c8fb1ec7c8690495de6189ec2c3a322db4e881
+	* agent/gpg-agent.c (agent_copy_startup_env): Replace explicit list
+	with the standard list.
+
+	gpg: Also detect a plaintext packet before an encrypted packet.
+	+ commit 054a187f24b19313cec59414fa924640e1b8c79c
+	* g10/mainproc.c (proc_encrypted): Print warning and later force an
+	error.
+
+	gpg: New command --show-keys.
+	+ commit dc87a3341f28ddac1113e90a3861d062be2610e2
+	* g10/gpg.c (aShowKeys): New const.
+	(opts): New command --show-keys.
+	(main): Implement command.
+	* g10/import.c (import_keys_internal): Don't print stats in show-only
+	mode.
+	(import_one): Be silent in show-only mode.
+
+2018-05-31  Werner Koch  <wk@gnupg.org>
+
+	gpg: Print a hint on how to decrypt a non-mdc message anyway.
+	+ commit 825909e9cd5f344ece6c0b0ea3a9475df1d643de
+	* g10/mainproc.c (proc_encrypted): Print a hint for legacy ciphers w/o
+	MDC.  Also print a dedicated status error code
+
+	(cherry picked from commit 874e391665405fc413a69f2ffacdb94bb08da7ff)
+
+	gpg: Detect multiple literal plaintext packets more reliable.
+	+ commit 2f2b1d1da949e8fce28d3c4a934b4097d6f24295
+	* g10/mainproc.c (proc_encrypted): Bump LITERALS_SEEN.
+
+	gpg: Remove MDC options.
+	+ commit 866667765f38bf65b612191209d0f0a87fb16393
+	* g10/gpg.c: Turn options --force-mdc, --no-force-mdc, --disable-mdc
+	and --no-disable-mdc into NOPs.
+	* g10/encrypt.c (use_mdc): Simplify.  MDC is now almost always used.
+	* g10/cipher.c (write_header): Include extra hint and make
+	translatable.
+	* g10/options.h (struct opt): Remove fields force_mdc and disable_mdc.
+
+	gpg: Hard fail on a missing MDC even for legacy algorithms.
+	+ commit 3db1b48a2da42942cb5a57281441167901bdcdc8
+	* g10/mainproc.c (proc_encrypted): Require an MDC or AEAD
+	* tests/openpgp/defs.scm (create-gpghome): Use --ignore-mdc-error to
+	allow testing with the current files.
+
+	gpg: Turn --no-mdc-warn into a NOP.
+	+ commit 26c0d3a3fc903c1a0de644ebcc99d3e665a80941
+	* g10/gpg.c (oNoMDCWarn): Remove.
+	(opts): Make --no-mdc-warn a NOP.
+	(main): Don't set var.
+	* g10/options.h (struct opt): Remove 'no_mdc_var'.
+	* g10/cipher-cfb.c (write_header): Assume opt.no_mdc_warn is false.
+	* g10/mainproc.c (proc_encrypted): Ditto.
+
+2018-05-07  Ineiev  <ineiev@gnu.org>
+
+	doc: Update description of displayed trust values.
+	+ commit ed12a1dabaf928e8620fc26ca426c935e1a8a880
+	* doc/trust-values.texi: New file.
+	* doc/Makefile.am (EXTRA_DIST): Add trust-values.texi.
+	* doc/gnupg.texi (Trust Values): New chapter.
+	* doc/gpg.texi (OpenPGP Key Management): Update the description
+	of how trust values are displayed, replace table with a reference
+	to Trust Values.
+	* doc/gpg.texi (GPG Examples): Add @mansect trust values.
+
 2018-05-02  Werner Koch  <wk@gnupg.org>
 
 	Release 2.2.7.
