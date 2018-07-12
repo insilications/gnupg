@@ -1,4 +1,182 @@
+2018-07-12  Werner Koch  <wk@gnupg.org>
+
+	Release 2.2.9.
+	+ commit 2b82db61ccfe57d077dff43e0d732b51c73e1a45
+
+
+2018-07-09  Werner Koch  <wk@gnupg.org>
+
+	gpg: Remove multiple subkey bindings during export-clean.
+	+ commit 61562fe00027a4263f53661ad279072bd0b0133e
+	* g10/key-clean.c (clean_one_subkey_dupsigs): New.
+	(clean_all_subkeys): Call it.
+
+	gpg: Let export-clean remove expired subkeys.
+	+ commit 8055f186a32e628028de897b7ee4705cd8e999b7
+	* g10/key-clean.h (KEY_CLEAN_NONE, KEY_CLEAN_INVALID)
+	(KEY_CLEAN_ENCR, KEY_CLEAN_AUTHENCR, KEY_CLEAN_ALL): New.
+	* g10/key-clean.c (clean_one_subkey): New.
+	(clean_all_subkeys): Add arg CLEAN_LEVEL.
+	* g10/import.c (import_one): Call clean_all_subkeys with
+	KEY_CLEAN_NONE.
+	* g10/export.c (do_export_stream): Call clean_all_subkeys depedning on
+	the export clean options.
+
+	gpg: Split key cleaning function for clarity.
+	+ commit 046276db3a04f1907ddcf77c3771832613918226
+	* g10/key-clean.c (clean_key): Rename to clean_all_uids and split
+	subkey cleaning into ...
+	(clean_all_subkeys): new.  Call that always after the former clean_key
+	invocations.
+
+	gpg: Move key cleaning functions to a separate file.
+	+ commit 40bf383f72b5629de739e30c9c35bbcb628273e8
+	* g10/trust.c (mark_usable_uid_certs, clean_sigs_from_uid)
+	(clean_uid_from_key, clean_one_uid, clean_key): Move to ...
+	* g10/key-clean.c: new file.
+	* g10/key-clean.h: New.
+	* g10/Makefile.am (gpg_sources): Add new files.
+	* g10/export.c, g10/import.c, g10/keyedit.c, g10/trustdb.c: Include
+	new header.
+	* g10/trustdb.h (struct key_item, is_in_klist): Move to ...
+	* g10/keydb.h: here.
+
+2018-07-06  Werner Koch  <wk@gnupg.org>
+
+	gpg: Allow decryption using several passphrases in may cases.
+	+ commit b4599a0449ead7dc5c0d922aa78b6168e625e15e
+	* g10/mainproc.c (symkey_decrypt_seskey): Check for a valid algorithm.
+	(proc_symkey_enc): Clear passpharse on error from above function.
+
+2018-07-05  Werner Koch  <wk@gnupg.org>
+
+	po: Add flag options for xgettext.
+	+ commit 833738a316977ee774399bd658d535216dff22e9
+	* po/Makevars (XGETTEXT_OPTIONS): Add --flag options.
+
+	gpg: Prepare for signatures with ISSUER_FPR but without ISSUER.
+	+ commit 221af19351addcdc28a1cd533c8628cfa3841671
+	* g10/getkey.c (get_pubkey_for_sig): New.
+	(get_pubkeyblock_for_sig): New.
+	* g10/mainproc.c (issuer_fpr_raw): Give global scope.
+	(check_sig_and_print): Use get_pubkeyblock_for_sig.
+	* g10/pkclist.c (check_signatures_trust): Use get_pubkey_for_sig.
+	* g10/sig-check.c (check_signature2): Ditto.
+	(check_signature_over_key_or_uid): Ditto.
+
+2018-07-04  Andre Heinecke  <aheinecke@intevation.de>
+
+	po: Fix bug in german translation.
+	+ commit 063cf45c142f33815bc0f31d0fb3e1b25ca57b8c
+	* po/de.po (decryption forced to fail!): Fix translation.
+
+2018-07-04  Werner Koch  <wk@gnupg.org>
+
+	gpg: Ignore too large user ids during import.
+	+ commit cb6b925f94b42c91fe8a7ed8bb22d98984538efc
+	* g10/import.c (read_block): Add special treatment for bad user ids
+	and comment packets.
+
+	gpg: Extra check for sign usage when verifying a data signature.
+	+ commit ef50fdf82a459894ed3da7b9be83f89658f1eaba
+	* g10/sig-check.c (check_signature_end_simple): Check sign usage.
+
+2018-07-03  Werner Koch  <wk@gnupg.org>
+
+	gpg: Print revocation reason for "rev" records.
+	+ commit 04fb76684d8b2c9cda2e5c35bad6edec521cffa5
+	* g10/main.h: Add prototype.
+	* g10/keylist.c (list_keyblock_print): Print revocation info.
+	(list_keyblock_colon): Ditto.
+
+	* g10/test-stubs.c (get_revocation_reason): New stub.
+	* g10/gpgv.c (get_revocation_reason): New stub.
+
+	gpg: Print revocation reason for "rvs" records.
+	+ commit a8e24addcc4e0fdff7d07acdd7e13bf6febf97d2
+	* g10/import.c (get_revocation_reason): New.
+	(list_standalone_revocation): Extend function.
+
+	gpg: Let --show-keys print revocation certificates.
+	+ commit 5c67ee160d4969b1ef94642ac602e1aed4d9a6d7
+	* g10/import.c (list_standalone_revocation): New.
+	(import_revoke_cert): Call new function.
+
+2018-07-03  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Fix memory leak for PKT_signature.
+	+ commit 2809be1f97a447171a9e8b40079851740b15341a
+	* g10/getkey.c (buf_to_sig): Free by free_seckey_enc.
+	* g10/gpgcompose.c (signature): Likewise.
+	* g10/sign.c (write_signature_packets): Likewise.
+
+2018-07-02  NIIBE Yutaka  <gniibe@fsij.org>
+
+	libdns: For SOCKS connection, just fails.
+	+ commit cca92ca5348999a3564dd54d7b0a103cc9e7640c
+	* dirmngr/dns.c (dns_res_exec): If it's DNS_SO_SOCKS_CONN, don't
+	iterate to other server, but return the error immediately.
+
+2018-06-20  NIIBE Yutaka  <gniibe@fsij.org>
+
+	libdns: Let kernel to decide the local port.
+	+ commit 72a35ffee022f1bf180d02250c5be6a4edb599e7
+	* dirmngr/dns.c (LEAVE_SELECTION_OF_PORT_TO_KERNEL): New.
+	(dns_socket): Don't select ephemeral port in user space.
+
+2018-06-18  NIIBE Yutaka  <gniibe@fsij.org>
+
+	libdns: Fix for non-FQDN hostname.
+	+ commit 87d0ecf8a1b80139a6cab2a79f1ca6e287207999
+	* dirmngr/dns.c (dns_resconf_open): Clear search[0] for non-FQDN
+	hostname.
+
+	libdns: Fix connect and try next nameserver when ECONNREFUSED.
+	+ commit 699fe4b36f62b0f4d4e21a85ee7c9ae13377d6cb
+	* dirmngr/dns.c (dns_so_check): When EINVAL, release the association
+	by connect with AF_UNSPEC and try again.  Also try again for
+	ECONNREFUSED.
+	(dns_res_exec): Try next nameserver when ECONNREFUSED.
+
+	libdns: Clear struct sockaddr_storage by zero.
+	+ commit 0c05b08e8b5c1f120fe5f3ed5c061f034f7496a0
+	* dirmngr/dns.c (dns_resconf_pton): Clear SS.
+	(dns_resconf_setiface): Clear ->IFACE.
+	(dns_hints_root, send_query): Clear SS.
+
+	libdns: Sync to upstream.
+	+ commit 20c289606f89803929948ddd18910acff2acc9eb
+	* dirmngr/dns.c (dns_nssconf_loadfile): Handle exclamation mark.
+
+	dirmngr: Fix recursive resolver mode.
+	+ commit 13320db678675246f4bb5a3fb6ece143f37c34a4
+	* dirmngr/dns-stuff.c (libdns_init): Initialize options.recurse.
+
+2018-06-12  Werner Koch  <wk@gnupg.org>
+
+	gpg: Do not import revocations with --show-keys.
+	+ commit e8f439e0547463c24f3c10008fee73e6c4259f52
+	* g10/import.c (import_revoke_cert): Add arg 'options'.  Take care of
+	IMPORT_DRY_RUN.
+
+2018-06-12  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	gpg: Add new usage option for drop-subkey filters.
+	+ commit 86b64876bef0d8c4be8e309fcf3e2ce21e65a947
+	* g10/import.c (impex_filter_getval): Add new "usage" property for
+	drop-subkey filter.
+
+2018-06-11  Werner Koch  <wk@gnupg.org>
+
+	gpg: Set some list options with --show-keys.
+	+ commit cbb84b3361263504dcb958208bc20177cb97cebd
+	* g10/gpg.c (main): Set some list options.
+
 2018-06-08  Werner Koch  <wk@gnupg.org>
+
+	gpg: Allow building with older libgpg-error.
+	+ commit 18274db32b5dea7fe8db67043a787578c975de4d
+	* g10/mainproc.c (proc_encrypted): Use constant from logging.h
 
 	Release 2.2.8.
 	+ commit cd9aaa7862955846f8adf819cd89d0db33e9c08c
