@@ -1,3 +1,118 @@
+2018-08-30  Werner Koch  <wk@gnupg.org>
+
+	Release 2.2.10.
+	+ commit 24697074f44c18eeeedbc1e09d35f56504c57a1f
+
+
+2018-08-30  Ineiev  <ineiev@gnu.org>
+
+	po: Update Russian translation.
+	+ commit 2f5ba3a6c19b7a514488be01b7683287d74545d3
+
+
+2018-08-29  Werner Koch  <wk@gnupg.org>
+
+	gpg: Explain error message in key generation with --batch.
+	+ commit a9931b3c052ee9025705a8ef1f0cdd5f20aeda70
+	* g10/keygen.c (generate_keypair): Show more info.
+
+	gpg: Remove unused function get_pubkeys.
+	+ commit 719fc941b6eceb75c2326335d9d73011823ff3f9
+	* g10/getkey.c (get_pubkeys): Remove.
+	(pubkey_free): Remove and use code directly ...
+	(pubkeys_free): ... here.
+
+	(cherry picked from commit ed8fe21e6612401846fc4af8631f0136dc633c67)
+
+	gpg: New option --known-notation.
+	+ commit a59a9962f48f828ea7d22362dfa6d82841551110
+	* g10/gpg.c (oKnownNotation): New const.
+	(opts): Add option --known-notation.
+	(main): Set option.
+	* g10/parse-packet.c (known_notations_list): New local var.
+	(register_known_notation): New.
+	(can_handle_critical_notation): Rewrite to handle the new feature.
+	Also print the name of unknown notations in verbose mode.
+
+2018-08-28  Ineiev  <ineiev@gnu.org>
+
+	po: Update Russian translation.
+	+ commit b02ad56a9041273df58ded4cc70cf5ffa9e58c16
+
+
+2018-08-28  Werner Koch  <wk@gnupg.org>
+
+	assuan: Fix exponential decay for first second.
+	+ commit 38eb7c360bc4867cbaf37e3c2c0865bc6452ba4a
+	* common/asshelp.c (wait_for_sock): Round SECSLEFT.
+	* dirmngr/dirmngr.c (main): Take care of --debug-wait also in dameon
+	mode.
+	* common/sysutils.c (gnupg_usleep) [HAVE_NANOSLEEP]: Fix nanosleep use.
+
+2018-08-28  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	assuan: Use exponential decay for first 1s of spinlock.
+	+ commit 1189df2cd7d4b6896ba22aa204c159ff2a425ead
+	* common/asshelp.c (wait_for_sock): instead of checking the socket
+	every second, we check 10 times in the first second (with exponential
+	decay).
+
+	assuan: Reorganize waiting for socket.
+	+ commit a22a55b994e06dd06157fbdabf5a402d8daf69c2
+	* common/asshelp.c (wait_for_sock): New function, collecting
+	codepaths from...
+	(start_new_gpg_agent) here and...
+	(start_new_dirmngr) here.
+
+2018-08-28  Werner Koch  <wk@gnupg.org>
+
+	gpg: Refresh expired keys originating from the WKD.
+	+ commit 0709f358cd13abc82e0f97f055fcaa712f0fd44f
+	* g10/getkey.c (getkey_ctx_s): New field found_via_akl.
+	(get_pubkey_byname): Set it.
+	(only_expired_enc_subkeys): New.
+	(get_best_pubkey_byname): Add support to refresh expired keys from the
+	WKD.
+
+	gpg: Remove unused arg from a function.
+	+ commit 11a9fe1c5820b97d7e0f4b3e91f016df9dc466a9
+	* g10/getkey.c (get_best_pubkey_byname): Remove unused arg 'no_akl'.
+	Change both callers.
+
+	(cherry picked from commit db67ccb759426c1173761574b14bdfe6a76394c2)
+
+2018-08-10  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Fix undefined behavior when EOF in parsing packet for S2K.
+	+ commit 822c633845066756b6442ca67b93b4b5c4316ca0
+	* g10/parse-packet.c (parse_symkeyenc): Use iobuf_get_noeof.
+	(parse_key): Likewise.
+
+2018-07-29  Werner Koch  <wk@gnupg.org>
+
+	gpg: Set a limit for a WKD import of 256 KiB.
+	+ commit f1c0d9bb6506eee6a3ad93ef432fe6aa5b72aabd
+	* g10/call-dirmngr.c (MAX_WKD_RESULT_LENGTH): New.
+	(gpg_dirmngr_wkd_get): Use it.
+
+	dirmngr: Validate SRV records in WKD queries.
+	+ commit 8a98aa25bb4bdbfe53afd4534f6624454ca01ab0
+	* dirmngr/server.c (proc_wkd_get): Check the returned SRV record names
+	to mitigate rogue DNS servers.
+
+	common: New function to validate domain names.
+	+ commit 4f59187a17f16d559e37a375501a0add1ca7eee8
+	* common/mbox-util.c (is_valid_domain_name): New.
+	* common/t-mbox-util.c (run_dns_test): New test.
+
+	(cherry picked from commit ddee9f9409fb5a089883eab0fadef7b9b7e61e72)
+
+2018-07-29  Jiří Keresteš  <jiri.kerestes@trustica.cz>
+
+	scd: Add support for Trustica Cryptoucan.
+	+ commit d43248af9242d30e95f58285e4f2a2e927aae937
+	(cherry picked from commit 967d3649d24aba623133808e8d01675dff389fbb)
+
 2018-07-12  Werner Koch  <wk@gnupg.org>
 
 	Release 2.2.9.
