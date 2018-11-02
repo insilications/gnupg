@@ -1,0 +1,48 @@
+From c0253a119a91a60e4e11162a86b32d1631008bf8 Mon Sep 17 00:00:00 2001
+From: "Brett T. Warden" <brett.t.warden@intel.com>
+Date: Thu, 1 Nov 2018 16:47:24 -0700
+Subject: [PATCH 1/2] Warn on use of insecure 3DES algo
+
+---
+ g10/encrypt.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/g10/encrypt.c b/g10/encrypt.c
+index 543f1a7..3c470c6 100644
+--- a/g10/encrypt.c
++++ b/g10/encrypt.c
+@@ -611,6 +611,15 @@ encrypt_crypt (ctrl_t ctrl, int filefd, const char *filename,
+   compliant = gnupg_cipher_is_compliant (CO_DE_VS, cfx.dek->algo,
+                                          GCRY_CIPHER_MODE_CFB);
+ 
++  switch (cfx.dek->algo)
++  {
++    case GCRY_CIPHER_3DES:
++      log_error (_("WARNING: cipher algorithm '%s' is insecure and not"
++                   " suitable for encryption!\n"),
++                 openpgp_cipher_algo_name (cfx.dek->algo));
++      break;
++  };
++
+   {
+     pk_list_t pkr;
+ 
+@@ -852,6 +861,15 @@ encrypt_filter (void *opaque, int control,
+ 
+           efx->cfx.dek->use_mdc = use_mdc (efx->pk_list,efx->cfx.dek->algo);
+ 
++          switch (efx->cfx.dek->algo)
++          {
++            case GCRY_CIPHER_3DES:
++              log_error (_("WARNING: cipher algorithm '%s' is insecure and not"
++                           " suitable for encryption!\n"),
++                         openpgp_cipher_algo_name (efx->cfx.dek->algo));
++              break;
++          };
++
+           make_session_key ( efx->cfx.dek );
+           if (DBG_CRYPTO)
+             log_printhex ("DEK is: ", efx->cfx.dek->key, efx->cfx.dek->keylen);
+-- 
+2.19.1
+

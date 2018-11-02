@@ -6,18 +6,19 @@
 #
 Name     : gnupg
 Version  : 2.2.10
-Release  : 40
+Release  : 41
 URL      : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.10.tar.bz2
 Source0  : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.10.tar.bz2
 Source99 : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.10.tar.bz2.sig
 Summary  : zlib compression library
 Group    : Development/Tools
 License  : BSD-3-Clause CC0-1.0 GPL-2.0 GPL-3.0 LGPL-2.1 LGPL-3.0 NCSA
-Requires: gnupg-bin
-Requires: gnupg-license
-Requires: gnupg-data
-Requires: gnupg-locales
-Requires: gnupg-man
+Requires: gnupg-bin = %{version}-%{release}
+Requires: gnupg-data = %{version}-%{release}
+Requires: gnupg-libexec = %{version}-%{release}
+Requires: gnupg-license = %{version}-%{release}
+Requires: gnupg-locales = %{version}-%{release}
+Requires: gnupg-man = %{version}-%{release}
 BuildRequires : bzip2-dev
 BuildRequires : libassuan-dev
 BuildRequires : libgcrypt-dev
@@ -28,6 +29,8 @@ BuildRequires : npth-dev
 BuildRequires : pkgconfig(gnutls)
 BuildRequires : pkgconfig(sqlite3)
 BuildRequires : pkgconfig(zlib)
+Patch1: 0001-Warn-on-use-of-insecure-3DES-algo.patch
+Patch2: 0002-Set-better-key-default-prefs.patch
 
 %description
 The GNU Privacy Guard 2
@@ -43,9 +46,10 @@ directories.
 %package bin
 Summary: bin components for the gnupg package.
 Group: Binaries
-Requires: gnupg-data
-Requires: gnupg-license
-Requires: gnupg-man
+Requires: gnupg-data = %{version}-%{release}
+Requires: gnupg-libexec = %{version}-%{release}
+Requires: gnupg-license = %{version}-%{release}
+Requires: gnupg-man = %{version}-%{release}
 
 %description bin
 bin components for the gnupg package.
@@ -62,10 +66,19 @@ data components for the gnupg package.
 %package doc
 Summary: doc components for the gnupg package.
 Group: Documentation
-Requires: gnupg-man
+Requires: gnupg-man = %{version}-%{release}
 
 %description doc
 doc components for the gnupg package.
+
+
+%package libexec
+Summary: libexec components for the gnupg package.
+Group: Default
+Requires: gnupg-license = %{version}-%{release}
+
+%description libexec
+libexec components for the gnupg package.
 
 
 %package license
@@ -94,13 +107,15 @@ man components for the gnupg package.
 
 %prep
 %setup -q -n gnupg-2.2.10
+%patch1 -p1
+%patch2 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1535662929
+export SOURCE_DATE_EPOCH=1541119515
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
@@ -116,16 +131,16 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make check || :
 
 %install
-export SOURCE_DATE_EPOCH=1535662929
+export SOURCE_DATE_EPOCH=1541119515
 rm -rf %{buildroot}
-mkdir -p %{buildroot}/usr/share/doc/gnupg
-cp COPYING %{buildroot}/usr/share/doc/gnupg/COPYING
-cp COPYING.CC0 %{buildroot}/usr/share/doc/gnupg/COPYING.CC0
-cp COPYING.GPL2 %{buildroot}/usr/share/doc/gnupg/COPYING.GPL2
-cp COPYING.LGPL21 %{buildroot}/usr/share/doc/gnupg/COPYING.LGPL21
-cp COPYING.LGPL3 %{buildroot}/usr/share/doc/gnupg/COPYING.LGPL3
-cp COPYING.other %{buildroot}/usr/share/doc/gnupg/COPYING.other
-cp tests/gpgscm/LICENSE.TinySCHEME %{buildroot}/usr/share/doc/gnupg/tests_gpgscm_LICENSE.TinySCHEME
+mkdir -p %{buildroot}/usr/share/package-licenses/gnupg
+cp COPYING %{buildroot}/usr/share/package-licenses/gnupg/COPYING
+cp COPYING.CC0 %{buildroot}/usr/share/package-licenses/gnupg/COPYING.CC0
+cp COPYING.GPL2 %{buildroot}/usr/share/package-licenses/gnupg/COPYING.GPL2
+cp COPYING.LGPL21 %{buildroot}/usr/share/package-licenses/gnupg/COPYING.LGPL21
+cp COPYING.LGPL3 %{buildroot}/usr/share/package-licenses/gnupg/COPYING.LGPL3
+cp COPYING.other %{buildroot}/usr/share/package-licenses/gnupg/COPYING.other
+cp tests/gpgscm/LICENSE.TinySCHEME %{buildroot}/usr/share/package-licenses/gnupg/tests_gpgscm_LICENSE.TinySCHEME
 %make_install
 %find_lang gnupg2
 ## install_append content
@@ -153,11 +168,6 @@ ln -s gpg %{buildroot}/usr/bin/gpg2
 /usr/bin/gpgv
 /usr/bin/kbxutil
 /usr/bin/watchgnupg
-/usr/libexec/gpg-check-pattern
-/usr/libexec/gpg-preset-passphrase
-/usr/libexec/gpg-protect-tool
-/usr/libexec/gpg-wks-client
-/usr/libexec/scdaemon
 
 %files data
 %defattr(-,root,root,-)
@@ -197,18 +207,26 @@ ln -s gpg %{buildroot}/usr/bin/gpg2
 %doc /usr/share/doc/gnupg/*
 %doc /usr/share/info/*
 
-%files license
+%files libexec
 %defattr(-,root,root,-)
-/usr/share/doc/gnupg/COPYING
-/usr/share/doc/gnupg/COPYING.CC0
-/usr/share/doc/gnupg/COPYING.GPL2
-/usr/share/doc/gnupg/COPYING.LGPL21
-/usr/share/doc/gnupg/COPYING.LGPL3
-/usr/share/doc/gnupg/COPYING.other
-/usr/share/doc/gnupg/tests_gpgscm_LICENSE.TinySCHEME
+/usr/libexec/gpg-check-pattern
+/usr/libexec/gpg-preset-passphrase
+/usr/libexec/gpg-protect-tool
+/usr/libexec/gpg-wks-client
+/usr/libexec/scdaemon
+
+%files license
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/gnupg/COPYING
+/usr/share/package-licenses/gnupg/COPYING.CC0
+/usr/share/package-licenses/gnupg/COPYING.GPL2
+/usr/share/package-licenses/gnupg/COPYING.LGPL21
+/usr/share/package-licenses/gnupg/COPYING.LGPL3
+/usr/share/package-licenses/gnupg/COPYING.other
+/usr/share/package-licenses/gnupg/tests_gpgscm_LICENSE.TinySCHEME
 
 %files man
-%defattr(-,root,root,-)
+%defattr(0644,root,root,0755)
 /usr/share/man/man1/dirmngr-client.1
 /usr/share/man/man1/gpg-agent.1
 /usr/share/man/man1/gpg-connect-agent.1
