@@ -5,11 +5,11 @@
 # Source0 file verified with key 0x249B39D24F25E3B6
 #
 Name     : gnupg
-Version  : 2.2.10
-Release  : 41
-URL      : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.10.tar.bz2
-Source0  : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.10.tar.bz2
-Source99 : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.10.tar.bz2.sig
+Version  : 2.2.11
+Release  : 42
+URL      : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.11.tar.bz2
+Source0  : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.11.tar.bz2
+Source99 : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.11.tar.bz2.sig
 Summary  : zlib compression library
 Group    : Development/Tools
 License  : BSD-3-Clause CC0-1.0 GPL-2.0 GPL-3.0 LGPL-2.1 LGPL-3.0 NCSA
@@ -106,7 +106,7 @@ man components for the gnupg package.
 
 
 %prep
-%setup -q -n gnupg-2.2.10
+%setup -q -n gnupg-2.2.11
 %patch1 -p1
 %patch2 -p1
 
@@ -115,7 +115,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1541119515
+export SOURCE_DATE_EPOCH=1541523752
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
@@ -131,7 +131,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make check || :
 
 %install
-export SOURCE_DATE_EPOCH=1541119515
+export SOURCE_DATE_EPOCH=1541523752
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/gnupg
 cp COPYING %{buildroot}/usr/share/package-licenses/gnupg/COPYING
@@ -159,6 +159,7 @@ ln -s gpg %{buildroot}/usr/bin/gpg2
 /usr/bin/gpg
 /usr/bin/gpg-agent
 /usr/bin/gpg-connect-agent
+/usr/bin/gpg-wks-server
 /usr/bin/gpg2
 /usr/bin/gpgconf
 /usr/bin/gpgparsemail

@@ -1,3 +1,179 @@
+2018-11-06  Werner Koch  <wk@gnupg.org>
+
+	Release 2.1.11.
+	+ commit cb46b787571ef149856be03b8c3481bb79871698
+
+
+2018-11-06  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Fix print_keygrip for smartcard.
+	+ commit 627839ea88da11a9e8d033e3c91bdf5a048b15c3
+	* g10/card-util.c (print_keygrip): Use tty_fprintf.
+
+2018-11-05  Werner Koch  <wk@gnupg.org>
+
+	wks: New option --with-colons for gpg-wks-client.
+	+ commit 66e0bd37ee3dd5ab534b2664493576ef6ad15a08
+	* tools/gpg-wks.h (opt): Add field with_colons.
+	* tools/gpg-wks-client.c (oWithColons): New const.
+	(opts, parse_arguments): Add option --with-colons.
+	(main): Change aSupported to take several domains in --with-colons
+	mode.
+	(command_send): Factor policy getting code out to ...
+	(get_policy_and_sa): New function.
+	(command_supported): Make use of new function.
+
+	speedo: Remove obsolete configure option of gpgme.
+	+ commit 593895a5e495c4647efa7db164356f3cae3d5759
+	* build-aux/speedo.mk (speedo_pkg_gpgme_configure): Remove
+	--disable-w32-qt option.
+
+	dirmngr: In verbose mode print the OCSP responder id.
+	+ commit 50756927ce6247abc2fadefbc76c58b75c8a7586
+	* dirmngr/ocsp.c (ocsp_isvalid): Print the responder id.
+
+	(cherry picked from commit 0a7f446c189201ca6e527af08b44da756b343209)
+
+	tools: Replace duplicated code in mime-maker.
+	+ commit d5f540e7a9b3a723ba787e3a587fcd1b0948f105
+	* tools/rfc822parse.c (HEADER_NAME_CHARS): New.  Taken from
+	mime-maker.c.
+	(rfc822_valid_header_name_p): New.  Based on code from mime-maker.c.
+	(rfc822_capitalize_header_name): New.  Copied from mime-maker.c.
+	(capitalize_header_name): Remove.  Replace calls by new func.
+	(my_toupper, my_strcasecmp): New.
+	* tools/mime-maker.c: Include rfc822parse.h.
+	(HEADER_NAME_CHARS, capitalize_header_name): Remove.
+	(add_header): Replace check and capitalization by new functions.
+
+	gpg: Don't take the a TOFU trust model from the trustdb,
+	+ commit 82cd7556fdce989aaacf91e0d369a62e4652f224
+	* g10/tdbio.c (tdbio_update_version_record): Never store a TOFU model.
+	(create_version_record): Don't init as TOFU.
+	(tdbio_db_matches_options): Don't indicate a change in case TOFU is
+	stored in an old trustdb file.
+
+	dirmngr: Emit SOURCE status also on NO_DATA.
+	+ commit ab7a907a184f37ddafaa0dc7200c76b735ba4853
+	* dirmngr/ks-engine-hkp.c (ks_hkp_search): Send SOURCE status also on
+	NO DATA error.
+	(ks_hkp_get): Ditto.
+	* g10/call-dirmngr.c (gpg_dirmngr_ks_search): Print "data source" info
+	also on error.
+	(gpg_dirmngr_ks_get): Ditto.
+
+	dirmngr: Fix LDAP port parsing.
+	+ commit 5ab58d3001b0342aecaf691b1af70b1f76426f55
+	* dirmngr/misc.c (host_and_port_from_url): Fix bad port parsing and a
+	segv for a missing slash after the host name.
+
+2018-10-26  Werner Koch  <wk@gnupg.org>
+
+	build: By default build wks-tools on all Unix platforms.
+	+ commit 8a33d5c9c699d2145d39b362d580df67571c5f36
+	(cherry picked from commit b83fed64f8051279a8f36e024c1f12f7f13c4716)
+
+	wkd: Add option --directory to the server.
+	+ commit 839426104a0c829f0182b22048fdc51cf295beb7
+	* tools/gpg-wks-server.c (opts): Add '--directory',
+	(main): Explain how to set correct permissions.
+	(command_list_domains): Create an empty policy file and remove the
+	warning for an empty policy file.
+
+2018-10-25  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Fix out of scope use of a var in the keyserver LDAP code.
+	+ commit 26ebb15bec897a105b248680c1ddf1806592b1eb
+	* dirmngr/ks-engine-ldap.c (extract_attributes): Don't use a variabale
+	out of scope and cleanup the entire pgpKeySize block.
+
+2018-10-24  Werner Koch  <wk@gnupg.org>
+
+	agent: Fix possible uninitalized use of CTX in simple_pwquery.
+	+ commit e53253485cd7ceb7012505a629d2cd997167ccab
+	* common/simple-pwquery.c (agent_open): Clear CTX even on early error.
+
+	agent: Fix possible release of unitialize var in a genkey error case.
+	+ commit 62c75271173f83c5770576aae7b84f55a9ccbc16
+	* agent/command.c (cmd_genkey): Initialize 'value'.
+
+	ssh: Fix possible infinite loop in case of an read error.
+	+ commit 147e59b7815daafb32b570a96f1d1925d0f37008
+	* agent/command-ssh.c (ssh_handler_add_identity): Handle other errors
+	than EOF.
+
+	tools: Fix FILE memory leak in gpg-connect-agent.
+	+ commit f1561e5196e54f11b18050eeaeda50e786d188c2
+	* tools/gpg-connect-agent.c (do_open): dup the fileno and close the
+	stream.
+
+	(cherry picked from commit 378719f25fe00d46393541f4a4f79e04484c3000)
+
+	sm: Use the correct string in an error message.
+	+ commit 1b9b0fc54b9bcd5eb1e63816bd3222d7ac7572a7
+	* sm/gpgsm.c (main): Fix error message.
+
+2018-10-24  Andre Heinecke  <aheinecke@intevation.de>
+
+	dirmngr: Only print info for no ldapserver file.
+	+ commit 01baee2b0ef4f81ac6ffa55480e91168dd27b430
+	* dirmngr/dirmngr.c (parse_ldapserver_file): Only print info
+	for ENOENT.
+
+2018-10-23  Andre Heinecke  <aheinecke@intevation.de>
+
+	sm: Fix dirmngr loadcrl for intermediate certs.
+	+ commit 6b36c16f77722d17f4f317c788701cbc1e9552b2
+	* sm/call-dirmngr.c (run_command_inq_cb): Support ISTRUSTED.
+	(inq_certificate): Distinguish unsupported inquiry error.
+
+2018-10-22  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Prepare for updated WKD specs with ?l= param.
+	+ commit a2bd4a64e5b057f291a60a9499f881dd47745e2f
+	* dirmngr/server.c (proc_wkd_get): Tack the raw local address to the
+	request.
+
+	gpg: Fix extra check for sign usage of a data signature.
+	+ commit b0d6e26bf3c8decaa568c9e4a5b2451d9af0b25b
+	* g10/sig-check.c (check_signature_end_simple):
+
+2018-10-15  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Fix signing authentication status.
+	+ commit 7e2b0488d13561be2b754e28801de654747a8dcc
+	* scd/app-openpgp.c (do_sign): Clear DID_CHV1 after signing.
+
+2018-10-02  NIIBE Yutaka  <gniibe@fsij.org>
+
+	common: Fix gnupg_reopen_std.
+	+ commit 8f844ae1cd16e27ad07d45784b1f0ff2917da2b8
+	* common/sysutils.c (gnupg_reopen_std): Use fcntl instead of fstat.
+
+2018-09-10  NIIBE Yutaka  <gniibe@fsij.org>
+
+	common: Use iobuf_get_noeof to avoid undefined behaviors.
+	+ commit 0383e7fed7b2a45c7f0ae4c11415c6a9a3a3ddb7
+	* common/iobuf.c (block_filter): Use iobuf_get_noeof.
+
+	agent: Fix error code check from npth_mutex_init.
+	+ commit 213379debe5591dad6339aa95aa7282e0de620f9
+	* agent/call-pinentry.c (initialize_module_call_pinentry): It's an
+	error when npth_mutex_init returns non-zero.
+
+2018-09-07  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Fix memory leak.
+	+ commit 91f8a9b33a1282cbf00cb4b71b177088f0d923d7
+	* g10/import.c (read_block): Call free_packet to skip the packet.
+
+2018-09-06  NIIBE Yutaka  <gniibe@fsij.org>
+
+	Fix use of strncpy, which is actually good to use memcpy.
+	+ commit f0fdee2e24a25f57a84e1684984ce3921d923e0a
+	* common/ssh-utils.c (get_fingerprint): Use memcpy.
+	* g10/build-packet.c (string_to_notation): Use memcpy.
+
 2018-08-30  Werner Koch  <wk@gnupg.org>
 
 	Release 2.2.10.
