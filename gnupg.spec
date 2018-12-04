@@ -6,7 +6,7 @@
 #
 Name     : gnupg
 Version  : 2.2.11
-Release  : 42
+Release  : 43
 URL      : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.11.tar.bz2
 Source0  : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.11.tar.bz2
 Source99 : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.11.tar.bz2.sig
@@ -19,6 +19,7 @@ Requires: gnupg-libexec = %{version}-%{release}
 Requires: gnupg-license = %{version}-%{release}
 Requires: gnupg-locales = %{version}-%{release}
 Requires: gnupg-man = %{version}-%{release}
+Requires: pinentry
 BuildRequires : bzip2-dev
 BuildRequires : libassuan-dev
 BuildRequires : libgcrypt-dev
@@ -115,7 +116,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1541523752
+export SOURCE_DATE_EPOCH=1543944200
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
@@ -131,7 +132,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make check || :
 
 %install
-export SOURCE_DATE_EPOCH=1541523752
+export SOURCE_DATE_EPOCH=1543944200
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/gnupg
 cp COPYING %{buildroot}/usr/share/package-licenses/gnupg/COPYING
