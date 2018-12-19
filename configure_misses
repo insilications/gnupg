@@ -28,8 +28,8 @@ Configure miss: byte typedef
 Configure miss: u16 typedef
 Configure miss: u32 typedef
 Configure miss: whether time_t is unsigned
-Configure miss: strlwr
 Configure miss: memicmp
+Configure miss: strlwr
 Configure miss: struct ucred.cr_pid
 Configure miss: struct sockpeercred.pid
 Configure miss: direct.h usability

@@ -1,3 +1,190 @@
+2018-12-14  Werner Koch  <wk@gnupg.org>
+
+	Release 2.2.12.
+	+ commit 7d8f4ee7cf56eda988acdc909160cbac71bff18a
+
+
+2018-12-11  Werner Koch  <wk@gnupg.org>
+
+	agent: Make the S2K calibration time runtime configurable.
+	+ commit de29a50e7c8a779ac0832a149bcf3eb2c4191dc9
+	* agent/protect.c (s2k_calibration_time): New file global var.
+	(calibrate_s2k_count): Use it here.
+	(get_calibrated_s2k_count): Replace function static var by ...
+	(s2k_calibrated_count): new file global var.
+	(set_s2k_calibration_time): New function.
+	* agent/gpg-agent.c (oS2KCalibration): New const.
+	(opts): New option --s2k-calibration.
+	(parse_rereadable_options): Parse that option.
+
+2018-12-11  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	agent: compile-time configuration of s2k calibration.
+	+ commit 0cf0f3aaf835d29848f1485df357606254ba6fad
+	* configure.ac: add --with-agent-s2k-calibration=MSEC, introduces
+	AGENT_S2K_CALIBRATION (measured in milliseconds)
+	* agent/protect.c (calibrate_s2k_count): Calibrate based on
+	AGENT_S2K_CALIBRATION.
+
+	(cherry picked from commit 926d07c5fa05de05caef3a72b6fe156606ac0549)
+
+2018-12-11  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Retry another server from the pool on 502, 503, 504.
+	+ commit e5abdb6da7fa7cd4d146c7285b160277511bc230
+	* dirmngr/ks-engine-hkp.c (handle_send_request_error): Add arg
+	http_status and handle it.
+	(ks_hkp_search): Get http_status froms end_request and pass on to
+	handle_send_request_error.
+	(ks_hkp_get): Ditto.
+	(ks_hkp_put): Ditto.
+
+	dirmngr: New function http_status2string.
+	+ commit b9d71ea64a694582739c18cfef9621b36d5371e9
+	* dirmngr/http.c (http_status2string): New.
+
+	gpg: In search-keys return "Not found" instead of "No Data".
+	+ commit f7ff25edadd474f83fccba6fd3c410eb8358bb22
+	* g10/keyserver.c (keyserver_search): Check for NO_DATA.
+
+2018-12-11  Tomi Leppänen  <tomi.leppanen@jolla.com>
+
+	tools: Use POSIX compatible arguments for find.
+	+ commit dfcc5e6d3ec91f547feb78e442946e729b49878c
+	* tools/addgnupghome (filelist): Remove bashism.
+
+2018-12-06  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Make "learn" report about KDF data object.
+	+ commit d4bc8051525a33b28b1e33daf35d79c1d6cd9c41
+	* scd/app-openpgp.c (do_learn_status): Report KDF attr.
+	* g10/card-util.c (current_card_status): Output KDF for with_colons.
+
+	card: Display if KDF is enabled or not.
+	+ commit 751ff784e5316470f266750d299ae857ad7840d8
+	* g10/call-agent.h (kdf_do_enabled): New field.
+	* g10/call-agent.c (learn_status_cb): Set kdf_do_enabled if available.
+	* g10/card-util.c (current_card_status): Inform the availability.
+
+	g10: Fix memory leak for --card-status.
+	+ commit 293001e2c6f0e228ff7f1b6a3e2606ae1370a5d5
+	* g10/card-util.c (card_status): Release memory of serial number.
+
+2018-12-05  NIIBE Yutaka  <gniibe@fsij.org>
+
+	g10: Fix print_pubkey_info new line output.
+	+ commit c5aba093b86e7d69b34ddcf55130f8f21e889b5c
+	* g10/keylist.c (print_pubkey_info): Reverse the condition.
+
+2018-12-05  Werner Koch  <wk@gnupg.org>
+
+	gpg: New list-option "show-only-fpr-mbox".
+	+ commit 9b538451682c704b4036c0ecdb7e6b0ef8570016
+	* g10/gpg.c (parse_list_options): Add option "show-only-fpr-mbox".
+	* g10/options.h (LIST_SHOW_ONLY_FPR_MBOX): New.
+	* g10/keylist.c (list_keyblock_simple): New.
+	(list_keyblock): Call it.
+	(list_all): Do not print the keyring name in LIST_SHOW_ONLY_FPR_MBOX
+	mode.
+
+	wks: Fix filter expression syntax flaw.
+	+ commit 80bf1f8901dcbbb2cb6cacc11cca98705ce8f59d
+	* tools/wks-util.c (wks_get_key, wks_filter_uid): The filter
+	expression needs a space before the value.
+	(install_key_from_spec_file): Replace es_getline by es_read_line and
+	remove debug output.
+
+	wks: Allow reading of --install-key arguments from stdin.
+	+ commit b6fd60dfa1709f162c25eb72cf8c45d0ab9bf34f
+	* tools/wks-util.c (install_key_from_spec_file): New.
+	(wks_cmd_install_key): Call it.
+	* tools/gpg-wks-client.c (main): Allow --install-key w/o arguments.
+	* tools/gpg-wks-server.c (main): Ditto.
+
+	(cherry picked from commit ba46a359b9d6549b74ec8401ea39bad434d87564)
+
+	wks: Create sub-directories.
+	+ commit bf29d7c822264a40f1469c7b5024d93b955a3a1e
+	* tools/wks-util.c (wks_compute_hu_fname): Stat and create directory
+	if needed.
+
+	(cherry picked from commit 73e5b0ec9b9ba5e04e55f8c42d81e23df7c3afe0)
+
+	wks: Add new commands --install-key and --remove-key to the client.
+	+ commit 5b4aa8c6d4abfa3135ec3ab23decf9bdd624df3e
+	* tools/gpg-wks-client.c (aInstallKey, aRemoveKey, oDirectory): New.
+	(opts): Add "--install-key", "--remove-key" and "-C".
+	(parse_arguments): Parse them.
+	(main): Check that the given directory exists.  Implement the new
+	commands.
+
+	wks: Move a few server functions to wks-util.
+	+ commit 51b722c6f57b80a3b9caa417b7a74e7fab80043f
+	* tools/gpg-wks-server.c (write_to_file): Move to ...
+	* tools/wks-util.c: here.
+	* tools/gpg-wks-server.c (compute_hu_fname): Move to ...
+	* tools/wks-util.c (wks_compute_hu_fname): here.
+	* tools/gpg-wks-server.c (fname_from_userid): Move to ...
+	* tools/wks-util.c (wks_fname_from_userid): here.
+	* tools/gpg-wks-server.c (command_install_key): Move to ...
+	* tools/wks-util.c (wks_cmd_install_key): here and change caller.
+	* tools/gpg-wks-server.c (command_remove_key): Move to ...
+	* tools/wks-util.c (wks_cmd_remove_key): here and change callers.
+
+	(cherry picked from commit 99094c992c20dd22971beb3527cfda109cd1df89)
+
+2018-12-05  Jussi Kivilinna  <jussi.kivilinna@iki.fi>
+
+	g10/mainproc: disable hash contexts when --skip-verify is used.
+	+ commit 6008410e512cb74a4a2ad3f6e3fce4669e4f7e2c
+	* g10/mainproc.c (proc_plaintext): Do not enable hash contexts when
+	opt.skip_verify is set.
+
+	common/iobuf: fix memory wiping in iobuf_copy.
+	+ commit ebd434a45eefd34bd9d9f875f22a74a47b88dd5f
+	* common/iobuf.c (iobuf_copy): Wipe used area of buffer instead of
+	first sizeof(char*) bytes.
+
+	common: Use platform memory zeroing function for wipememory.
+	+ commit 21fdef6963539680a16b68b7536378bdaa8dea85
+	* common/mischelp.h (wipememory): Replace macro with function
+	prototype.
+	(wipememory2): Remove.
+	* common/mischelp.c (wipememory): New.
+	* configure.ac (AC_CHECK_FUNCS): Check for 'explicit_bzero' and
+	remove duplicated checks.
+
+2018-12-05  Werner Koch  <wk@gnupg.org>
+
+	gpg: Improve error message about failed keygrip computation.
+	+ commit edeebe0a6b9a49d2291d6351d52c5bc688d24cff
+	* g10/keyid.c (keygrip_from_pk): Print the fingerprint on failure.
+
+	(cherry picked from commit cd64af003d4b6b46b69dbd575f73d53359ae0bcc)
+
+2018-11-23  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Avoid possible CSRF attacks via http redirects.
+	+ commit 4a4bb874f63741026bd26264c43bb32b1099f060
+	* dirmngr/http.h (parsed_uri_s): Add fields off_host and off_path.
+	(http_redir_info_t): New.
+	* dirmngr/http.c (do_parse_uri): Set new fields.
+	(same_host_p): New.
+	(http_prepare_redirect): New.
+	* dirmngr/t-http-basic.c: New test.
+	* dirmngr/ks-engine-hkp.c (send_request): Use http_prepare_redirect
+	instead of the open code.
+	* dirmngr/ks-engine-http.c (ks_http_fetch): Ditto.
+
+2018-11-12  Andre Heinecke  <aheinecke@intevation.de>
+
+	dirmngr: Add FLUSHCRLs command.
+	+ commit 00321a025f90990a71b60b4689ede1f38fbde347
+	Summary:
+	* dirmngr/crlcache.c (crl_cache_flush): Also deinit the cache.
+	* dirmngr/server.c (hlp_flushcrls, cmd_flushcrls): New.
+	(register_commands): Add FLUSHCRLS.
+
 2018-11-06  Werner Koch  <wk@gnupg.org>
 
 	Release 2.1.11.
