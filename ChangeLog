@@ -1,3 +1,192 @@
+2019-02-12  Werner Koch  <wk@gnupg.org>
+
+	Release 2.2.13.
+	+ commit 7922e2dd1c7eee48a8a2cf4799827942489ddd0f
+
+
+2019-02-11  Werner Koch  <wk@gnupg.org>
+
+	sm: In --gen-key with "key from card" show also the algorithm.
+	+ commit d1bee9d1efa28fa9d35b7eed1e616c6362fd044e
+	* sm/certreqgen-ui.c (gpgsm_gencertreq_tty): Get and show algo.
+
+	common: Provide function to get public key algo names in our format.
+	+ commit d29d73264f607642281fb701a17015306c8fc4d7
+	* common/sexputil.c (pubkey_algo_string): New.
+
+	common: New functions get_option_value and ascii_strupr.
+	+ commit ee8d1a9e6c09b3ecc4b46f47b79358f78d458916
+	* common/server-help.c (get_option_value): New.
+	* common/stringhelp.c (ascii_strupr): New.
+
+	scd: Make app_genkey and supporting ISO function more flexible.
+	+ commit 14816c798099925e47908e7ce415412d72fbe28e
+	* scd/app.c (app_genkey): Add arg keytype.
+	* scd/app-common.h (struct app_ctx_s): Fitto for the genkey member.
+	* scd/command.c (cmd_genkey): Adjust for change.
+	* scd/iso7816.c (do_generate_keypair): Replace arg read_only by new
+	args p1 and p2.
+	(iso7816_read_public_key): Adjust for this.
+	(iso7816_generate_keypair): Add new args p1 and p2.
+	* scd/app-openpgp.c (do_genkey): Adjust for changes.
+
+	scd: Fix parameter name of app_change_key.
+	+ commit c075274aac0ffd388df638548b75a7d90e7e929d
+	* scd/app-common.h (APP_GENKEY_FLAG_FORCE): New.
+	* scd/app.c (app_change_pin): Rename arg reset_mode to flags and
+	change from int to unsigned int.
+
+	scd: Allow standard keyref scheme for app-openpgp.
+	+ commit 6651a0640d0f1b4dd161210dc55974d9b93b7253
+	* scd/app-openpgp.c (do_change_pin): Allow prefixing the CHVNO with
+	"OPENPGP."
+
+	gpg: Emit an ERROR status if no key was found with --list-keys.
+	+ commit 14ea581a1c040b53b0ad4c51136a7948363b1e4b
+	* g10/keylist.c (list_one): Emit status line.
+
+2019-02-06  NIIBE Yutaka  <gniibe@fsij.org>
+
+	po: Update Japanese translation.
+	+ commit c16685b2f5021105ef0560cb3db68ef43bcdb9c1
+
+
+	agent: Clear bogus pinentry cache, when it causes an error.
+	+ commit 9109bb9919f84d5472b7e62e84b961414a79d3c2
+	* agent/agent.h (PINENTRY_STATUS_*): Expose to public.
+	(struct pin_entry_info_s): Add status.
+	* agent/call-pinentry.c (agent_askpin): Clearing the ->status
+	before the loop, let the assuan_transact set ->status.  When
+	failure with PINENTRY_STATUS_PASSWORD_FROM_CACHE, it returns
+	soon.
+	* agent/findkey.c (unprotect): Clear the pinentry cache,
+	when it causes an error.
+
+	dirmngr: Fix initialization of assuan's nPth hook.
+	+ commit 7f4c3eb0a039621c564b6095ab5f810524843157
+	* dirmngr/dirmngr.c (main): Move assuan_set_system_hooks to...
+	(thread_init): ... here.
+
+2019-01-30  Werner Koch  <wk@gnupg.org>
+
+	gpg: Allow generating Ed25519 key from an existing key.
+	+ commit 31d2a1eecaee766919b18bc42b918d9168f601f8
+	* g10/misc.c (map_pk_gcry_to_openpgp): Add EdDSA mapping.
+
+2019-01-29  Werner Koch  <wk@gnupg.org>
+
+	gpg: Implement searching keys via keygrip.
+	+ commit 5e5f3ca0c2e08185a236b4d04b318f81004e3223
+	* kbx/keybox-defs.h (struct _keybox_openpgp_key_info): Add field grip.
+	* kbx/keybox-openpgp.c (struct keyparm_s): New.
+	(keygrip_from_keyparm): New.
+	(parse_key): Compute keygrip.
+	* kbx/keybox-search.c (blob_openpgp_has_grip): New.
+	(has_keygrip): Call it.
+
+	common: Provide some convenient OpenPGP related constants.
+	+ commit b78f293cf06f447d1d0a5c416ac129a4e1cf9f8c
+	* common/openpgpdefs.h (OPENPGP_MAX_NPKEY): New.
+	(OPENPGP_MAX_NSKEY): New.
+	(OPENPGP_MAX_NSIG): New.
+	(OPENPGP_MAX_NENC): New.
+	* g10/packet.h: Define PUBKEY_MAX using the new consts.
+
+	(cherry picked from commit f382984966a31a4cbe572bce5370590c5490ed1e)
+
+	common: New helper functions for OpenPGP curve OIDs.
+	+ commit dddbb26155f292fde2909ecc84b62b693b6dea49
+	* common/openpgp-oid.c (openpgp_oidbuf_to_str): Factor most code out
+	to ...
+	(openpgp_oidbuf_to_str): new.
+	(openpgp_oidbuf_is_ed25519): New.
+	(openpgp_oidbuf_is_cv25519): New.
+
+2019-01-22  Werner Koch  <wk@gnupg.org>
+
+	scd: Add option --clear to PASSWD.
+	+ commit d4082ff430afe670510d2c1c7ea66ee9ddcbe505
+	* scd/command.c (cmd_passwd): Add option --clear.
+	(send_status_printf): New.
+	* scd/app-common.h (APP_CHANGE_FLAG_CLEAR): New.
+	* scd/app-nks.c (do_change_pin): Return an error if that option is
+	used.
+	* scd/app-openpgp.c (do_change_pin): Ditto.
+
+	scd: One new and one improved 7816 function.
+	+ commit 9309175de8c76de44021c25c7885355ff1a9b67b
+	* scd/apdu.c (apdu_send_direct): New arg R_SW.
+	* scd/command.c (cmd_apdu): Ditto.
+	* scd/iso7816.c (iso7816_apdu_direct): New arg R_SW.
+	(iso7816_general_authenticate): New.
+	* scd/app-nks.c (get_chv_status, get_nks_version): Pass NULL for new
+	arg.
+
+	ssh: Simplify the curve name lookup.
+	+ commit 11a65159f997ccd69ecb9d867c1f3d0c4d8837d6
+	* agent/command-ssh.c (struct ssh_key_type_spec): Add field
+	alt_curve_name.
+	(ssh_key_types): Add some alternate curve names.
+	(ssh_identifier_from_curve_name): Lookup also bey alternative names
+	and return the canonical name.
+	(ssh_key_to_blob): Simplify the ECDSA case by using gcry_pk_get_curve
+	instead of the explicit mapping.
+	(ssh_receive_key): Likewise.  Use ssh_identifier_from_curve_name to
+	validate the curve name.  Remove the reverse mapping because since
+	GnuPG-2.2 Libgcrypt 1.7 is required.
+	(ssh_handler_request_identities): Log an error message.
+
+	gpg: Stop early when trying to create a primary Elgamal key.
+	+ commit f5d3b982e44c5cfc60e9936020102a598b635187
+	* g10/misc.c (openpgp_pk_test_algo2): Add extra check.
+
+2019-01-17  NIIBE Yutaka  <gniibe@fsij.org>
+
+	scd: Fix for USB INTERRUPT transfer.
+	+ commit 9dc76d599cd4c86d3c187d078daad1144a92564c
+	* scd/ccid-driver.c (intr_cb): When LIBUSB_TRANSFER_NO_DEVICE,
+	just handle this event as failure.
+
+2018-12-19  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: Fix message for ACK button.
+	+ commit 80a08b655f8f5e7a7d78b766f1770fd474081a48
+	* agent/divert-scd.c (getpin_cb): Display correct message.
+
+2018-12-18  Werner Koch  <wk@gnupg.org>
+
+	Silence compiler warnings new with gcc 8.
+	+ commit 21fc089148678f59edb02e0e16bed65b709fb972
+	* dirmngr/dns.c: Include gpgrt.h.  Silence -Warray-bounds also gcc.
+	* tests/gpgscm/scheme.c: Include gpgrt.h.
+	(Eval_Cycle): Ignore -Wimplicit-fallthrough.
+
+	wks: Do not use compression for the encrypted data.
+	+ commit 16424d8a34c7f6af1071fd19dfc180cb7d17c052
+	* tools/gpg-wks-client.c (encrypt_response): Add arg -z0.
+	* tools/gpg-wks-server.c (encrypt_stream): Ditto.
+
+2018-12-18  NIIBE Yutaka  <gniibe@fsij.org>
+
+	po: Update Japanese translation.
+	+ commit ae9159e0685098ee97d6f526666524423f4a0fff
+
+
+	scd: Support "acknowledge button" feature.
+	+ commit ffe31f405f9b5e4929e95c3d66c613052cb7727e
+	* scd/apdu.c (set_prompt_cb): New member function.
+	(set_prompt_cb_ccid_reader): New function.
+	(open_ccid_reader): Initialize with set_prompt_cb_ccid_reader.
+	(apdu_set_prompt_cb): New.
+	* scd/app.c (lock_app, unlock_app): Add call to apdu_set_prompt_cb.
+	* ccid-driver.c (ccid_set_prompt_cb): New.
+	(bulk_in): Call ->prompt_cb when timer extension.
+	* scd/command.c (popup_prompt): New.
+
+	agent: Support --ack option for POPUPPINPADPROMPT.
+	+ commit e6be36ee8854dc343a5e0f914991da3da360b513
+	* agent/divert-scd.c (getpin_cb): Support --ack option.
+
 2018-12-14  Werner Koch  <wk@gnupg.org>
 
 	Release 2.2.12.
