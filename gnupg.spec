@@ -5,11 +5,11 @@
 # Source0 file verified with key 0x249B39D24F25E3B6
 #
 Name     : gnupg
-Version  : 2.2.14
-Release  : 46
-URL      : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.14.tar.bz2
-Source0  : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.14.tar.bz2
-Source99 : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.14.tar.bz2.sig
+Version  : 2.2.15
+Release  : 47
+URL      : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.15.tar.bz2
+Source0  : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.15.tar.bz2
+Source99 : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.15.tar.bz2.sig
 Summary  : zlib compression library
 Group    : Development/Tools
 License  : BSD-3-Clause CC0-1.0 GPL-2.0 GPL-3.0 LGPL-2.1 LGPL-3.0 NCSA
@@ -50,6 +50,7 @@ Group: Binaries
 Requires: gnupg-data = %{version}-%{release}
 Requires: gnupg-libexec = %{version}-%{release}
 Requires: gnupg-license = %{version}-%{release}
+Requires: gnupg-man = %{version}-%{release}
 
 %description bin
 bin components for the gnupg package.
@@ -106,7 +107,7 @@ man components for the gnupg package.
 
 
 %prep
-%setup -q -n gnupg-2.2.14
+%setup -q -n gnupg-2.2.15
 %patch1 -p1
 %patch2 -p1
 
@@ -115,7 +116,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1553007832
+export SOURCE_DATE_EPOCH=1553647681
 export LDFLAGS="${LDFLAGS} -fno-lto"
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
@@ -132,7 +133,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make check || :
 
 %install
-export SOURCE_DATE_EPOCH=1553007832
+export SOURCE_DATE_EPOCH=1553647681
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/gnupg
 cp COPYING %{buildroot}/usr/share/package-licenses/gnupg/COPYING

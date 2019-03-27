@@ -1,3 +1,345 @@
+2019-03-26  Werner Koch  <wk@gnupg.org>
+
+	Release 2.2.15.
+	+ commit dc93e57226db32d5b90884dcf768d271baa6628a
+
+
+	sm: Allow decryption even if expired other keys are configured.
+	+ commit 30972d21824264aef2088d30b4f2e5ce3aca889e
+	* sm/gpgsm.c (main): Add special handling for bad keys in decrypt
+	mode.
+
+	agent: Allow other ssh fingerprint algos in KEYINFO.
+	+ commit 1c2fa8b6d747aa171bfef35a50754893aa80a562
+	* agent/command.c (cmd_keyinfo): Allow for --ssh-fpr=ALGO.  Default to
+	the standard algo.
+
+2019-03-25  Werner Koch  <wk@gnupg.org>
+
+	wkd: New command --print-wkd-url for gpg-wks-client.
+	+ commit 2f3eebf1865a85f8c09a1c052513260ed55acec6
+	* tools/gpg-wks-client.c (aPrintWKDURL): New.
+	(opts): Add option.
+	(main): Implement.
+	* tools/wks-util.c (wks_cmd_print_wkd_url): New.
+
+2019-03-25  NIIBE Yutaka  <gniibe@fsij.org>
+
+	libdns: Don't use _[A-Z] which are reserved names.
+	+ commit a975fd127a5d58bbbb3c585e610a54daeb423af6
+	* dirmngr/dns.c: Use the identifiers of "*_instance" instead of
+	reserved "_[A-Z]".
+
+2019-03-25  Werner Koch  <wk@gnupg.org>
+
+	wkd: New command --print-wkd-hash for gpg-wks-client.
+	+ commit 64621f1f40c31c7f453da98efb860ff8cf11edbc
+	* tools/gpg-wks-client.c (aPrintWKDHash): New.
+	(opts) : Add "--print-wkd-hash".
+	(main): Implement that command.
+	(proc_userid_from_stdin): New.
+	* tools/wks-util.c (wks_fname_from_userid): Add option HASH_ONLY.
+	(wks_cmd_print_wkd_hash): New.
+
+2019-03-25  Andre Heinecke  <aheinecke@gnupg.org>
+
+	sm, w32: Translate logger and status fd to handles.
+	+ commit b9d2759da19cb70c1f6243498480bea1d7ecaa46
+	* sm/gpgsm.c (main): Call translate_sys2libc_fd_int to
+	convert the FDs.
+
+2019-03-22  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	doc: fix formatting error.
+	+ commit 93782de23fe45e7f7f86140fda6de39395c3a9d8
+
+
+2019-03-19  Werner Koch  <wk@gnupg.org>
+
+	Release 2.2.14.
+	+ commit 813de13e73b01409fabff9859f24c4f23b808796
+
+
+2019-03-18  Ineiev  <ineiev@gnu.org>
+
+	po: Update Russian translation.
+	+ commit dc00947b21dcd4417a35da711c884cef5cc9fc7d
+
+
+2019-03-18  Werner Koch  <wk@gnupg.org>
+
+	gpg: Do not bail out on v5 keys in the local keyring.
+	+ commit de70a2f377c1647417fb8a2b6476c3744a901296
+	* g10/parse-packet.c (parse_key): Return GPG_ERR_UNKNOWN_VERSION
+	instead of invalid packet.
+	* g10/keydb.c (parse_keyblock_image): Do not map the unknown version
+	error to invalid keyring.
+	(keydb_search): Skip unknown version errors simlar to legacy keys.
+	* g10/keyring.c (keyring_rebuild_cache): Skip keys with unknown
+	versions.
+	* g10/import.c (read_block): Handle unknown version.
+
+	gpg: Allow import of PGP desktop exported secret keys.
+	+ commit 0e73214dd208fca4df26ac796416c6f25b3ae50d
+	* g10/import.c (NODE_TRANSFER_SECKEY): New.
+	(import): Add attic kludge.
+	(transfer_secret_keys): Add arg only_marked.
+	(resync_sec_with_pub_keyblock): Return removed seckeys via new arg
+	r_removedsecs.
+	(import_secret_one): New arg r_secattic.  Change to take ownership of
+	arg keyblock.  Implement extra secret key import logic.  Factor some
+	code out to ...
+	(do_transfer): New.
+	(import_matching_seckeys): New.
+
+	gpg: Avoid importing secret keys if the keyblock is not valid.
+	+ commit 43b23aa82be7e02414398af506986b812e2b9349
+	* g10/keydb.h (struct kbnode_struct): Replace unused field RECNO by
+	new field TAG.
+	* g10/kbnode.c (alloc_node): Change accordingly.
+	* g10/import.c (import_one): Add arg r_valid.
+	(sec_to_pub_keyblock): Set tags.
+	(resync_sec_with_pub_keyblock): New.
+	(import_secret_one): Change return code to gpg_error_t.   Return an
+	error code if sec_to_pub_keyblock failed.  Resync secret keyblock.
+
+	gpg: During secret key import print "sec" instead of "pub".
+	+ commit db2d75f1ffede2ea77163b487a15e60249daffa0
+	* g10/keyedit.c (show_basic_key_info): New arg 'print_sec'.  Remove
+	useless code for "sub" and "ssb".
+	* g10/import.c (import_one): Pass FROM_SK to show_basic_key_info.  Do
+	not print the first  keyinfo in FROM_SK mode.
+	printing.
+
+	gpg: Simplify an interactive import status line.
+	+ commit 184fbf014ae537554d6939a47f07977ef0b0fe9f
+	* g10/cpr.c (write_status_printf): Escape CR and LF.
+	* g10/import.c (print_import_check): Simplify by using
+	write_status_printf and hexfingerprint.
+
+
+	Fixed one conlict in a comment.
+
+2019-03-07  NIIBE Yutaka  <gniibe@fsij.org>
+
+	libdns: Avoid using compound literals (8).
+	+ commit ee08a15e31284d32fb59774fc15e39107a727072
+	* dirmngr/dns.h (dns_quietinit): Remove.
+	(dns_hints_i_new): Remove.
+
+	libdns: Avoid using compound literals (7).
+	+ commit 4ab0fef5dc856d1f2747efab584182aa880f631c
+	* dirmngr/dns.h (DNS_OPTS_INIT, dns_opts): Remove.
+	* dirmngr/dns-stuff.c (libdns_res_open): Use zero-ed, and initialized
+	automatic variable for opts.
+	* dirmngr/dns.c (send_query, resolve_query, resolve_addrinfo):
+	Likewise.
+
+	libdns: Avoid using compound literals (6).
+	+ commit f3af1707690b070b4cbf6d761a9e5dbddbf681e9
+	* dirmngr/dns.h (dns_rr_i_new): Remove.
+	(dns_rr_i_init): Remove unused second argument.
+	* dirmngr/dns.c (dns_p_dump, dns_hints_query, print_packet)
+	(parse_packet): Use automatic variable for struct dns_rr_i.
+	(dns_d_cname): No need to call dns_rr_i_init after memset 0.
+	(dns_rr_i_init): Remove unused second argument.  Return nothing.
+	* dirmngr/dns-stuff.c (resolve_addr_libdns, get_dns_cert_libdns)
+	(getsrv_libdns): Follow the change of dns_rr_i_init.
+
+	(cherry picked from commit 6501e59d3685bb58753c9caea729a4b0eca3942a)
+
+	libdns: Avoid using compound literals (5).
+	+ commit 500151e6daf5fc4d6ea382b83aab3cca72b27881
+	* dirmngr/dns.h (dns_rr_foreach): Don't use dns_rr_i_new.
+	Call dns_rr_grep with NULL.
+	* dirmngr/dns.c (dns_rr_grep): Support NULL for error_.
+
+	libdns: Avoid using compound literals (4).
+	+ commit 229302aecf8deea0349e79ca0cc05f32665391b7
+	* dirmngr/dns.h (dns_d_new*): Remove.
+	* dirmngr/dns.c (parse_packet): Use dns_d_init with automatic
+	variable.
+	(parse_domain): Likewise.
+
+	(cherry picked from commit 7313a112f9c7ada61d24285313d2e2d069a672e8)
+
+	libdns: Avoid using compound literals (3).
+	+ commit f0de4fc990767ae5d120a523be51616b0f35f4f6
+	* dirmngr/dns.h (dns_p_new): Remove.
+	* dirmngr/dns.c (dns_hosts_query): Use dns_p_init with automatic
+	variable.
+	(dns_hints_query, dns_res_glue, parse_packet, query_hosts)
+	(send_query, show_hints, echo_port): Likewise.
+
+	libdns: Avoid using compound literals (2).
+	+ commit ff7d01fc6d396fc3b8d37baa9bd4cdebc8853648
+	* dirmngr/dns.h (dns_strsection1, dns_strsection3): Remove.
+	(dns_strclass1, dns_strclass3): Remove.
+	(dns_strtype1, dns_strtype3): Remove.
+	(dns_strsection, dns_strclass, dns_strtype): Directly use the
+	function.
+	* dirmngr/dns.c (dns_strsection): Use automatic variable.
+	(dns_strclass, dns_strtype): Likewise.
+
+	(cherry picked from commit 455ef62d29a112de05897139716265d07e4c6ae3)
+
+	libdns: Avoid using compound literals.
+	+ commit 1318d1e2d50989c66f496ede906a846859f0cf9f
+	* dirmngr/dns.c (dns_inet_pton, dns_so_tcp_keep): Use automatic
+	variables.
+	(dns_poll, dns_send_nopipe): Likewise, adding const qualifier.
+
+2019-03-07  Werner Koch  <wk@gnupg.org>
+
+	dirmngr: Add CSRF protection exception for protonmail.
+	+ commit 557c721e787e7e6d311ccb48d8aa677123061cf5
+	* dirmngr/http.c (same_host_p): Add exception table.
+
+	gpgtar: Make option -C work for archive creation.
+	+ commit 5d73c231e4f2d5994eb3be48b36517e39d66be96
+	* tools/gpgtar-create.c (gpgtar_create): Switch to the -C directory.
+
+	gpgtar: Improve error messages.
+	+ commit 2e4151a3412c3fc553fbb7ad070dfffc68a04b35
+	* tools/gpgtar.h (struct tarinfo_s): New.
+	* tools/gpgtar.c (cmd, skip_crypto, files_from, null_names): Move
+	global vars more to the top.
+	(set_cmd): Rename 'cmd' to 'c'.
+	* tools/gpgtar-list.c (parse_header): Add arg 'info' and improve error
+	messages.
+	(read_header): Add arg 'info' and update counter.
+	(skip_data): Ditto.
+	(gpgtar_list): Pass info object to read functions.
+	(gpgtar_read_header): Add arg 'info'.
+	* tools/gpgtar-extract.c (gpgtar_extract): add arg 'info' and pass on.
+	(extract_regular): Add arg 'info' and update counter.
+
+	gpg: Make invalid primary key algos obvious in key listings.
+	+ commit d2a7f9078a4673ec53733e4f69fd17a8f1ac962d
+	* g10/keylist.c (print_key_line): Print a warning for invalid algos.
+
+	sm: Print Yubikey attestation extensions with --dump-cert.
+	+ commit b3c8ce9e4343f1b68b9ba94bdd71b7d8e13b139a
+	* sm/keylist.c (oidtranstbl): Add Yubikey OIDs.
+	(OID_FLAG_HEX): New.
+	(print_hex_extn): New.
+	(list_cert_raw): Make use of that flag.
+
+	(cherry picked from commit 86c241a8c9a952ea8007066b70b04f435e2e483e)
+
+2019-03-07  NIIBE Yutaka  <gniibe@fsij.org>
+
+	tests: Add "disable-scdaemon" in gpg-agent.conf.
+	+ commit 150d5452318eafa6aa800ff3b87f8f8eb35ed203
+	* tests/openpgp/defs.scm: Add "disable-scdaemon".  Remove
+	  "scdaemon-program".
+	* tests/gpgme/gpgme-defs.scm, tests/gpgsm/gpgsm-defs.scm: Likewise.
+	* tests/inittests, tests/pkits/inittests: Add "disable-scdaemon"
+
+2019-03-07  Werner Koch  <wk@gnupg.org>
+
+	scd: Fix flushing of CA-FPR data objects.
+	+ commit e7eafe10197557ce874db2f049d683f90f26e0bc
+	* scd/app-openpgp.c (do_setattr): Add new table item to flush a
+	different tag.
+
+2019-03-07  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: Support --mode=ssh option for CLEAR_PASSPHRASE.
+	+ commit 77a285a0a94994ee9b42289897f9bf3075c7192d
+	* agent/command.c (cmd_clear_passphrase): Add support for SSH.
+
+2019-03-07  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	gpgv: Improve documentation for keyring choices.
+	+ commit a7b2a87f940dba078867c44f1f50d46211d51719
+	* doc/gpgv.texi: Improve documentation for keyring choices
+
+2019-02-28  Werner Koch  <wk@gnupg.org>
+
+	sm: Don't mark a cert as de-vs compliant if it leads to SHA-1 sigs.
+	+ commit be69bf0cbd11cb8c0d452e07066669aacc6caafa
+	* sm/keylist.c (print_compliance_flags): Also check the digest_algo.
+	Add new arg 'cert'.
+
+2019-02-28  Daniel Kahn Gillmor  <dkg@fifthhorseman.net>
+
+	gpgsm: default to 3072-bit keys.
+	+ commit 121286d9d1506dbaad9ba33bae2e459814fe5849
+	* doc/gpgsm.texi, doc/howto-create-a-server-cert.texi: : update
+	default to 3072 bits.
+	* sm/certreqgen-ui.c (gpgsm_gencertreq_tty): update default to
+	3072 bits.
+	* sm/certreqgen.c (proc_parameters): update default to 3072 bits.
+	* sm/gpgsm.c (main): print correct default_pubkey_algo.
+
+2019-02-26  Werner Koch  <wk@gnupg.org>
+
+	conf: New option --show-socket.
+	+ commit 92e26ade5c0d52f2e50eaf338a0bb8006e75711c
+	* tools/gpgconf-comp.c (gc_component_t): Move this enum to ...
+	* tools/gpgconf.h: here.
+	* tools/gpgconf.c (oShowSocket): New.
+	(opts): Add new option.
+	(main): Implement new option.
+
+2019-02-25  Werner Koch  <wk@gnupg.org>
+
+	scd: Don't let the "undefined" app cause a conflict error.
+	+ commit 0eb8095626be71160dfa66284a7b0a6a57cb03e3
+	* scd/app.c (check_conflict): Ignore "undefined".
+
+	(cherry picked from commit 5ecc7a02609dde65096ddb12e0ff8f6bce3b774a)
+
+	sm: Fix certificate creation with key on card.
+	+ commit 54c56230e305a38d6fd0c3bf1262172fd5fbcb87
+	* sm/certreqgen.c (create_request): Fix for certmode.
+
+	agent: Fix for suggested Libgcrypt use.
+	+ commit 0a95b153811f36739d1b20f23920bad0bb07c68b
+	* agent/divert-scd.c (divert_pkdecrypt): Skip a flags parameter.
+
+2019-02-25  NIIBE Yutaka  <gniibe@fsij.org>
+
+	gpgscm: Build well even if NDEBUG defined.
+	+ commit 8161afb9dddaba839be92fbe9d85c05235eda825
+	* gpgscm/scheme.c (gc_reservation_failure): Fix adding ";".
+	[!NDEBUG] (scheme_init_custom_alloc): Don't init seserved_lineno.
+
+2019-02-19  Neal H. Walfield  <neal@g10code.com>
+
+	gpg: Fix comparison.
+	+ commit 14e5435afb50dc9a9243ff3e0aed5030beba2914
+	* g10/gpgcompose.c (literal_name): Complain if passed zero arguments,
+	not one or fewer.
+
+2019-02-19  NIIBE Yutaka  <gniibe@fsij.org>
+
+	agent: Fix cancellation handling for scdaemon.
+	+ commit 005e951714ff62087b8c8802e05d14b7998826f3
+	* agent/call-scd.c (cancel_inquire): Remove.
+	(agent_card_pksign, agent_card_pkdecrypt, agent_card_writekey)
+	(agent_card_scd): Don't call cancel_inquire.
+
+	scd: Distinguish cancel by user and protocol error.
+	+ commit 90e5f49b6a2e002d3c67a041a076f07aeb7a7f54
+	* scd/apdu.h (SW_HOST_CANCELLED): New.
+	* scd/apdu.c (host_sw_string): Support SW_HOST_CANCELLED.
+	(pcsc_error_to_sw): Return SW_HOST_CANCELLED for PCSC_E_CANCELLED.
+	* scd/iso7816.c (map_sw): Return GPG_ERR_INV_RESPONSE for
+	SW_HOST_ABORTED and GPG_ERR_CANCELED for SW_HOST_CANCELLED.
+
+	common: Fix gnupg_wait_processes.
+	+ commit 6e422b5135c71f8fa859a3f4de51bf89e3ff5ac6
+	* common/exechelp-posix.c (gnupg_wait_processes): Loop for r_exitcodes
+	even if we already see an error.
+
+2019-02-14  Ingvar Hagelund  <ingvar@redpill-linpro.com>
+
+	po: Correct a simple typo in the Norwegian translation.
+	+ commit a09bba976d2f5694011a9291189a70a0f3c4caae
+
+
 2019-02-12  Werner Koch  <wk@gnupg.org>
 
 	Release 2.2.13.
