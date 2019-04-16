@@ -6,7 +6,7 @@
 #
 Name     : gnupg
 Version  : 2.2.15
-Release  : 47
+Release  : 48
 URL      : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.15.tar.bz2
 Source0  : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.15.tar.bz2
 Source99 : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.15.tar.bz2.sig
@@ -19,6 +19,7 @@ Requires: gnupg-libexec = %{version}-%{release}
 Requires: gnupg-license = %{version}-%{release}
 Requires: gnupg-locales = %{version}-%{release}
 Requires: gnupg-man = %{version}-%{release}
+Requires: pcsc-lite
 Requires: pinentry
 BuildRequires : bzip2-dev
 BuildRequires : libassuan-dev
@@ -50,7 +51,6 @@ Group: Binaries
 Requires: gnupg-data = %{version}-%{release}
 Requires: gnupg-libexec = %{version}-%{release}
 Requires: gnupg-license = %{version}-%{release}
-Requires: gnupg-man = %{version}-%{release}
 
 %description bin
 bin components for the gnupg package.
@@ -116,7 +116,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1553647681
+export SOURCE_DATE_EPOCH=1555450494
 export LDFLAGS="${LDFLAGS} -fno-lto"
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
@@ -133,7 +133,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make check || :
 
 %install
-export SOURCE_DATE_EPOCH=1553647681
+export SOURCE_DATE_EPOCH=1555450494
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/gnupg
 cp COPYING %{buildroot}/usr/share/package-licenses/gnupg/COPYING
