@@ -2,6 +2,7 @@
 # picked up automatically. One name per line, no whitespace.
 npth-dev
 libgpg-error-dev
+libgpg-error-extras
 libgcrypt-dev
 libassuan-dev
 libksba-dev

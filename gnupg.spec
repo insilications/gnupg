@@ -6,7 +6,7 @@
 #
 Name     : gnupg
 Version  : 2.2.15
-Release  : 48
+Release  : 49
 URL      : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.15.tar.bz2
 Source0  : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.15.tar.bz2
 Source99 : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.15.tar.bz2.sig
@@ -25,6 +25,7 @@ BuildRequires : bzip2-dev
 BuildRequires : libassuan-dev
 BuildRequires : libgcrypt-dev
 BuildRequires : libgpg-error-dev
+BuildRequires : libgpg-error-extras
 BuildRequires : libksba-dev
 BuildRequires : libusb-dev
 BuildRequires : npth-dev
@@ -116,7 +117,8 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1555450494
+export SOURCE_DATE_EPOCH=1558393210
+export GCC_IGNORE_WERROR=1
 export LDFLAGS="${LDFLAGS} -fno-lto"
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
@@ -133,7 +135,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make check || :
 
 %install
-export SOURCE_DATE_EPOCH=1555450494
+export SOURCE_DATE_EPOCH=1558393210
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/gnupg
 cp COPYING %{buildroot}/usr/share/package-licenses/gnupg/COPYING

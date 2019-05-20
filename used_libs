@@ -4,6 +4,7 @@ libc.so.6
 libdl.so.2
 libgcrypt.so.20
 libgnutls.so.30
+libgpg-error.so.0
 libksba.so.8
 libnpth.so.0
 libpthread.so.0
