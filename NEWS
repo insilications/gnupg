@@ -1,3 +1,105 @@
+Noteworthy changes in version 2.2.17 (2019-07-09)
+-------------------------------------------------
+
+  * gpg: Ignore all key-signatures received from keyservers.  This
+    change is required to mitigate a DoS due to keys flooded with
+    faked key-signatures.  The old behaviour can be achieved by adding
+      keyserver-options no-self-sigs-only,no-import-clean
+    to your gpg.conf.  [#4607]
+
+  * gpg: If an imported keyblocks is too large to be stored in the
+    keybox (pubring.kbx) do not error out but fallback to an import
+    using the options "self-sigs-only,import-clean".  [#4591]
+
+  * gpg: New command --locate-external-key which can be used to
+    refresh keys from the Web Key Directory or via other methods
+    configured with --auto-key-locate.
+
+  * gpg: New import option "self-sigs-only".
+
+  * gpg: In --auto-key-retrieve prefer WKD over keyservers.  [#4595]
+
+  * dirmngr: Support the "openpgpkey" subdomain feature from
+    draft-koch-openpgp-webkey-service-07. [#4590].
+
+  * dirmngr: Add an exception for the "openpgpkey" subdomain to the
+    CSRF protection.  [#4603]
+
+  * dirmngr: Fix endless loop due to http errors 503 and 504.  [#4600]
+
+  * dirmngr: Fix TLS bug during redirection of HKP requests.  [#4566]
+
+  * gpgconf: Fix a race condition when killing components.  [#4577]
+
+  Release-info: https://dev.gnupg.org/T4606
+  See-also: gnupg-announce/2019q3/000439.html
+
+
+Noteworthy changes in version 2.2.16 (2019-05-28)
+-------------------------------------------------
+
+  * gpg,gpgsm: Fix deadlock on Windows due to a keybox sharing
+    violation.  [#4505]
+
+  * gpg: Allow deletion of subkeys with --delete-key.  This finally
+    makes the bang-suffix work as expected for that command.  [#4457]
+
+  * gpg: Replace SHA-1 by SHA-256 in self-signatures when updating
+    them with --quick-set-expire or --quick-set-primary-uid. [#4508]
+
+  * gpg: Improve the photo image viewer selection.  [#4334]
+
+  * gpg: Fix decryption with --use-embedded-filename.  [#4500]
+
+  * gpg: Remove hints on using the --keyserver option.  [#4512]
+
+  * gpg: Fix export of certain secret keys with comments.  [#4490]
+
+  * gpg: Reject too long user-ids in --quick-gen-key.  [#4532]
+
+  * gpg: Fix a double free in the best key selection code.  [#4462]
+
+  * gpg: Fix the key generation dialog for switching back from EdDSA
+    to ECDSA.
+
+  * gpg: Use AES-192 with SHA-384 to comply with RFC-6637.
+
+  * gpg: Use only the addrspec from the Signer's UID subpacket to
+    mitigate a problem with another implementation.
+
+  * gpg: Skip invalid packets during a keyring listing and sync
+    diagnostics with the output.
+
+  * gpgsm: Avoid confusing diagnostic when signing with the default
+    key.  [#4535]
+
+  * agent: Do not delete any secret key in --dry-run mode.
+
+  * agent: Fix failures on 64 bit big-endian boxes related to URIs in
+    a keyfile.  [#4501]
+
+  * agent: Stop scdaemon after a reload with disable-scdaemon newly
+    configured.  [#4326]
+
+  * dirmngr: Improve caching algorithm for WKD domains.
+
+  * dirmngr: Support other hash algorithms than SHA-1 for OCSP.  [#3966]
+
+  * gpgconf: Make --homedir work for --launch.  [#4496]
+
+  * gpgconf: Before --launch check for a valid config file.  [#4497]
+
+  * wkd: Do not import more than 5 keys from one WKD address.
+
+  * wkd: Accept keys which are stored in armored format in the
+    directory.
+
+  * The installer for Windows now comes with signed binaries.
+
+  Release-info: https://dev.gnupg.org/T4509
+  See-also: gnupg-announce/2019q2/000438.html
+
+
 Noteworthy changes in version 2.2.15 (2019-03-26)
 -------------------------------------------------
 
@@ -50,7 +152,7 @@ Noteworthy changes in version 2.2.14 (2019-03-19)
 
   * dirmngr: Fix build problems with gcc 9 in libdns.
 
-  * gpgconf: New option --show-socket for use wity --launch.
+  * gpgconf: New option --show-socket for use with --launch.
 
   * gpgtar: Make option -C work for archive creation.
 
@@ -99,7 +201,7 @@ Noteworthy changes in version 2.2.12 (2018-12-14)
 
   * gpg: Fix a bug where a LF was accidentally written to the console.
 
-  * gpg: --card-status now shwos whether a card has the new KDF
+  * gpg: --card-status now shows whether a card has the new KDF
     feature enabled.
 
   * agent: New runtime option --s2k-calibration=MSEC.  New configure
@@ -2574,7 +2676,7 @@ Noteworthy changes in version 1.9.2 (2003-11-17)
    command but from the menu provided by the new --card-edit command.
 
  * PINs are now properly cached and there are only 2 PINs visible.
-   The 3rd PIN (CHV2) is internally syncronized with the regular PIN.
+   The 3rd PIN (CHV2) is internally synchronized with the regular PIN.
 
  * All kind of other internal stuff.
 

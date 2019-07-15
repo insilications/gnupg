@@ -1,9 +1,12 @@
 # This file contains recursive sources that require this package
+flatpak
 gcr
 gmime
 gpgme
+kleopatra
 libcryptui
 libreoffice
 mutt
+notmuch
 seahorse
 volume_key

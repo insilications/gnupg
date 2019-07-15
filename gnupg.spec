@@ -5,11 +5,11 @@
 # Source0 file verified with key 0x249B39D24F25E3B6
 #
 Name     : gnupg
-Version  : 2.2.15
-Release  : 49
-URL      : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.15.tar.bz2
-Source0  : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.15.tar.bz2
-Source99 : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.15.tar.bz2.sig
+Version  : 2.2.17
+Release  : 50
+URL      : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.17.tar.bz2
+Source0  : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.17.tar.bz2
+Source99 : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.17.tar.bz2.sig
 Summary  : zlib compression library
 Group    : Development/Tools
 License  : BSD-3-Clause CC0-1.0 GPL-2.0 GPL-3.0 LGPL-2.1 LGPL-3.0 NCSA
@@ -29,6 +29,8 @@ BuildRequires : libgpg-error-extras
 BuildRequires : libksba-dev
 BuildRequires : libusb-dev
 BuildRequires : npth-dev
+BuildRequires : pcsc-lite
+BuildRequires : pinentry
 BuildRequires : pkgconfig(gnutls)
 BuildRequires : pkgconfig(sqlite3)
 BuildRequires : pkgconfig(zlib)
@@ -108,7 +110,7 @@ man components for the gnupg package.
 
 
 %prep
-%setup -q -n gnupg-2.2.15
+%setup -q -n gnupg-2.2.17
 %patch1 -p1
 %patch2 -p1
 
@@ -116,26 +118,28 @@ man components for the gnupg package.
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1558393210
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1563201432
 export GCC_IGNORE_WERROR=1
-export LDFLAGS="${LDFLAGS} -fno-lto"
-export CFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
-export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
-export FFLAGS="$CFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
-export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export AR=gcc-ar
+export RANLIB=gcc-ranlib
+export NM=gcc-nm
+export CFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export FFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 %configure --disable-static --disable-rpath
 make  %{?_smp_mflags}
 
 %check
-export LANG=C
+export LANG=C.UTF-8
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 make check || :
 
 %install
-export SOURCE_DATE_EPOCH=1558393210
+export SOURCE_DATE_EPOCH=1563201432
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/gnupg
 cp COPYING %{buildroot}/usr/share/package-licenses/gnupg/COPYING
