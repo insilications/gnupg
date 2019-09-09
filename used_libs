@@ -1,5 +1,5 @@
 libassuan.so.0
-libbz2.so.0
+libbz2.so.1.0
 libc.so.6
 libdl.so.2
 libgcrypt.so.20

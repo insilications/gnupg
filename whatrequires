@@ -8,5 +8,6 @@ libcryptui
 libreoffice
 mutt
 notmuch
+php-gnupg
 seahorse
 volume_key

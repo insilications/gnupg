@@ -2,6 +2,7 @@ Configure miss: whether SELinux support is requested
 Configure miss: whether to allocate extra secure memory
 Configure miss: whether to use a fixed photo ID viewer
 Configure miss: whether use of capabilities is requested
+Configure miss: windres
 Configure miss: strerror in -lcposix
 Configure miss: ntbtls-config
 Configure miss: NTBTLS - version >= 0.1.0
