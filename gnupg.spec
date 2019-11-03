@@ -6,7 +6,7 @@
 #
 Name     : gnupg
 Version  : 2.2.17
-Release  : 52
+Release  : 53
 URL      : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.17.tar.bz2
 Source0  : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.17.tar.bz2
 Source1 : https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.17.tar.bz2.sig
