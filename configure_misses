@@ -35,7 +35,6 @@ Configure miss: struct ucred.cr_pid
 Configure miss: struct sockpeercred.pid
 Configure miss: direct.h usability
 Configure miss: direct.h presence
-Configure miss: whether your system's regexp library is broken
 Configure miss: whether readline via "-lreadline" is present and sane
 Configure miss: whether readline via "-lreadline -ltermcap" is present and sane
 Configure miss: whether readline via "-lreadline -lcurses" is present and sane
