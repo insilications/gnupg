@@ -19,6 +19,7 @@ Configure miss: whether I can make LDAP be sane with lber.h
 Configure miss: whether LDAP via "-lwldap32" is present and sane
 Configure miss: whether I can make LDAP be sane with lber.h
 Configure miss: ber_free in -llber
+Configure miss: sendmail
 Configure miss: ucred.h usability
 Configure miss: ucred.h presence
 Configure miss: ucred.h
