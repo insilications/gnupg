@@ -34,6 +34,7 @@ Configure miss: whether readline via "-lreadline -lcurses" is present and sane
 Configure miss: whether readline via "-lreadline -lncurses" is present and sane
 Configure miss: whether readline via "-lreadline -ltermcap" is present and sane
 Configure miss: whether readline via "-lreadline" is present and sane
+Configure miss: whether sys_siglist is declared
 Configure miss: whether time_t is unsigned
 Configure miss: whether to allocate extra secure memory
 Configure miss: whether to enable log_clock
