@@ -1,8 +1,8 @@
 Configure miss: NTBTLS - version >= 0.1.0
 Configure miss: ber_free in -llber
-Configure miss: byte
-Configure miss: library containing Esys_Initialize
-Configure miss: library containing TSS_Create
+Configure miss: byte typedef
+Configure miss: direct.h presence
+Configure miss: direct.h usability
 Configure miss: library containing dn_expand
 Configure miss: library containing dn_skipname
 Configure miss: library containing res_9_dn_skipname
@@ -10,13 +10,14 @@ Configure miss: library containing res_query
 Configure miss: memicmp
 Configure miss: ntbtls-config
 Configure miss: sendmail
+Configure miss: strerror in -lcposix
 Configure miss: strlwr
 Configure miss: struct sockpeercred.pid
 Configure miss: struct ucred.cr_pid
 Configure miss: sys/ucred.h presence
 Configure miss: sys/ucred.h usability
-Configure miss: u16
-Configure miss: u32
+Configure miss: u16 typedef
+Configure miss: u32 typedef
 Configure miss: ucred.h
 Configure miss: ucred.h presence
 Configure miss: ucred.h usability
@@ -37,7 +38,6 @@ Configure miss: whether readline via "-lreadline" is present and sane
 Configure miss: whether sys_siglist is declared
 Configure miss: whether time_t is unsigned
 Configure miss: whether to allocate extra secure memory
-Configure miss: whether to enable log_clock
 Configure miss: whether to use a fixed photo ID viewer
 Configure miss: whether use of capabilities is requested
 Configure miss: windres

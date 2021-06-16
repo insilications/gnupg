@@ -8,7 +8,7 @@ Subject: [PATCH] Warn on use of insecure 3DES algo
  1 file changed, 18 insertions(+)
 
 diff --git a/g10/encrypt.c b/g10/encrypt.c
-index 01f32af..3feda5a 100644
+index 94e233b..4fbb5c7 100644
 --- a/g10/encrypt.c
 +++ b/g10/encrypt.c
 @@ -627,6 +627,15 @@ encrypt_crypt (ctrl_t ctrl, int filefd, const char *filename,
