@@ -1,5 +1,6 @@
 PKG_NAME := gnupg
-URL = https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.29.tar.bz2
+URL = https://dev.gnupg.org/source/gnupg.git
 ARCHIVES = 
+ARCHIVES_GIT = 
 
 include ../common/Makefile.common
