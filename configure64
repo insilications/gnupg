@@ -1,4 +1,3 @@
---disable-rpath
 --enable-shared
 --enable-static
 --disable-card-support
@@ -6,3 +5,4 @@
 --disable-tpm2d
 --disable-scdaemon
 --enable-maintainer-mode
+--enable-all-tests

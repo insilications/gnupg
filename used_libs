@@ -8,8 +8,6 @@ libksba.so.8
 liblber-2.4.so.2
 libldap-2.4.so.2
 libnpth.so.0
-libpthread.so.0
 libreadline.so.8
-libresolv.so.2
 libsqlite3.so.0
 libz.so.1

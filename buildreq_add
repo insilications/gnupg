@@ -23,7 +23,11 @@ libgpg-error-extras
 libgpg-error-staticdev
 libksba-dev
 libksba-staticdev
+pinentry
 libssh-dev
+ncurses
+ncurses-dev
+ncurses-staticdev
 npth-dev
 openldap
 openldap-bin
@@ -44,3 +48,5 @@ texinfo
 xdg-dbus-proxy
 zlib-dev
 zlib-staticdev
+bzip2-dev
+bzip2-staticdev

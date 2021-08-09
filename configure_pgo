@@ -1,0 +1,8 @@
+--enable-shared
+--enable-static
+--disable-card-support
+--disable-ccid-driver
+--disable-tpm2d
+--disable-scdaemon
+--enable-maintainer-mode
+--enable-all-tests
