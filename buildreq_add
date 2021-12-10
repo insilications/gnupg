@@ -41,7 +41,6 @@ pinentry
 readline-dev
 sqlite-autoconf
 sqlite-autoconf-dev
-sqlite-autoconf-staticdev
 sshpass
 sshtunnel
 texinfo
