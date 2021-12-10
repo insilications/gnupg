@@ -1,6 +1,8 @@
 # This file contains additional build requirements that did not get
 # picked up automatically. One name per line, no whitespace.
 #libusb-dev
+ImageMagick
+ImageMagick-dev
 bzip2-dev
 bzip2-staticdev
 dbus
@@ -12,8 +14,6 @@ fig2dev
 ghostscript
 ghostscript-dev
 gnutls-dev
-ImageMagick
-ImageMagick-dev
 libassuan-dev
 libassuan-staticdev
 libgcrypt-dev
@@ -26,7 +26,6 @@ libksba-staticdev
 libssh-dev
 ncurses
 ncurses-dev
-ncurses-staticdev
 npth-dev
 openldap
 openldap-bin
