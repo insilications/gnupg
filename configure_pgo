@@ -5,4 +5,3 @@
 --disable-tpm2d
 --disable-scdaemon
 --enable-maintainer-mode
---enable-all-tests

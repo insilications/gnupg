@@ -14,7 +14,6 @@ License  : GPL-2.0
 Requires: pinentry
 BuildRequires : ImageMagick
 BuildRequires : ImageMagick-dev
-BuildRequires : buildreq-configure
 BuildRequires : bzip2-dev
 BuildRequires : bzip2-staticdev
 BuildRequires : dbus
@@ -51,8 +50,6 @@ BuildRequires : openssh-bin
 BuildRequires : openssl-dev
 BuildRequires : pinentry
 BuildRequires : pkgconfig(dbus-1)
-BuildRequires : pkgconfig(gnutls)
-BuildRequires : pkgconfig(sqlite3)
 BuildRequires : pkgconfig(zlib)
 BuildRequires : readline-dev
 BuildRequires : sqlite-autoconf
@@ -88,7 +85,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1639148251
+export SOURCE_DATE_EPOCH=1639148307
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -233,7 +230,7 @@ fi
 
 
 %install
-export SOURCE_DATE_EPOCH=1639148251
+export SOURCE_DATE_EPOCH=1639148307
 rm -rf %{buildroot}
 %make_install
 ## install_append content
