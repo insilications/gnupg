@@ -11,6 +11,12 @@ Source0  : file:///aot/build/clearlinux/packages/gnupg/gnupg-v2.3.3.tar.gz
 Summary  : zlib compression library
 Group    : Development/Tools
 License  : GPL-2.0
+Requires: gnupg-bin = %{version}-%{release}
+Requires: gnupg-data = %{version}-%{release}
+Requires: gnupg-info = %{version}-%{release}
+Requires: gnupg-libexec = %{version}-%{release}
+Requires: gnupg-locales = %{version}-%{release}
+Requires: gnupg-man = %{version}-%{release}
 Requires: pinentry
 BuildRequires : ImageMagick
 BuildRequires : ImageMagick-dev
@@ -75,6 +81,66 @@ and signing of data and communication, and features a versatile key
 management system as well as access modules for public key
 directories.
 
+%package bin
+Summary: bin components for the gnupg package.
+Group: Binaries
+Requires: gnupg-data = %{version}-%{release}
+Requires: gnupg-libexec = %{version}-%{release}
+
+%description bin
+bin components for the gnupg package.
+
+
+%package data
+Summary: data components for the gnupg package.
+Group: Data
+
+%description data
+data components for the gnupg package.
+
+
+%package doc
+Summary: doc components for the gnupg package.
+Group: Documentation
+Requires: gnupg-man = %{version}-%{release}
+Requires: gnupg-info = %{version}-%{release}
+
+%description doc
+doc components for the gnupg package.
+
+
+%package info
+Summary: info components for the gnupg package.
+Group: Default
+
+%description info
+info components for the gnupg package.
+
+
+%package libexec
+Summary: libexec components for the gnupg package.
+Group: Default
+
+%description libexec
+libexec components for the gnupg package.
+
+
+%package locales
+Summary: locales components for the gnupg package.
+Group: Default
+
+%description locales
+locales components for the gnupg package.
+
+
+%package man
+Summary: man components for the gnupg package.
+Group: Default
+
+%description man
+man components for the gnupg package.
+
+
 %prep
 %setup -q -n gnupg
 cd %{_builddir}/gnupg
@@ -85,7 +151,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1639148663
+export SOURCE_DATE_EPOCH=1639148900
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -193,7 +259,7 @@ export LIBS="${LIBS_GENERATE}"
 --enable-maintainer-mode \
 --enable-all-tests
 ## make_macro content
-make dist V=1 VERBOSE=1 || :
+make -j16 dist V=1 VERBOSE=1 || :
 make -j16 V=1 VERBOSE=1 || :
 ## make_macro end
 
@@ -224,19 +290,123 @@ export LIBS="${LIBS_USE}"
 --disable-scdaemon \
 --enable-maintainer-mode
 ## make_macro content
-make dist V=1 VERBOSE=1 || :
+make -j16 dist V=1 VERBOSE=1 || :
 make -j16 V=1 VERBOSE=1 || :
 ## make_macro end
 fi
 
 
 %install
-export SOURCE_DATE_EPOCH=1639148663
+export SOURCE_DATE_EPOCH=1639148900
 rm -rf %{buildroot}
 %make_install
+%find_lang gnupg2
 ## install_append content
 ln -s gpg %{buildroot}/usr/bin/gpg2
 ## install_append end
 
 %files
+%defattr(-,root,root,-)
+
+%files bin
+%defattr(-,root,root,-)
+/usr/bin/addgnupghome
+/usr/bin/applygnupgdefaults
+/usr/bin/dirmngr
+/usr/bin/dirmngr-client
+/usr/bin/gpg
+/usr/bin/gpg-agent
+/usr/bin/gpg-card
+/usr/bin/gpg-connect-agent
+/usr/bin/gpg-wks-client
+/usr/bin/gpg-wks-server
+/usr/bin/gpg2
+/usr/bin/gpgconf
+/usr/bin/gpgparsemail
+/usr/bin/gpgscm
+/usr/bin/gpgsm
+/usr/bin/gpgsplit
+/usr/bin/gpgtar
+/usr/bin/gpgv
+/usr/bin/kbxutil
+/usr/bin/watchgnupg
+
+%files data
+%defattr(-,root,root,-)
+/usr/share/gnupg/distsigkey.gpg
+/usr/share/gnupg/help.be.txt
+/usr/share/gnupg/help.ca.txt
+/usr/share/gnupg/help.cs.txt
+/usr/share/gnupg/help.da.txt
+/usr/share/gnupg/help.de.txt
+/usr/share/gnupg/help.el.txt
+/usr/share/gnupg/help.eo.txt
+/usr/share/gnupg/help.es.txt
+/usr/share/gnupg/help.et.txt
+/usr/share/gnupg/help.fi.txt
+/usr/share/gnupg/help.fr.txt
+/usr/share/gnupg/help.gl.txt
+/usr/share/gnupg/help.hu.txt
+/usr/share/gnupg/help.id.txt
+/usr/share/gnupg/help.it.txt
+/usr/share/gnupg/help.ja.txt
+/usr/share/gnupg/help.nb.txt
+/usr/share/gnupg/help.pl.txt
+/usr/share/gnupg/help.pt.txt
+/usr/share/gnupg/help.pt_BR.txt
+/usr/share/gnupg/help.ro.txt
+/usr/share/gnupg/help.ru.txt
+/usr/share/gnupg/help.sk.txt
+/usr/share/gnupg/help.sv.txt
+/usr/share/gnupg/help.tr.txt
+/usr/share/gnupg/help.txt
+/usr/share/gnupg/help.zh_CN.txt
+/usr/share/gnupg/help.zh_TW.txt
+/usr/share/gnupg/sks-keyservers.netCA.pem
+
+%files doc
+%defattr(0644,root,root,0755)
+%doc /usr/share/doc/gnupg/*
+
+%files info
+%defattr(0644,root,root,0755)
+/usr/share/info/gnupg.info
+/usr/share/info/gnupg.info-1
+/usr/share/info/gnupg.info-2
+/usr/share/info/gnupg.info-3
+
+%files libexec
+%defattr(-,root,root,-)
+/usr/libexec/dirmngr_ldap
+/usr/libexec/gpg-check-pattern
+/usr/libexec/gpg-pair-tool
+/usr/libexec/gpg-preset-passphrase
+/usr/libexec/gpg-protect-tool
+/usr/libexec/gpg-wks-client
+/usr/libexec/keyboxd
+
+%files man
+%defattr(0644,root,root,0755)
+/usr/share/man/man1/dirmngr-client.1
+/usr/share/man/man1/gpg-agent.1
+/usr/share/man/man1/gpg-card.1
+/usr/share/man/man1/gpg-check-pattern.1
+/usr/share/man/man1/gpg-connect-agent.1
+/usr/share/man/man1/gpg-preset-passphrase.1
+/usr/share/man/man1/gpg-wks-client.1
+/usr/share/man/man1/gpg-wks-server.1
+/usr/share/man/man1/gpg.1
+/usr/share/man/man1/gpgconf.1
+/usr/share/man/man1/gpgparsemail.1
+/usr/share/man/man1/gpgsm.1
+/usr/share/man/man1/gpgtar.1
+/usr/share/man/man1/gpgv.1
+/usr/share/man/man1/scdaemon.1
+/usr/share/man/man1/watchgnupg.1
+/usr/share/man/man7/gnupg.7
+/usr/share/man/man8/addgnupghome.8
+/usr/share/man/man8/applygnupgdefaults.8
+/usr/share/man/man8/dirmngr.8
+
+%files locales -f gnupg2.lang
 %defattr(-,root,root,-)

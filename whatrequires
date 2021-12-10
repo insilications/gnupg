@@ -1,18 +1,23 @@
 # This file contains recursive sources that require this package
 dnsmasq
 flatpak
+flatpak-builder
 flatpak-dev
 gcr
 gmime
+gnome-software
 gpgme
 kleopatra
 kleopatra-dev
+koji
 libcryptui
 libreoffice
 mutt
 notmuch
 ostree
 php-gnupg
+plasma-discover
 rpm
 seahorse
 volume_key
+xdg-desktop-portal
