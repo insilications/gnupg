@@ -1,0 +1,51 @@
+Configure miss: CFLocaleCopyPreferredLanguages
+Configure miss: CFLocaleCopyPreferredLanguages
+Configure miss: NTBTLS - version >= 0.1.0
+Configure miss: NTBTLS - version >= 0.1.0
+Configure miss: byte
+Configure miss: byte
+Configure miss: gcc options needed to detect all undeclared functions
+Configure miss: gcc options needed to detect all undeclared functions
+Configure miss: ldap_start_tls_sA
+Configure miss: ldap_start_tls_sA
+Configure miss: library containing res_9_dn_skipname
+Configure miss: library containing res_9_dn_skipname
+Configure miss: memicmp
+Configure miss: memicmp
+Configure miss: ntbtls-config
+Configure miss: ntbtls-config
+Configure miss: sendmail
+Configure miss: sendmail
+Configure miss: strlwr
+Configure miss: strlwr
+Configure miss: struct sockpeercred.pid
+Configure miss: struct sockpeercred.pid
+Configure miss: struct ucred.cr_pid
+Configure miss: struct ucred.cr_pid
+Configure miss: u16
+Configure miss: u16
+Configure miss: u32
+Configure miss: u32
+Configure miss: ucred.h
+Configure miss: ucred.h
+Configure miss: whether "make check" shall run all tests
+Configure miss: whether SELinux support is requested
+Configure miss: whether SELinux support is requested
+Configure miss: whether smartcard support is requested
+Configure miss: whether smartcard support is requested
+Configure miss: whether sys_siglist is declared
+Configure miss: whether sys_siglist is declared
+Configure miss: whether time_t is unsigned
+Configure miss: whether time_t is unsigned
+Configure miss: whether to allocate extra secure memory
+Configure miss: whether to allocate extra secure memory
+Configure miss: whether to enable log_clock
+Configure miss: whether to enable log_clock
+Configure miss: whether to enable the internal CCID driver
+Configure miss: whether to enable the internal CCID driver
+Configure miss: whether to use a fixed photo ID viewer
+Configure miss: whether to use a fixed photo ID viewer
+Configure miss: whether use of capabilities is requested
+Configure miss: whether use of capabilities is requested
+Configure miss: windres
+Configure miss: windres

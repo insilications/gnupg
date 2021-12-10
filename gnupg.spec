@@ -5,7 +5,7 @@
 %define keepstatic 1
 Name     : gnupg
 Version  : 2.3.3
-Release  : 501
+Release  : 502
 URL      : file:///aot/build/clearlinux/packages/gnupg/gnupg-v2.3.3.tar.gz
 Source0  : file:///aot/build/clearlinux/packages/gnupg/gnupg-v2.3.3.tar.gz
 Summary  : zlib compression library
@@ -85,7 +85,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1639148307
+export SOURCE_DATE_EPOCH=1639148663
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -173,6 +173,8 @@ export LIBVA_DRIVERS_PATH=/usr/lib64/dri
 export GTK_RC_FILES=/etc/gtk/gtkrc
 export FONTCONFIG_PATH=/usr/share/defaults/fonts
 ## altflags_pgo end
+sd -r '\s--dirty\s' ' ' .
+sd -r 'git describe' 'git describe --abbrev=0' .
 if [ ! -f statuspgo ]; then
 echo PGO Phase 1
 export CFLAGS="${CFLAGS_GENERATE}"
@@ -182,7 +184,7 @@ export FCFLAGS="${FCFLAGS_GENERATE}"
 export LDFLAGS="${LDFLAGS_GENERATE}"
 export ASMFLAGS="${ASMFLAGS_GENERATE}"
 export LIBS="${LIBS_GENERATE}"
-%configure  --enable-shared \
+%autogen_simple  --enable-shared \
 --enable-static \
 --disable-card-support \
 --disable-ccid-driver \
@@ -214,14 +216,13 @@ export FCFLAGS="${FCFLAGS_USE}"
 export LDFLAGS="${LDFLAGS_USE}"
 export ASMFLAGS="${ASMFLAGS_USE}"
 export LIBS="${LIBS_USE}"
-%configure  --enable-shared \
+%autogen_simple --enable-shared \
 --enable-static \
 --disable-card-support \
 --disable-ccid-driver \
 --disable-tpm2d \
 --disable-scdaemon \
---enable-maintainer-mode \
---enable-all-tests
+--enable-maintainer-mode
 ## make_macro content
 make dist V=1 VERBOSE=1 || :
 make -j16 V=1 VERBOSE=1 || :
@@ -230,7 +231,7 @@ fi
 
 
 %install
-export SOURCE_DATE_EPOCH=1639148307
+export SOURCE_DATE_EPOCH=1639148663
 rm -rf %{buildroot}
 %make_install
 ## install_append content
