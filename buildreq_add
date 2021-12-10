@@ -27,6 +27,7 @@ libssh-dev
 ncurses
 ncurses-dev
 npth-dev
+npth-staticdev
 openldap
 openldap-bin
 openldap-config
